@@ -82,7 +82,6 @@
           <span class="year-tabs-toggle-label">Alle Jahre</span><span class="toggle-caret">▾</span>
         </button>
         <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
-        <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
       </div>
     </nav>
 
@@ -92,7 +91,6 @@
           <span class="year-tabs-toggle-label">Alle Jahre</span><span class="toggle-caret">▾</span>
         </button>
         <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
-        <button type="button" id="orderSelectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
       </div>
     </nav>
   </div>
@@ -147,6 +145,7 @@
   <div id="bulkBar" class="bulk-bar" hidden>
     <span id="bulkCount">0 ausgewählt</span>
     <div class="bulk-bar-actions">
+      <button type="button" id="bulkClearBtn" class="btn btn-secondary">Markierungen löschen</button>
       <button type="button" id="bulkSelectAllBtn" class="btn btn-secondary">Alle auswählen</button>
       <button type="button" id="bulkExportCsvBtn" class="btn btn-secondary" disabled>CSV exportieren</button>
       <button type="button" id="bulkEditBtn" class="btn btn-primary" disabled>Bearbeiten</button>
@@ -157,6 +156,7 @@
   <div id="orderBulkBar" class="bulk-bar" hidden>
     <span id="orderBulkCount">0 ausgewählt</span>
     <div class="bulk-bar-actions">
+      <button type="button" id="orderBulkClearBtn" class="btn btn-secondary">Markierungen löschen</button>
       <button type="button" id="orderBulkSelectAllBtn" class="btn btn-secondary">Alle auswählen</button>
       <button type="button" id="orderBulkExportCsvBtn" class="btn btn-secondary" disabled>CSV exportieren</button>
       <button type="button" id="orderBulkDoneBtn" class="btn btn-secondary">Fertig</button>

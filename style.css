@@ -418,27 +418,6 @@ textarea { resize: vertical; }
   color: var(--color-primary);
 }
 
-.select-toggle-btn {
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.16);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
-  padding: 7px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s ease;
-}
-
-.select-toggle-btn.active {
-  background: #fff;
-  border-color: #fff;
-  color: var(--color-primary);
-}
-
 /* Kompakte Dropdown-Buttons für Haupt-Reiter/Jahres-Leiste - nur am Handy
    sichtbar (siehe Mobile-Media-Query weiter unten), am Desktop bleiben die
    normalen Pillen-Reihen. */
@@ -995,8 +974,31 @@ main {
     transform: rotate(180deg);
   }
 
+  /* Haupt-Reiter und Jahres-Auswahl teilen sich eine Zeile (beide Toggles
+     sind kompakt genug) statt zwei eigene Balken zu belegen - braucht immer
+     noch weniger Höhe im fixierten Kopfbereich. Per CSS Grid statt DOM-
+     Umbau, damit der Haupt-Reiter-Toggle immer erreichbar bleibt (auch auf
+     der Statistik-Seite, wo beide Jahres-Leisten ausgeblendet sind). */
+  #topBar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+  }
+  #topBar > .app-header {
+    grid-column: 1 / -1;
+  }
+  #topBar > .main-tabs {
+    grid-column: 1;
+  }
+  #topBar > .year-tabs-bar {
+    grid-column: 2;
+  }
+
   .main-tabs {
     position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10px 0 10px 16px;
   }
   .main-tabs-inner {
     display: none;
@@ -1034,7 +1036,7 @@ main {
 
   .year-tabs-inner {
     position: relative;
-    padding: 10px 16px;
+    padding: 10px 16px 10px 0;
     gap: 8px;
   }
   .year-tabs-toggle {
@@ -1045,7 +1047,7 @@ main {
     display: none;
     position: absolute;
     top: calc(100% + 8px);
-    left: 16px;
+    left: 0;
     right: 16px;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -1074,11 +1076,6 @@ main {
     border: none;
     color: var(--color-primary);
   }
-  .year-tabs-inner .select-toggle-btn {
-    width: auto;
-    flex-shrink: 0;
-  }
-
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 
   /* Round FAB, label hidden, thumb-friendly corner */

@@ -314,14 +314,66 @@ const sortSelect = document.getElementById("sortSelect");
 const viewGridBtn = document.getElementById("viewGridBtn");
 const viewListBtn = document.getElementById("viewListBtn");
 const yearTabs = document.getElementById("yearTabs");
-const selectModeBtn = document.getElementById("selectModeBtn");
 const bulkBar = document.getElementById("bulkBar");
 const bulkCount = document.getElementById("bulkCount");
+const bulkClearBtn = document.getElementById("bulkClearBtn");
 const bulkEditBtn = document.getElementById("bulkEditBtn");
 const bulkExportCsvBtn = document.getElementById("bulkExportCsvBtn");
 const bulkSelectAllBtn = document.getElementById("bulkSelectAllBtn");
 const bulkDoneBtn = document.getElementById("bulkDoneBtn");
 const fab = document.getElementById("addChiliBtn");
+
+// --- Langer Druck auf eine Karte/Zeile aktiviert die Mehrfachauswahl -
+// ersetzt den separaten "Mehrere auswählen"-Button. Funktioniert mit Maus
+// UND Touch (Pointer Events), da ein normaler Klick danach sonst noch das
+// Bearbeiten-Fenster öffnen würde.
+
+function attachLongPress(el, onLongPress) {
+  const THRESHOLD_MS = 500;
+  const MOVE_TOLERANCE = 10;
+  let timer = null;
+  let startX = 0;
+  let startY = 0;
+  let firedLongPress = false;
+
+  function cancelTimer() {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  }
+
+  el.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    startX = e.clientX;
+    startY = e.clientY;
+    cancelTimer();
+    timer = setTimeout(() => {
+      firedLongPress = true;
+      onLongPress();
+    }, THRESHOLD_MS);
+  });
+  el.addEventListener("pointermove", (e) => {
+    if (!timer) return;
+    if (Math.abs(e.clientX - startX) > MOVE_TOLERANCE || Math.abs(e.clientY - startY) > MOVE_TOLERANCE) {
+      cancelTimer();
+    }
+  });
+  el.addEventListener("pointerup", cancelTimer);
+  el.addEventListener("pointercancel", cancelTimer);
+  el.addEventListener("pointerleave", cancelTimer);
+  el.addEventListener(
+    "click",
+    (e) => {
+      if (firedLongPress) {
+        firedLongPress = false;
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    true
+  );
+}
 
 // --- Menü (⋮): Hell/Dunkel, Statistik, Info - statt einzeln sichtbarer
 // Icons im Header sitzt das gebündelt in einem Dropdown.
@@ -381,9 +433,15 @@ let selectedIds = new Set();
 function setSelectionMode(on) {
   selectionMode = on;
   if (!on) selectedIds.clear();
-  selectModeBtn.classList.toggle("active", on);
-  selectModeBtn.textContent = on ? "Auswahl beenden" : "Mehrere auswählen";
   fab.hidden = on;
+  updateBulkBar();
+  render();
+}
+
+function enterSelectionMode(initialId) {
+  selectionMode = true;
+  selectedIds.add(initialId);
+  fab.hidden = true;
   updateBulkBar();
   render();
 }
@@ -405,8 +463,12 @@ function updateBulkBar() {
   bulkExportCsvBtn.disabled = selectedIds.size === 0;
 }
 
-selectModeBtn.addEventListener("click", () => setSelectionMode(!selectionMode));
 bulkDoneBtn.addEventListener("click", () => setSelectionMode(false));
+bulkClearBtn.addEventListener("click", () => {
+  selectedIds.clear();
+  updateBulkBar();
+  render();
+});
 bulkSelectAllBtn.addEventListener("click", () => {
   const filtered = getFilteredChilis();
   const allSelected = filtered.length > 0 && filtered.every((c) => selectedIds.has(c.id));
@@ -572,9 +634,9 @@ function populateHaendlerOptions() {
 
 // --- Bestellungen: Mehrfachauswahl + CSV-Export (spiegelt die Sammlung) ---
 
-const orderSelectModeBtn = document.getElementById("orderSelectModeBtn");
 const orderBulkBar = document.getElementById("orderBulkBar");
 const orderBulkCount = document.getElementById("orderBulkCount");
+const orderBulkClearBtn = document.getElementById("orderBulkClearBtn");
 const orderBulkSelectAllBtn = document.getElementById("orderBulkSelectAllBtn");
 const orderBulkExportCsvBtn = document.getElementById("orderBulkExportCsvBtn");
 const orderBulkDoneBtn = document.getElementById("orderBulkDoneBtn");
@@ -585,9 +647,15 @@ let orderSelectedIds = new Set();
 function setOrderSelectionMode(on) {
   orderSelectionMode = on;
   if (!on) orderSelectedIds.clear();
-  orderSelectModeBtn.classList.toggle("active", on);
-  orderSelectModeBtn.textContent = on ? "Auswahl beenden" : "Mehrere auswählen";
   addOrderBtn.hidden = on || appTab !== "bestellungen";
+  updateOrderBulkBar();
+  renderOrders();
+}
+
+function enterOrderSelectionMode(initialId) {
+  orderSelectionMode = true;
+  orderSelectedIds.add(initialId);
+  addOrderBtn.hidden = true;
   updateOrderBulkBar();
   renderOrders();
 }
@@ -608,8 +676,12 @@ function updateOrderBulkBar() {
   orderBulkExportCsvBtn.disabled = orderSelectedIds.size === 0;
 }
 
-orderSelectModeBtn.addEventListener("click", () => setOrderSelectionMode(!orderSelectionMode));
 orderBulkDoneBtn.addEventListener("click", () => setOrderSelectionMode(false));
+orderBulkClearBtn.addEventListener("click", () => {
+  orderSelectedIds.clear();
+  updateOrderBulkBar();
+  renderOrders();
+});
 orderBulkSelectAllBtn.addEventListener("click", () => {
   const filtered = getFilteredOrders();
   const allSelected = filtered.length > 0 && filtered.every((o) => orderSelectedIds.has(o.id));
@@ -693,6 +765,9 @@ function buildOrderRow(o) {
     } else {
       openOrderModal(o.id);
     }
+  });
+  attachLongPress(row, () => {
+    if (!orderSelectionMode) enterOrderSelectionMode(o.id);
   });
   row.innerHTML = `
     ${orderSelectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
@@ -884,6 +959,9 @@ function buildCard(c) {
       openModal(c.id);
     }
   });
+  attachLongPress(card, () => {
+    if (!selectionMode) enterSelectionMode(c.id);
+  });
 
   const photoWrap = document.createElement("div");
   photoWrap.className = "card-photo-wrap";
@@ -940,6 +1018,9 @@ function buildRow(c) {
     } else {
       openModal(c.id);
     }
+  });
+  attachLongPress(row, () => {
+    if (!selectionMode) enterSelectionMode(c.id);
   });
   row.innerHTML = `
     ${selectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
