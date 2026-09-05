@@ -19,7 +19,10 @@ für Handy und Desktop.
   festgehalten werden können.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
-„App installieren" (Android) mit eigenem Chili-Icon abgelegt werden.
+„App installieren" (Android) mit eigenem Chili-Icon abgelegt werden. In
+diesem Modus fehlt iOS die eigene Browser-Leiste und damit auch das native
+Pull-to-refresh – die App bringt das selbst mit: oben auf der Seite nach
+unten ziehen lädt neu.
 
 Beim allerersten Öffnen ist die Sammlung bereits mit den 58 Chilis aus dem
 „Chili 2026"-Buch vorbefüllt (`data/seed-chilis.js`), inklusive Katalog-Nummer
@@ -46,6 +49,11 @@ nicht im Git-Repository. Das heißt:
 Deshalb: regelmäßig auf **„Daten exportieren (JSON)"** klicken und die Datei
 sichern. Mit **„Daten importieren"** kann die Sammlung wiederhergestellt oder
 auf ein anderes Gerät übertragen werden.
+
+Updates an der App (neues Design, neue Funktionen) fassen deinen
+gespeicherten Bestand nie an: Die Startliste wird nur beim allerersten
+Öffnen geladen, jedes spätere Update ändert nur Code und Optik. Eigene
+Chilis, Fotos und Notizen bleiben über Versionen hinweg erhalten.
 
 ## Später: eigenes Backend
 

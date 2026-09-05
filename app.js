@@ -396,6 +396,72 @@ importFile.addEventListener("change", async () => {
   importFile.value = "";
 });
 
+// --- Pull-to-refresh ---
+// Als "Zum Home-Bildschirm hinzugefügte" App (display: standalone) hat iOS
+// keine eigene Browser-Leiste mehr und damit auch keine native
+// Pull-to-refresh-Geste. Das hier holt sie zurück, wenn ganz oben auf der
+// Seite nach unten gezogen wird.
+
+function setupPullToRefresh() {
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+  if (!isStandalone) return;
+
+  const indicator = document.getElementById("pullIndicator");
+  const THRESHOLD = 70;
+  const MAX_PULL = 110;
+  let startY = null;
+  let pulling = false;
+
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      startY = document.scrollingElement.scrollTop <= 0 ? e.touches[0].clientY : null;
+      pulling = false;
+      indicator.classList.remove("snap-back", "refreshing");
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (startY === null) return;
+      const deltaY = e.touches[0].clientY - startY;
+      if (deltaY <= 0) return;
+
+      pulling = true;
+      const distance = Math.min(deltaY, MAX_PULL);
+      indicator.classList.add("pulling");
+      indicator.style.opacity = Math.min(distance / THRESHOLD, 1);
+      indicator.style.transform = `translateY(${distance - 34}px)`;
+      indicator.classList.toggle("ready", distance >= THRESHOLD);
+    },
+    { passive: true }
+  );
+
+  document.addEventListener("touchend", () => {
+    if (!pulling) {
+      startY = null;
+      return;
+    }
+    indicator.classList.remove("pulling");
+    if (indicator.classList.contains("ready")) {
+      indicator.classList.add("refreshing");
+      indicator.style.transform = "";
+      indicator.style.opacity = "";
+      location.reload();
+    } else {
+      indicator.classList.add("snap-back");
+      indicator.style.transform = "";
+      indicator.style.opacity = "";
+    }
+    startY = null;
+    pulling = false;
+  });
+}
+
 // --- Init ---
 
 populateStatusFilter();
@@ -403,4 +469,5 @@ populateYearSelect();
 renderYearTabs();
 viewGridBtn.classList.toggle("active", viewMode === "grid");
 viewListBtn.classList.toggle("active", viewMode === "list");
+setupPullToRefresh();
 render();
