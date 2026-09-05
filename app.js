@@ -208,6 +208,13 @@ async function upsertChiliRemote(data) {
   return !error;
 }
 
+async function updateLinkedChilisRemote(ids, data) {
+  if (ids.length === 0) return true;
+  const { error } = await sb.from("chilis").update(data).in("id", ids);
+  if (error) alert("Verknüpfte Sorten konnten nicht gespeichert werden: " + error.message);
+  return !error;
+}
+
 // Angaben zur Sorte gelten unabhaengig vom Anbaujahr. Werden sie bei einem
 // Eintrag geaendert, schreiben wir sie deshalb auch in alle gleichnamigen
 // Eintraege der anderen Jahre. Die Saison-Felder (Status, Daten, Notizen und
@@ -2017,10 +2024,21 @@ form.addEventListener("submit", async (e) => {
   });
   const sharedValues = Object.fromEntries(SHARED_VARIETY_FIELDS.map((field) => [field, data[field]]));
   const linkedUpdates = linked.map((c) => ({ ...c, ...sharedValues }));
-  const recordsToSave = [data, ...linkedUpdates];
 
-  const ok = await upsertChiliRemote(recordsToSave);
+  // Den aktuellen Datensatz separat speichern. Bei einem Array-Upsert ergänzt
+  // PostgREST die Spalten aller Objekte auf dieselbe Form. Weil bestehende
+  // Einträge `created_at` enthalten, wurde dieses Feld bei einer neuen Chili
+  // dadurch als NULL gesendet, statt den Datenbank-Standard zu verwenden.
+  const ok = await upsertChiliRemote(data);
   if (!ok) return;
+
+  // Für die verknüpften Jahre nur die tatsächlich gemeinsamen Felder ändern.
+  // Dadurch bleiben `created_at` und sämtliche Saison-Daten unangetastet.
+  const linkedOk = await updateLinkedChilisRemote(
+    linked.map((c) => c.id),
+    sharedValues
+  );
+  if (!linkedOk) return;
 
   await saveReferenceEntryIfRequested();
 
