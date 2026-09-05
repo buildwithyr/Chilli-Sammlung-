@@ -66,6 +66,9 @@ body {
 /* --- Header --- */
 
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background: linear-gradient(120deg, rgba(148,40,10,0.55), rgba(198,88,20,0.45));
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
