@@ -154,6 +154,11 @@ function populateYearSelect() {
   fillOptions(document.getElementById("fieldJahr"), YEAR_OPTIONS);
 }
 
+function nextCatalogNr() {
+  const highest = chilis.reduce((max, c) => Math.max(max, parseInt(c.nr, 10) || 0), 0);
+  return String(highest + 1);
+}
+
 function sgValue(sg) {
   return parseInt(sg, 10) || 0;
 }
@@ -314,7 +319,7 @@ function openModal(id) {
   const chili = id ? chilis.find((c) => c.id === id) : null;
 
   document.getElementById("chiliId").value = chili ? chili.id : "";
-  document.getElementById("fieldNr").value = chili?.nr || "";
+  document.getElementById("fieldNr").value = chili?.nr || (chili === null ? nextCatalogNr() : "");
   document.getElementById("fieldName").value = chili?.name || "";
   document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
   document.getElementById("fieldSorte").value = chili?.sorte || "";
