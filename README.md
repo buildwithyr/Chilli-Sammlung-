@@ -23,6 +23,7 @@ Das **⋮-Menü** oben rechts im Header bündelt:
 - **📊 Statistik**: eigene Ansicht mit Gesamtzahl, Anzahl verschiedener
   Sorten, meistgezogener Sorte und einem Balkendiagramm je Sorte – zählt bei
   jedem Aufruf frisch aus der aktuellen Sammlung.
+- **📤 Daten exportieren (JSON)** / **📥 Daten importieren**: siehe unten.
 - **ℹ️ Info**: kurze Beschreibung der App plus Copyright-Hinweis (steht
   zusätzlich klein im Footer, auf jeder Seite).
 
@@ -50,9 +51,10 @@ Das **⋮-Menü** oben rechts im Header bündelt:
   2026 / 2027): filtert die Sammlung nach Anbau-Jahr, damit auch vergangene
   Saisons festgehalten werden können. Header, Sammlung/Bestellungen-Reiter
   und Jahres-Leiste bilden zusammen einen fixierten Bereich (Chili-Foto als
-  durchsichtiges Glas im Hintergrund), der beim Scrollen oben stehen bleibt;
-  auf dem Handy sind Jahres-Reiter und Haupt-Reiter je ein seitlich
-  wischbarer Streifen statt umbrechender Kacheln.
+  durchsichtiges Glas im Hintergrund), der beim Scrollen oben stehen bleibt.
+  Auf dem Handy sind Sammlung/Bestellungen und die Jahres-Auswahl je ein
+  kompakter Dropdown-Button statt breiter Pillen-Reihen, damit der fixierte
+  Bereich nicht zu viel Platz wegnimmt.
 - **Mehrere auswählen** (Button unter den Jahres-Reitern): Chilis anklicken
   statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
   oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
@@ -103,10 +105,11 @@ Das heißt:
   alter Foto-Daten in Storage-Uploads). Danach ist Supabase die einzige
   Quelle.
 
-Trotzdem: regelmäßig auf **„Daten exportieren (JSON)"** klicken und die
-Datei sichern (z.B. per Mail an dich selbst) – als Backup unabhängig von
-Supabase. Mit **„Daten importieren"** lässt sich so ein Export auch wieder
-zurückspielen (ersetzt dabei die komplette Supabase-Sammlung).
+Trotzdem: im **⋮-Menü** regelmäßig auf **„Daten exportieren (JSON)"** klicken
+und die Datei sichern (z.B. per Mail an dich selbst) – als Backup unabhängig
+von Supabase. Mit **„Daten importieren"** (ebenfalls im ⋮-Menü) lässt sich so
+ein Export auch wieder zurückspielen (ersetzt dabei die komplette
+Supabase-Sammlung).
 
 Updates an der App (neues Design, neue Funktionen) fassen deinen
 gespeicherten Bestand nie an: nur der Code/das Aussehen ändert sich,
