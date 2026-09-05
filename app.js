@@ -82,6 +82,7 @@ const selectModeBtn = document.getElementById("selectModeBtn");
 const bulkBar = document.getElementById("bulkBar");
 const bulkCount = document.getElementById("bulkCount");
 const bulkEditBtn = document.getElementById("bulkEditBtn");
+const bulkExportCsvBtn = document.getElementById("bulkExportCsvBtn");
 const bulkDoneBtn = document.getElementById("bulkDoneBtn");
 const fab = document.getElementById("addChiliBtn");
 
@@ -114,6 +115,7 @@ function updateBulkBar() {
   bulkBar.hidden = !selectionMode;
   bulkCount.textContent = `${selectedIds.size} ausgewählt`;
   bulkEditBtn.disabled = selectedIds.size === 0;
+  bulkExportCsvBtn.disabled = selectedIds.size === 0;
 }
 
 selectModeBtn.addEventListener("click", () => setSelectionMode(!selectionMode));
@@ -715,6 +717,57 @@ bulkForm.addEventListener("submit", (e) => {
 
   closeBulkModal();
   setSelectionMode(false);
+});
+
+// --- CSV-Export der Auswahl ---
+
+const CSV_COLUMNS = [
+  ["nr", "Katalog-Nr."],
+  ["name", "Name"],
+  ["jahr", "Jahr"],
+  ["sorte", "Sorte/Art"],
+  ["herkunft", "Herkunft"],
+  ["sg", "Schärfegrad (Sg)"],
+  ["scoville", "Scoville"],
+  ["status", "Status"],
+  ["pflanzdatum", "Pflanzdatum"],
+  ["erntedatum", "Erntedatum"],
+  ["erntenotizen", "Wie läuft die Ernte"],
+  ["geschmack", "Geschmack/Aroma"],
+  ["notizen", "Notizen"],
+];
+
+function csvEscape(value) {
+  const str = String(value ?? "");
+  // Excel (DE) erwartet Semikolon als Trenner; Felder mit Semikolon,
+  // Anführungszeichen oder Zeilenumbruch müssen in Anführungszeichen.
+  if (/[;"\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function chilisToCsv(list) {
+  const header = CSV_COLUMNS.map(([, label]) => csvEscape(label)).join(";");
+  const rows = list.map((c) =>
+    CSV_COLUMNS.map(([key]) => csvEscape(c[key])).join(";")
+  );
+  // BOM, damit Excel Umlaute als UTF-8 statt als Kauderwelsch anzeigt.
+  return "﻿" + [header, ...rows].join("\r\n");
+}
+
+bulkExportCsvBtn.addEventListener("click", () => {
+  const selected = chilis.filter((c) => selectedIds.has(c.id));
+  if (selected.length === 0) return;
+
+  const csv = chilisToCsv(selected);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `chili-auswahl-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
 // --- Export / Import ---

@@ -32,6 +32,10 @@ Zwei Reiter oben unter dem Kopfbereich:
   statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
   oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
   ein ganzer Satz Chilis am selben Tag umgesetzt oder geerntet wurde.
+  In diesem Modus auch **„CSV exportieren"**: lädt nur die ausgewählten
+  Chilis als CSV-Datei herunter (Semikolon-getrennt, für Excel/Numbers/
+  Google Sheets), zum Ausdrucken oder Teilen ohne die App. Fotos sind
+  darin nicht enthalten, alle Textfelder schon.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
 „App installieren" (Android) mit eigenem Chili-Icon abgelegt werden. In
