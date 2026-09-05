@@ -1,9 +1,13 @@
+// Alte localStorage-Keys - werden nur noch für die einmalige Migration
+// zu Supabase gelesen, danach ist Supabase die alleinige Datenquelle.
 const STORAGE_KEY = "chiliSammlung";
+const ORDERS_STORAGE_KEY = "chiliBestellungen";
+const MIGRATED_KEY = "chiliMigratedToSupabase";
+
 const VIEW_KEY = "chiliViewMode";
 const YEAR_KEY = "chiliActiveYear";
 const SORT_KEY = "chiliSortMode";
 const APP_TAB_KEY = "chiliAppTab";
-const ORDERS_STORAGE_KEY = "chiliBestellungen";
 const ORDER_YEAR_KEY = "chiliOrderActiveYear";
 
 const YEAR_OPTIONS = ["2024", "2025", "2026", "2027"];
@@ -21,51 +25,134 @@ const STATUS_OPTIONS = [
   "Saison beendet",
 ];
 
-let chilis = loadChilis();
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const FOTOS_BUCKET = "chili-fotos";
+
+let chilis = [];
+let orders = [];
 let currentPhotos = [];
-
-if (localStorage.getItem(STORAGE_KEY) === null) {
-  saveChilis();
-}
-
-function loadChilis() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw === null) {
-      // Erster Start: mit der Chili-2026-Liste vorbefüllen.
-      return typeof SEED_CHILIS !== "undefined" ? [...SEED_CHILIS] : [];
-    }
-    const parsed = JSON.parse(raw);
-    // Migration: Chilis aus einer älteren Version hatten noch kein Jahr.
-    return parsed.map((c) => (c.jahr ? c : { ...c, jahr: DEFAULT_YEAR }));
-  } catch (e) {
-    console.error("Konnte gespeicherte Daten nicht lesen", e);
-    return [];
-  }
-}
-
-function saveChilis() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(chilis));
-}
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-let orders = loadOrders();
-
-function loadOrders() {
-  try {
-    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    console.error("Konnte gespeicherte Bestellungen nicht lesen", e);
+async function fetchChilis() {
+  const { data, error } = await sb.from("chilis").select("*").order("nr", { ascending: true });
+  if (error) {
+    console.error("Konnte Chilis nicht laden", error);
     return [];
+  }
+  return data;
+}
+
+async function fetchOrders() {
+  const { data, error } = await sb.from("bestellungen").select("*");
+  if (error) {
+    console.error("Konnte Bestellungen nicht laden", error);
+    return [];
+  }
+  return data;
+}
+
+async function upsertChiliRemote(data) {
+  const { error } = await sb.from("chilis").upsert(data);
+  if (error) alert("Speichern fehlgeschlagen: " + error.message);
+  return !error;
+}
+
+async function deleteChiliRemote(id) {
+  const { error } = await sb.from("chilis").delete().eq("id", id);
+  if (error) alert("Löschen fehlgeschlagen: " + error.message);
+  return !error;
+}
+
+async function upsertOrderRemote(data) {
+  const { error } = await sb.from("bestellungen").upsert(data);
+  if (error) alert("Speichern fehlgeschlagen: " + error.message);
+  return !error;
+}
+
+async function deleteOrderRemote(id) {
+  const { error } = await sb.from("bestellungen").delete().eq("id", id);
+  if (error) alert("Löschen fehlgeschlagen: " + error.message);
+  return !error;
+}
+
+// --- Einmalige Migration: altes localStorage -> Supabase ---
+// Läuft nur, solange die Supabase-Tabelle noch leer ist, damit ein
+// zweites Gerät mit eigenem (älterem) localStorage nichts überschreibt.
+
+async function uploadDataUrlToStorage(dataUrl, chiliId) {
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const path = `${chiliId}/${uid()}.jpg`;
+    const { error } = await sb.storage
+      .from(FOTOS_BUCKET)
+      .upload(path, blob, { contentType: blob.type || "image/jpeg" });
+    if (error) throw error;
+    return sb.storage.from(FOTOS_BUCKET).getPublicUrl(path).data.publicUrl;
+  } catch (e) {
+    console.error("Foto-Upload bei Migration fehlgeschlagen", e);
+    return null;
   }
 }
 
-function saveOrders() {
-  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+async function migrateLocalDataIfNeeded() {
+  if (localStorage.getItem(MIGRATED_KEY) === "true") return;
+
+  const { count } = await sb.from("chilis").select("id", { count: "exact", head: true });
+  if (count && count > 0) {
+    // Supabase hat schon Daten (z.B. von einem anderen Gerät migriert) -
+    // hier nichts überschreiben.
+    localStorage.setItem(MIGRATED_KEY, "true");
+    return;
+  }
+
+  let localChilis;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    localChilis = raw
+      ? JSON.parse(raw)
+      : typeof SEED_CHILIS !== "undefined"
+      ? [...SEED_CHILIS]
+      : [];
+  } catch (e) {
+    localChilis = typeof SEED_CHILIS !== "undefined" ? [...SEED_CHILIS] : [];
+  }
+  localChilis = localChilis.map((c) => (c.jahr ? c : { ...c, jahr: DEFAULT_YEAR }));
+
+  let localOrders = [];
+  try {
+    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    localOrders = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    localOrders = [];
+  }
+
+  for (const c of localChilis) {
+    if (!c.fotos || c.fotos.length === 0) continue;
+    const uploaded = [];
+    for (const foto of c.fotos) {
+      if (typeof foto === "string" && foto.startsWith("data:")) {
+        const url = await uploadDataUrlToStorage(foto, c.id);
+        if (url) uploaded.push(url);
+      } else {
+        uploaded.push(foto);
+      }
+    }
+    c.fotos = uploaded;
+  }
+
+  if (localChilis.length > 0) {
+    const { error } = await sb.from("chilis").upsert(localChilis);
+    if (error) console.error("Migration der Chilis fehlgeschlagen", error);
+  }
+  if (localOrders.length > 0) {
+    const { error } = await sb.from("bestellungen").upsert(localOrders);
+    if (error) console.error("Migration der Bestellungen fehlgeschlagen", error);
+  }
+
+  localStorage.setItem(MIGRATED_KEY, "true");
 }
 
 // --- Rendering ---
@@ -289,7 +376,7 @@ function closeOrderModal() {
   orderForm.reset();
 }
 
-orderForm.addEventListener("submit", (e) => {
+orderForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const id = document.getElementById("orderId").value || uid();
@@ -299,10 +386,13 @@ orderForm.addEventListener("submit", (e) => {
     name: document.getElementById("orderFieldName").value.trim(),
     menge: document.getElementById("orderFieldMenge").value.trim(),
     haendler: document.getElementById("orderFieldHaendler").value.trim(),
-    datum: document.getElementById("orderFieldDatum").value,
+    datum: document.getElementById("orderFieldDatum").value || null,
     preis: document.getElementById("orderFieldPreis").value.trim(),
     notizen: document.getElementById("orderFieldNotizen").value.trim(),
   };
+
+  const ok = await upsertOrderRemote(data);
+  if (!ok) return;
 
   const existingIndex = orders.findIndex((o) => o.id === id);
   if (existingIndex >= 0) {
@@ -311,17 +401,17 @@ orderForm.addEventListener("submit", (e) => {
     orders.push(data);
   }
 
-  saveOrders();
   closeOrderModal();
   renderOrders();
 });
 
-orderDeleteBtn.addEventListener("click", () => {
+orderDeleteBtn.addEventListener("click", async () => {
   const id = document.getElementById("orderId").value;
   if (!id) return;
   if (!confirm("Diese Bestellung wirklich löschen?")) return;
+  const ok = await deleteOrderRemote(id);
+  if (!ok) return;
   orders = orders.filter((o) => o.id !== id);
-  saveOrders();
   closeOrderModal();
   renderOrders();
 });
@@ -513,7 +603,9 @@ const photoThumbs = document.getElementById("photoThumbs");
 function openModal(id) {
   const chili = id ? chilis.find((c) => c.id === id) : null;
 
-  document.getElementById("chiliId").value = chili ? chili.id : "";
+  // Neue Chili bekommt sofort eine feste ID, damit Fotos schon während des
+  // Ausfüllens in den richtigen Storage-Ordner hochgeladen werden können.
+  document.getElementById("chiliId").value = chili ? chili.id : uid();
   document.getElementById("fieldNr").value = chili?.nr || (chili === null ? nextCatalogNr() : "");
   document.getElementById("fieldName").value = chili?.name || "";
   document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
@@ -574,27 +666,33 @@ function renderPhotoPreview() {
 
 photoInput.addEventListener("change", async () => {
   const files = Array.from(photoInput.files || []);
+  const chiliId = document.getElementById("chiliId").value;
+  photoInput.disabled = true;
+  photoPlaceholder.textContent = "⏳ Wird hochgeladen ...";
+
   for (const file of files) {
-    const dataUrl = await fileToDataUrl(file);
-    currentPhotos.push(dataUrl);
+    const path = `${chiliId}/${uid()}-${file.name}`;
+    const { error } = await sb.storage
+      .from(FOTOS_BUCKET)
+      .upload(path, file, { contentType: file.type || "image/jpeg" });
+    if (error) {
+      alert("Foto-Upload fehlgeschlagen: " + error.message);
+      continue;
+    }
+    const url = sb.storage.from(FOTOS_BUCKET).getPublicUrl(path).data.publicUrl;
+    currentPhotos.push(url);
   }
+
+  photoInput.disabled = false;
+  photoPlaceholder.textContent = "📷 Foto(s) hinzufügen";
   photoInput.value = "";
   renderPhotoPreview();
 });
 
-function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const id = document.getElementById("chiliId").value || uid();
+  const id = document.getElementById("chiliId").value;
   const data = {
     id,
     nr: document.getElementById("fieldNr").value.trim(),
@@ -605,13 +703,16 @@ form.addEventListener("submit", (e) => {
     sg: document.getElementById("fieldSg").value.trim(),
     scoville: document.getElementById("fieldScoville").value.trim(),
     status: document.getElementById("fieldStatus").value,
-    pflanzdatum: document.getElementById("fieldPflanzdatum").value,
-    erntedatum: document.getElementById("fieldErntedatum").value,
+    pflanzdatum: document.getElementById("fieldPflanzdatum").value || null,
+    erntedatum: document.getElementById("fieldErntedatum").value || null,
     erntenotizen: document.getElementById("fieldErntenotizen").value.trim(),
     geschmack: document.getElementById("fieldGeschmack").value.trim(),
     notizen: document.getElementById("fieldNotizen").value.trim(),
     fotos: currentPhotos,
   };
+
+  const ok = await upsertChiliRemote(data);
+  if (!ok) return;
 
   const existingIndex = chilis.findIndex((c) => c.id === id);
   if (existingIndex >= 0) {
@@ -620,17 +721,17 @@ form.addEventListener("submit", (e) => {
     chilis.push(data);
   }
 
-  saveChilis();
   closeModal();
   render();
 });
 
-deleteBtn.addEventListener("click", () => {
+deleteBtn.addEventListener("click", async () => {
   const id = document.getElementById("chiliId").value;
   if (!id) return;
   if (!confirm("Diese Chili wirklich löschen?")) return;
+  const ok = await deleteChiliRemote(id);
+  if (!ok) return;
   chilis = chilis.filter((c) => c.id !== id);
-  saveChilis();
   closeModal();
   render();
 });
@@ -693,15 +794,15 @@ bulkModal.addEventListener("click", (e) => {
   if (e.target === bulkModal) closeBulkModal();
 });
 
-bulkForm.addEventListener("submit", (e) => {
+bulkForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const changes = {};
   if (document.getElementById("bulkUsePflanzdatum").checked) {
-    changes.pflanzdatum = document.getElementById("bulkPflanzdatum").value;
+    changes.pflanzdatum = document.getElementById("bulkPflanzdatum").value || null;
   }
   if (document.getElementById("bulkUseErntedatum").checked) {
-    changes.erntedatum = document.getElementById("bulkErntedatum").value;
+    changes.erntedatum = document.getElementById("bulkErntedatum").value || null;
   }
   if (document.getElementById("bulkUseStatus").checked) {
     changes.status = document.getElementById("bulkStatus").value;
@@ -711,8 +812,12 @@ bulkForm.addEventListener("submit", (e) => {
   }
 
   if (Object.keys(changes).length > 0) {
+    const { error } = await sb.from("chilis").update(changes).in("id", Array.from(selectedIds));
+    if (error) {
+      alert("Sammel-Änderung fehlgeschlagen: " + error.message);
+      return;
+    }
     chilis = chilis.map((c) => (selectedIds.has(c.id) ? { ...c, ...changes } : c));
-    saveChilis();
   }
 
   closeBulkModal();
@@ -787,6 +892,14 @@ const importBtn = document.getElementById("importBtn");
 const importFile = document.getElementById("importFile");
 
 importBtn.addEventListener("click", () => importFile.click());
+async function replaceRemoteTable(table, rows) {
+  const { error: delError } = await sb.from(table).delete().neq("id", "");
+  if (delError) throw delError;
+  if (rows.length === 0) return;
+  const { error: insError } = await sb.from(table).insert(rows);
+  if (insError) throw insError;
+}
+
 importFile.addEventListener("change", async () => {
   const file = importFile.files[0];
   if (!file) return;
@@ -795,15 +908,34 @@ importFile.addEventListener("change", async () => {
     const imported = JSON.parse(text);
 
     // Ältere Exporte waren ein reines Chili-Array ohne Bestellungen.
-    const importedChilis = Array.isArray(imported) ? imported : imported.chilis;
+    let importedChilis = Array.isArray(imported) ? imported : imported.chilis;
     const importedOrders = Array.isArray(imported) ? [] : imported.bestellungen || [];
     if (!Array.isArray(importedChilis)) throw new Error("Ungültiges Format");
 
     if ((chilis.length > 0 || orders.length > 0) && !confirm("Vorhandene Daten durch Import ersetzen?")) return;
+
+    // Ganz alte Exporte (vor Supabase) hatten Fotos noch als Base64 -
+    // die müssen erst in den Storage-Bucket hochgeladen werden.
+    for (const c of importedChilis) {
+      if (!c.fotos || c.fotos.length === 0) continue;
+      const uploaded = [];
+      for (const foto of c.fotos) {
+        if (typeof foto === "string" && foto.startsWith("data:")) {
+          const url = await uploadDataUrlToStorage(foto, c.id);
+          if (url) uploaded.push(url);
+        } else {
+          uploaded.push(foto);
+        }
+      }
+      c.fotos = uploaded;
+    }
+    importedChilis = importedChilis.map((c) => (c.jahr ? c : { ...c, jahr: DEFAULT_YEAR }));
+
+    await replaceRemoteTable("bestellungen", importedOrders);
+    await replaceRemoteTable("chilis", importedChilis);
+
     chilis = importedChilis;
     orders = importedOrders;
-    saveChilis();
-    saveOrders();
     render();
     renderOrders();
   } catch (err) {
@@ -880,13 +1012,34 @@ function setupPullToRefresh() {
 
 // --- Init ---
 
-populateStatusFilter();
-populateYearSelect();
-renderYearTabs();
-renderOrderYearTabs();
-sortSelect.value = localStorage.getItem(SORT_KEY) || "nr";
-viewGridBtn.classList.toggle("active", viewMode === "grid");
-viewListBtn.classList.toggle("active", viewMode === "list");
-setupPullToRefresh();
-setAppTab(appTab);
-render();
+(async function main() {
+  populateStatusFilter();
+  populateYearSelect();
+  renderYearTabs();
+  renderOrderYearTabs();
+  sortSelect.value = localStorage.getItem(SORT_KEY) || "nr";
+  viewGridBtn.classList.toggle("active", viewMode === "grid");
+  viewListBtn.classList.toggle("active", viewMode === "list");
+  setupPullToRefresh();
+
+  // Sicherheitsnetz: bei sehr langsamer/fehlender Verbindung soll die Seite
+  // trotzdem nutzbar werden statt unbegrenzt leer/eingefroren zu wirken.
+  // Sobald die echten Daten doch noch ankommen, wird einfach neu gezeichnet.
+  let dataLoaded = false;
+  const fallbackTimer = setTimeout(() => {
+    if (!dataLoaded) {
+      setAppTab(appTab);
+      render();
+      renderOrders();
+    }
+  }, 8000);
+
+  await migrateLocalDataIfNeeded();
+  chilis = await fetchChilis();
+  orders = await fetchOrders();
+  dataLoaded = true;
+  clearTimeout(fallbackTimer);
+
+  setAppTab(appTab);
+  render();
+})();

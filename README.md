@@ -57,26 +57,30 @@ nach und nach über die Karten nach.
 - Freitext: Wie läuft die Ernte, Geschmack/Aroma, sonstige Notizen
 - Fotos (mehrere pro Pflanze)
 
-## Wichtig: Datenspeicherung
+## Datenspeicherung: Supabase (geräteübergreifend)
 
-Alle Daten (inkl. Fotos) liegen **nur im localStorage deines Browsers** –
-nicht im Git-Repository. Das heißt:
+Alle Daten (Chilis, Bestellungen, Fotos) liegen in einer eigenen
+Supabase-Datenbank ("Chili Sammlung"-Projekt), nicht mehr nur im Browser.
+Das heißt:
 
-- Andere Browser/Geräte sehen deine Daten nicht.
-- Browser-Daten löschen (z.B. "Website-Daten leeren") löscht auch die Sammlung.
+- Handy, Tablet und PC zeigen automatisch dieselbe, aktuelle Sammlung.
+- Fotos liegen im Supabase-Storage-Bucket `chili-fotos`.
+- Zugriff läuft über den öffentlichen "publishable" Key in `config.js` –
+  das ist wie ein früherer "anon" Key kein Geheimnis, Schutz kommt über
+  Datenbank-Regeln statt Geheimhaltung. Da die App kein eigenes Login hat,
+  sind diese Regeln bewusst offen: **jeder mit dem Link kann die Sammlung
+  lesen und ändern.** Für eine private Hobby-Seite ohne Nutzerverwaltung
+  ein akzeptabler Kompromiss, aber gut zu wissen.
+- Beim allerersten Öffnen (pro Browser) werden vorhandene Daten aus dem
+  alten localStorage einmalig zu Supabase hochgeladen (inkl. Umwandlung
+  alter Foto-Daten in Storage-Uploads). Danach ist Supabase die einzige
+  Quelle.
 
-Deshalb: regelmäßig auf **„Daten exportieren (JSON)"** klicken und die Datei
-sichern. Mit **„Daten importieren"** kann die Sammlung wiederhergestellt oder
-auf ein anderes Gerät übertragen werden. Der Export enthält Sammlung und
-Bestellungen zusammen in einer Datei.
+Trotzdem: regelmäßig auf **„Daten exportieren (JSON)"** klicken und die
+Datei sichern (z.B. per Mail an dich selbst) – als Backup unabhängig von
+Supabase. Mit **„Daten importieren"** lässt sich so ein Export auch wieder
+zurückspielen (ersetzt dabei die komplette Supabase-Sammlung).
 
 Updates an der App (neues Design, neue Funktionen) fassen deinen
-gespeicherten Bestand nie an: Die Startliste wird nur beim allerersten
-Öffnen geladen, jedes spätere Update ändert nur Code und Optik. Eigene
-Chilis, Fotos und Notizen bleiben über Versionen hinweg erhalten.
-
-## Später: eigenes Backend
-
-Aktuell ist das bewusst eine einfache, serverlose Version. Falls die
-Sammlung geräteübergreifend synchron sein soll (z.B. Handy + PC), kann
-später eine echte Datenbank (z.B. Supabase) angebunden werden.
+gespeicherten Bestand nie an: nur der Code/das Aussehen ändert sich,
+deine Daten in Supabase bleiben unberührt.
