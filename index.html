@@ -206,6 +206,22 @@
           <label class="photo-add-btn" for="photoInput" id="photoAddLabel">📷 Foto(s) hinzufügen</label>
           <input type="file" id="photoInput" accept="image/*" multiple hidden>
           <div id="photoThumbs" class="photo-thumbs"></div>
+
+          <label class="photo-add-btn" for="ocrPhotoInput" id="ocrAddLabel">🏷️ Samentütchen fotografieren (Texterkennung)</label>
+          <input type="file" id="ocrPhotoInput" accept="image/*" capture="environment" hidden>
+
+          <div id="ocrStatus" class="ocr-status" hidden>
+            <span class="ocr-spinner" aria-hidden="true"></span>
+            <span id="ocrStatusText">Texterkennung läuft ...</span>
+          </div>
+
+          <div id="ocrResult" class="ocr-result" hidden>
+            <p class="ocr-result-hint">Erkannte Vorschläge (nur nach Bestätigung übernommen):</p>
+            <div id="ocrSuggestions" class="ocr-suggestions"></div>
+            <label class="full-width">Erkannter Text (bearbeitbar)
+              <textarea id="ocrRawText" rows="4"></textarea>
+            </label>
+          </div>
         </div>
 
         <div class="form-grid">
@@ -224,7 +240,26 @@
           <label>Herkunft
             <input type="text" id="fieldHerkunft" placeholder="z.B. Samen von XY, USA">
           </label>
-          <label>Schärfegrad (Sg-Skala 1–10)
+          <label>Botanische Art
+            <input type="text" id="fieldArt" placeholder="z.B. Capsicum chinense">
+          </label>
+
+          <div id="referenceSuggestion" class="reference-suggestion" hidden>
+            <p class="reference-suggestion-text">
+              🔎 In der Referenzdatenbank gefunden: <strong id="referenceSuggestionName"></strong>
+            </p>
+            <ul id="referenceSuggestionDetails" class="reference-suggestion-details"></ul>
+            <div class="reference-suggestion-actions">
+              <button type="button" id="referenceApplyBtn" class="btn btn-secondary">Übernehmen</button>
+              <button type="button" id="referenceDismissBtn" class="btn btn-secondary">Ignorieren</button>
+            </div>
+          </div>
+
+          <label class="checkbox-label reference-save-back" id="referenceSaveBackWrap" hidden>
+            <input type="checkbox" id="referenceSaveBackCheckbox">
+            Für andere Jahre/Sorten in der Referenzdatenbank merken
+          </label>
+          <label>Schärfegrad (Skala 1–10, oder 10+ für extrem)
             <div id="sgScale" class="sg-scale" role="group" aria-label="Schärfegrad auswählen">
               <button type="button" class="sg-scale-btn" data-value="1">🌶️</button>
               <button type="button" class="sg-scale-btn" data-value="2">🌶️</button>
@@ -236,6 +271,7 @@
               <button type="button" class="sg-scale-btn" data-value="8">🌶️</button>
               <button type="button" class="sg-scale-btn" data-value="9">🌶️</button>
               <button type="button" class="sg-scale-btn" data-value="10">🌶️</button>
+              <button type="button" class="sg-scale-btn sg-scale-plus" data-value="10+" title="10+ (extrem, außerhalb der Skala)">10+</button>
             </div>
             <span id="sgScaleLabel" class="sg-scale-label">Kein Wert gewählt</span>
             <input type="hidden" id="fieldSg">
@@ -267,8 +303,11 @@
           <textarea id="fieldErntenotizen" rows="2" placeholder="z.B. erste 3 Früchte geerntet, weitere Blüten kommen nach"></textarea>
         </label>
 
-        <label class="full-width">Geschmack / Aroma
-          <textarea id="fieldGeschmack" rows="2" placeholder="z.B. fruchtig, süß am Anfang, dann brutale Schärfe"></textarea>
+        <label class="full-width">Geschmack
+          <div id="geschmackTags" class="tag-chips" role="group" aria-label="Geschmack auswählen"></div>
+        </label>
+        <label class="full-width">Geschmack – weitere Notizen (optional)
+          <textarea id="fieldGeschmack" rows="2" placeholder="Ergänzende Beschreibung, falls die Chips oben nicht passen"></textarea>
         </label>
 
         <label class="full-width">Sonstige Notizen
@@ -368,6 +407,7 @@
   <script src="data/seed-chilis.js"></script>
   <script src="vendor/supabase.js"></script>
   <script src="vendor/chart.umd.min.js"></script>
+  <script src="vendor/tesseract.min.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

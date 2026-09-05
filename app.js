@@ -880,14 +880,14 @@ function nextCatalogNr() {
 }
 
 function sgValue(sg) {
-  return parseInt(sg, 10) || 0;
+  return normalizeSg(sg).num;
 }
 
 function sgBadge(sg) {
-  if (!sg) return "–";
-  const num = sgValue(sg);
-  const peppers = Math.max(1, Math.min(5, Math.ceil(num / 2)));
-  return "🌶️".repeat(peppers) + ` Sg ${sg}`;
+  const norm = normalizeSg(sg);
+  if (!norm.display) return "–";
+  const peppers = Math.max(1, Math.min(5, Math.ceil(norm.num / 2)));
+  return "🌶️".repeat(peppers) + ` Schärfegrad ${norm.display}`;
 }
 
 function sortChilis(list) {
@@ -1063,22 +1063,281 @@ const sgScale = document.getElementById("sgScale");
 const sgScaleLabel = document.getElementById("sgScaleLabel");
 const fieldSg = document.getElementById("fieldSg");
 
+// normalizeSg(): einheitliche Sicht auf den sg-Wert für Anzeige/Sortierung -
+// alte Bestände hatten teils leeren String, teils "0"; "10"/"10+" bleiben
+// wie im Bestand erhalten (siehe Migrationshinweis), nur die Auswertung
+// (Vergleich, Badges) läuft immer über diese Funktion.
+function normalizeSg(value) {
+  const str = String(value ?? "").trim();
+  if (str === "10+") return { display: "10+", num: 10, plus: true };
+  const num = parseInt(str, 10);
+  if (!str || Number.isNaN(num)) return { display: "", num: 0, plus: false };
+  return { display: str, num, plus: false };
+}
+
 function setSgScale(value) {
-  const num = parseInt(value, 10) || 0;
-  fieldSg.value = num > 0 ? String(num) : "";
-  sgScaleLabel.textContent = num > 0 ? `Sg ${num}` : "Kein Wert gewählt";
+  const norm = normalizeSg(value);
+  fieldSg.value = norm.display;
+  sgScaleLabel.textContent = norm.display ? `Schärfegrad ${norm.display}` : "Kein Wert gewählt";
   sgScale.querySelectorAll(".sg-scale-btn").forEach((btn) => {
-    btn.classList.toggle("filled", parseInt(btn.dataset.value, 10) <= num);
+    if (btn.dataset.value === "10+") {
+      btn.classList.toggle("filled", norm.plus);
+    } else {
+      btn.classList.toggle("filled", !norm.plus && parseInt(btn.dataset.value, 10) <= norm.num);
+    }
   });
 }
 
 sgScale.addEventListener("click", (e) => {
   const btn = e.target.closest(".sg-scale-btn");
   if (!btn) return;
-  const clicked = parseInt(btn.dataset.value, 10);
-  const current = parseInt(fieldSg.value, 10) || 0;
-  setSgScale(clicked === current ? 0 : clicked);
+  const clickedVal = btn.dataset.value;
+  setSgScale(clickedVal === fieldSg.value ? "" : clickedVal);
 });
+
+// --- Geschmacks-Tags: konfigurierbare Chip-Auswahl statt reinem Freitext ---
+// Als eigenes Array, damit später leicht neue Tags ergänzt werden können und
+// die Auswahl als Array (geschmack_tags) auswertbar bleibt (z.B. Häufigkeit
+// je Tag in einer künftigen Statistik).
+
+const TASTE_TAGS = [
+  "fruchtig",
+  "rauchig",
+  "erdig",
+  "süß",
+  "scharf-brennend",
+  "blumig",
+  "nussig",
+  "grasig",
+  "bitter",
+  "sauer/zitrusartig",
+];
+
+const geschmackTagsEl = document.getElementById("geschmackTags");
+let selectedTasteTags = [];
+
+function renderTasteTagChips() {
+  geschmackTagsEl.innerHTML = "";
+  TASTE_TAGS.forEach((tag) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tag-chip" + (selectedTasteTags.includes(tag) ? " active" : "");
+    btn.textContent = tag;
+    btn.addEventListener("click", () => {
+      selectedTasteTags = selectedTasteTags.includes(tag)
+        ? selectedTasteTags.filter((t) => t !== tag)
+        : [...selectedTasteTags, tag];
+      renderTasteTagChips();
+    });
+    geschmackTagsEl.appendChild(btn);
+  });
+}
+
+// --- Sorten-Referenzdatenbank: Herkunft/Art/Scoville-Vorschlag beim Namen ---
+// Zwei Quellen werden zusammengeführt: die mitgelieferte data/chili-reference.json
+// (offline, kein Server nötig) und die Supabase-Tabelle "chili_reference", in
+// die Nutzer manuell nachgetragene Sorten zurückschreiben können ("Für
+// andere Jahre/Sorten merken") - Supabase-Einträge überschreiben dabei
+// gleichnamige statische Einträge, weil sie die aktuellere, von Menschen
+// bestätigte Quelle sind. Fuzzy-Match toleriert Groß-/Kleinschreibung,
+// Leerzeichen und kleine Tippfehler (z.B. "Numex Twilight" vs. "NuMex
+// Twilight", "Glocken rot" vs. "Glocken Rot").
+
+let referenceDb = [];
+
+const DIACRITICS_RE = new RegExp("[\\u0300-\\u036f]", "g");
+
+function normalizeForMatch(str) {
+  return String(str || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(DIACRITICS_RE, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function levenshteinDistance(a, b) {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  let prevRow = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const row = [i];
+    for (let j = 1; j <= n; j++) {
+      row[j] =
+        a[i - 1] === b[j - 1]
+          ? prevRow[j - 1]
+          : 1 + Math.min(prevRow[j - 1], prevRow[j], row[j - 1]);
+    }
+    prevRow = row;
+  }
+  return prevRow[n];
+}
+
+async function loadReferenceDb() {
+  let staticEntries = [];
+  try {
+    const res = await fetch("data/chili-reference.json");
+    staticEntries = await res.json();
+  } catch (e) {
+    console.warn("Statische Referenzdatenbank konnte nicht geladen werden", e);
+  }
+
+  let dynamicEntries = [];
+  try {
+    const { data, error } = await sb.from("chili_reference").select("*");
+    if (error) throw error;
+    dynamicEntries = data || [];
+  } catch (e) {
+    console.warn("Supabase-Referenzdatenbank konnte nicht geladen werden", e);
+  }
+
+  const merged = new Map();
+  for (const e of staticEntries) {
+    merged.set(normalizeForMatch(e.name), {
+      name: e.name,
+      herkunft: e.herkunft || "",
+      art: e.art || "",
+      scovilleMin: e.scovilleMin || e.scovilleMin === 0 ? e.scovilleMin : null,
+      scovilleMax: e.scovilleMax || e.scovilleMax === 0 ? e.scovilleMax : null,
+      geschmack: e.geschmack || "",
+    });
+  }
+  for (const e of dynamicEntries) {
+    merged.set(normalizeForMatch(e.name), {
+      name: e.name,
+      herkunft: e.herkunft || "",
+      art: e.art || "",
+      scovilleMin: e.scoville_min ?? null,
+      scovilleMax: e.scoville_max ?? null,
+      geschmack: e.geschmack || "",
+    });
+  }
+  referenceDb = [...merged.values()];
+}
+
+function findReferenceMatch(name) {
+  const query = normalizeForMatch(name);
+  if (!query || query.length < 3) return null;
+
+  for (const entry of referenceDb) {
+    if (normalizeForMatch(entry.name) === query) return entry;
+  }
+
+  let best = null;
+  let bestDist = Infinity;
+  for (const entry of referenceDb) {
+    const candidate = normalizeForMatch(entry.name);
+    const dist = levenshteinDistance(query, candidate);
+    const threshold = Math.max(1, Math.floor(candidate.length * 0.15));
+    if (dist <= threshold && dist < bestDist) {
+      best = entry;
+      bestDist = dist;
+    }
+  }
+  return best;
+}
+
+const referenceSuggestion = document.getElementById("referenceSuggestion");
+const referenceSuggestionName = document.getElementById("referenceSuggestionName");
+const referenceSuggestionDetails = document.getElementById("referenceSuggestionDetails");
+const referenceApplyBtn = document.getElementById("referenceApplyBtn");
+const referenceDismissBtn = document.getElementById("referenceDismissBtn");
+const referenceSaveBackWrap = document.getElementById("referenceSaveBackWrap");
+const referenceSaveBackCheckbox = document.getElementById("referenceSaveBackCheckbox");
+
+let currentReferenceMatch = null;
+
+function formatScovilleRange(min, max) {
+  if (min == null && max == null) return "";
+  if (min != null && max != null) return `${min.toLocaleString("de")}–${max.toLocaleString("de")} SHU`;
+  return `${(min ?? max).toLocaleString("de")} SHU`;
+}
+
+function updateReferenceSuggestion() {
+  const name = document.getElementById("fieldName").value.trim();
+  currentReferenceMatch = findReferenceMatch(name);
+
+  if (!currentReferenceMatch) {
+    referenceSuggestion.hidden = true;
+    // Nur anbieten, in die Referenzdatenbank zurückzuschreiben, wenn
+    // überhaupt ein Name eingegeben ist - sonst ergibt der Haken keinen Sinn.
+    referenceSaveBackWrap.hidden = !name;
+    return;
+  }
+
+  referenceSaveBackWrap.hidden = true;
+
+  const hasAnyInfo =
+    currentReferenceMatch.herkunft ||
+    currentReferenceMatch.art ||
+    currentReferenceMatch.scovilleMin != null ||
+    currentReferenceMatch.scovilleMax != null ||
+    currentReferenceMatch.geschmack;
+  if (!hasAnyInfo) {
+    referenceSuggestion.hidden = true;
+    return;
+  }
+
+  referenceSuggestionName.textContent = currentReferenceMatch.name;
+  referenceSuggestionDetails.innerHTML = "";
+  const rows = [];
+  if (currentReferenceMatch.herkunft) rows.push(`Herkunft: ${escapeHtml(currentReferenceMatch.herkunft)}`);
+  if (currentReferenceMatch.art) rows.push(`Botanische Art: ${escapeHtml(currentReferenceMatch.art)}`);
+  const scovilleText = formatScovilleRange(currentReferenceMatch.scovilleMin, currentReferenceMatch.scovilleMax);
+  if (scovilleText) rows.push(`Scoville: ${escapeHtml(scovilleText)}`);
+  if (currentReferenceMatch.geschmack) rows.push(`Geschmack: ${escapeHtml(currentReferenceMatch.geschmack)}`);
+  referenceSuggestionDetails.innerHTML = rows.map((r) => `<li>${r}</li>`).join("");
+
+  referenceSuggestion.hidden = false;
+}
+
+document.getElementById("fieldName").addEventListener("input", updateReferenceSuggestion);
+
+referenceApplyBtn.addEventListener("click", () => {
+  if (!currentReferenceMatch) return;
+  if (currentReferenceMatch.herkunft) document.getElementById("fieldHerkunft").value = currentReferenceMatch.herkunft;
+  if (currentReferenceMatch.art) document.getElementById("fieldArt").value = currentReferenceMatch.art;
+  const scovilleText = formatScovilleRange(currentReferenceMatch.scovilleMin, currentReferenceMatch.scovilleMax);
+  if (scovilleText) document.getElementById("fieldScoville").value = scovilleText;
+  referenceSuggestion.hidden = true;
+});
+
+referenceDismissBtn.addEventListener("click", () => {
+  referenceSuggestion.hidden = true;
+});
+
+async function saveReferenceEntryIfRequested() {
+  if (!referenceSaveBackCheckbox.checked) return;
+  const name = document.getElementById("fieldName").value.trim();
+  if (!name) return;
+
+  const herkunft = document.getElementById("fieldHerkunft").value.trim();
+  const art = document.getElementById("fieldArt").value.trim();
+  const scovilleRaw = document.getElementById("fieldScoville").value.trim();
+  const scovilleNums = scovilleRaw.match(/\d[\d.,]*/g) || [];
+  const parseScovilleNum = (s) => parseInt(s.replace(/[.,]/g, ""), 10);
+  const scovilleMin = scovilleNums.length > 0 ? parseScovilleNum(scovilleNums[0]) : null;
+  const scovilleMax = scovilleNums.length > 1 ? parseScovilleNum(scovilleNums[1]) : scovilleMin;
+
+  const row = {
+    name,
+    herkunft: herkunft || null,
+    art: art || null,
+    scoville_min: Number.isFinite(scovilleMin) ? scovilleMin : null,
+    scoville_max: Number.isFinite(scovilleMax) ? scovilleMax : null,
+    geschmack: document.getElementById("fieldGeschmack").value.trim() || null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await sb.from("chili_reference").upsert(row);
+  if (error) {
+    console.warn("Konnte Referenzdatenbank nicht aktualisieren", error);
+    return;
+  }
+  await loadReferenceDb();
+}
 
 function openModal(id) {
   const chili = id ? chilis.find((c) => c.id === id) : null;
@@ -1091,6 +1350,7 @@ function openModal(id) {
   document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
   document.getElementById("fieldSorte").value = chili?.sorte || "";
   document.getElementById("fieldHerkunft").value = chili?.herkunft || "";
+  document.getElementById("fieldArt").value = chili?.art || "";
   setSgScale(chili?.sg || "");
   document.getElementById("fieldScoville").value = chili?.scoville || "";
   document.getElementById("fieldStatus").value = chili?.status || "Aussaat";
@@ -1099,6 +1359,13 @@ function openModal(id) {
   document.getElementById("fieldErntenotizen").value = chili?.erntenotizen || "";
   document.getElementById("fieldGeschmack").value = chili?.geschmack || "";
   document.getElementById("fieldNotizen").value = chili?.notizen || "";
+
+  selectedTasteTags = chili?.geschmack_tags ? [...chili.geschmack_tags] : [];
+  renderTasteTagChips();
+
+  referenceSaveBackCheckbox.checked = false;
+  referenceSuggestion.hidden = true;
+  updateReferenceSuggestion();
 
   currentPhotos = chili?.fotos ? [...chili.fotos] : [];
   renderPhotoPreview();
@@ -1112,6 +1379,10 @@ function closeModal() {
   modal.hidden = true;
   form.reset();
   currentPhotos = [];
+  ocrResult.hidden = true;
+  ocrStatus.hidden = true;
+  ocrRawText.value = "";
+  ocrSuggestions.innerHTML = "";
 }
 
 function renderPhotoPreview() {
@@ -1226,6 +1497,143 @@ photoInput.addEventListener("change", async () => {
   renderPhotoPreview();
 });
 
+// --- OCR: Samentütchen fotografieren + clientseitige Texterkennung ---
+// Tesseract.js (Kernbibliothek + Worker lokal vendored) läuft komplett im
+// Browser, kein eigener Server/API-Key nötig. Die Sprachdaten (deu+eng, ein
+// paar MB) und der wasm-Kern lädt Tesseract selbst von einem CDN nach -
+// das ist bei der Dateigröße Standard (niemand vendort 10+MB Sprachdaten
+// pro Sprache in ein Git-Repo) und funktioniert auf GitHub Pages wie jede
+// andere Internetverbindung der App auch (z.B. zu Supabase). Erkannte
+// Werte werden nie automatisch übernommen, nur als Vorschlag mit eigenem
+// "Übernehmen"-Button pro Feld.
+
+const ocrPhotoInput = document.getElementById("ocrPhotoInput");
+const ocrStatus = document.getElementById("ocrStatus");
+const ocrStatusText = document.getElementById("ocrStatusText");
+const ocrResult = document.getElementById("ocrResult");
+const ocrSuggestions = document.getElementById("ocrSuggestions");
+const ocrRawText = document.getElementById("ocrRawText");
+
+async function uploadChiliPhoto(chiliId, file) {
+  let compressed;
+  try {
+    compressed = await compressImage(file);
+  } catch (e) {
+    alert(e.message);
+    return null;
+  }
+  const path = `${chiliId}/${uid()}.jpg`;
+  const { error } = await sb.storage.from(FOTOS_BUCKET).upload(path, compressed, { contentType: "image/jpeg" });
+  if (error) {
+    alert("Foto-Upload fehlgeschlagen: " + error.message);
+    return null;
+  }
+  return sb.storage.from(FOTOS_BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
+function extractOcrSuggestions(text) {
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const suggestions = {};
+
+  if (lines.length > 0 && lines[0].length <= 60) {
+    suggestions.name = lines[0];
+  }
+
+  const originMatch = text.match(/(?:hersteller|herkunft|origin|produced by|made in)[:\s]+([^\n]{2,60})/i);
+  if (originMatch) suggestions.herkunft = originMatch[1].trim();
+
+  const scovilleMatch = text.match(/([\d.,]{2,})\s*(?:-|–|to)?\s*([\d.,]{2,})?\s*(?:shu|scoville)/i);
+  if (scovilleMatch) {
+    const nums = [scovilleMatch[1], scovilleMatch[2]].filter(Boolean).map((s) => s.replace(/[.,]/g, ""));
+    if (nums.every((n) => /^\d+$/.test(n))) {
+      suggestions.scoville = `${nums.join("–")} SHU`;
+    }
+  }
+
+  return suggestions;
+}
+
+const OCR_FIELD_MAP = {
+  name: { label: "Sortenname", targetId: "fieldName" },
+  herkunft: { label: "Herkunft/Hersteller", targetId: "fieldHerkunft" },
+  scoville: { label: "Scoville", targetId: "fieldScoville" },
+};
+
+function renderOcrSuggestions(suggestions) {
+  ocrSuggestions.innerHTML = "";
+  const keys = Object.keys(suggestions).filter((k) => suggestions[k]);
+  if (keys.length === 0) {
+    ocrSuggestions.innerHTML = '<p class="ocr-result-hint">Keine eindeutigen Vorschläge erkannt - Text unten prüfen.</p>';
+    return;
+  }
+  keys.forEach((key) => {
+    const { label, targetId } = OCR_FIELD_MAP[key];
+    const row = document.createElement("div");
+    row.className = "ocr-suggestion-row";
+    row.innerHTML = `<span>${escapeHtml(label)}: ${escapeHtml(suggestions[key])}</span>`;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Übernehmen";
+    btn.addEventListener("click", () => {
+      document.getElementById(targetId).value = suggestions[key];
+      if (targetId === "fieldName") updateReferenceSuggestion();
+      btn.disabled = true;
+      btn.textContent = "Übernommen";
+    });
+    row.appendChild(btn);
+    ocrSuggestions.appendChild(row);
+  });
+}
+
+ocrPhotoInput.addEventListener("change", async () => {
+  const file = ocrPhotoInput.files?.[0];
+  if (!file) return;
+
+  ocrPhotoInput.disabled = true;
+  ocrResult.hidden = true;
+  ocrStatus.hidden = false;
+  ocrStatusText.textContent = "Texterkennung läuft ...";
+
+  try {
+    if (typeof Tesseract === "undefined") {
+      throw new Error("Tesseract.js konnte nicht geladen werden (keine Internetverbindung?).");
+    }
+    const { data } = await Tesseract.recognize(file, "deu+eng", {
+      workerPath: "vendor/tesseract-worker.min.js",
+      logger: (m) => {
+        if (m.status === "recognizing text" && typeof m.progress === "number") {
+          ocrStatusText.textContent = `Texterkennung läuft ... ${Math.round(m.progress * 100)}%`;
+        }
+      },
+    });
+
+    ocrRawText.value = (data.text || "").trim();
+    renderOcrSuggestions(extractOcrSuggestions(data.text || ""));
+    ocrResult.hidden = false;
+  } catch (err) {
+    ocrRawText.value = "";
+    ocrSuggestions.innerHTML = `<p class="ocr-result-hint">Texterkennung fehlgeschlagen: ${escapeHtml(err.message)}</p>`;
+    ocrResult.hidden = false;
+  }
+
+  ocrStatus.hidden = true;
+
+  // Foto trotzdem wie gewohnt komprimiert im fotos-Array speichern, auch
+  // wenn die Texterkennung fehlschlägt.
+  const chiliId = document.getElementById("chiliId").value;
+  const url = await uploadChiliPhoto(chiliId, file);
+  if (url) {
+    currentPhotos.push(url);
+    renderPhotoPreview();
+  }
+
+  ocrPhotoInput.disabled = false;
+  ocrPhotoInput.value = "";
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -1237,6 +1645,7 @@ form.addEventListener("submit", async (e) => {
     jahr: document.getElementById("fieldJahr").value,
     sorte: document.getElementById("fieldSorte").value.trim(),
     herkunft: document.getElementById("fieldHerkunft").value.trim(),
+    art: document.getElementById("fieldArt").value.trim(),
     sg: document.getElementById("fieldSg").value.trim(),
     scoville: document.getElementById("fieldScoville").value.trim(),
     status: document.getElementById("fieldStatus").value,
@@ -1244,12 +1653,15 @@ form.addEventListener("submit", async (e) => {
     erntedatum: document.getElementById("fieldErntedatum").value || null,
     erntenotizen: document.getElementById("fieldErntenotizen").value.trim(),
     geschmack: document.getElementById("fieldGeschmack").value.trim(),
+    geschmack_tags: selectedTasteTags,
     notizen: document.getElementById("fieldNotizen").value.trim(),
     fotos: currentPhotos,
   };
 
   const ok = await upsertChiliRemote(data);
   if (!ok) return;
+
+  await saveReferenceEntryIfRequested();
 
   const existingIndex = chilis.findIndex((c) => c.id === id);
   if (existingIndex >= 0) {
@@ -1369,13 +1781,15 @@ const CSV_COLUMNS = [
   ["jahr", "Jahr"],
   ["sorte", "Sorte/Art"],
   ["herkunft", "Herkunft"],
-  ["sg", "Schärfegrad (Sg)"],
+  ["art", "Botanische Art"],
+  ["sg", "Schärfegrad"],
   ["scoville", "Scoville"],
   ["status", "Status"],
   ["pflanzdatum", "Pflanzdatum"],
   ["erntedatum", "Erntedatum"],
   ["erntenotizen", "Wie läuft die Ernte"],
   ["geschmack", "Geschmack/Aroma"],
+  ["geschmack_tags", "Geschmacks-Tags"],
   ["notizen", "Notizen"],
 ];
 
@@ -1663,6 +2077,7 @@ function setupPullToRefresh() {
   viewGridBtn.classList.toggle("active", viewMode === "grid");
   viewListBtn.classList.toggle("active", viewMode === "list");
   setupPullToRefresh();
+  loadReferenceDb().catch((e) => console.warn("Referenzdatenbank-Ladefehler", e));
 
   // Sicherheitsnetz: bei sehr langsamer/fehlender Verbindung soll die Seite
   // trotzdem nutzbar werden statt unbegrenzt leer/eingefroren zu wirken.
