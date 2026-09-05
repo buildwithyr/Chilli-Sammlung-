@@ -579,6 +579,20 @@ main {
   font-weight: 600;
 }
 
+.year-link {
+  appearance: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.year-link:hover,
+.year-link:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .chili-list {
   display: flex;
   flex-direction: column;
