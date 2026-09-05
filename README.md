@@ -55,16 +55,18 @@ Das **⋮-Menü** oben rechts im Header bündelt:
   Auf dem Handy sind Sammlung/Bestellungen und die Jahres-Auswahl je ein
   kompakter Dropdown-Button statt breiter Pillen-Reihen, damit der fixierte
   Bereich nicht zu viel Platz wegnimmt.
-- **Mehrere auswählen** (Button unter den Jahres-Reitern): Chilis anklicken
-  statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
-  oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
-  ein ganzer Satz Chilis am selben Tag umgesetzt oder geerntet wurde.
-  In diesem Modus auch **„Alle auswählen"** (markiert/entmarkiert alle
-  gerade sichtbaren, also gefilterten Chilis auf einmal) und
-  **„CSV exportieren"**: lädt nur die ausgewählten Chilis als CSV-Datei
-  herunter (Semikolon-getrennt, für Excel/Numbers/Google Sheets), zum
-  Ausdrucken oder Teilen ohne die App. Fotos sind darin nicht enthalten,
-  alle Textfelder schon.
+- **Mehrfachauswahl**: lange auf eine Chili-Karte drücken (Maus oder Touch)
+  aktiviert die Auswahl und markiert die gedrückte Pflanze gleich mit;
+  danach reicht ein normaler Klick auf weitere Karten zum Mit-Markieren.
+  Unten erscheint eine Leiste mit der Anzahl und: **„Markierungen löschen"**
+  (leert die Auswahl, ohne den Modus zu verlassen), **„Alle auswählen"**
+  (markiert/entmarkiert alle gerade sichtbaren, also gefilterten Chilis auf
+  einmal), **„CSV exportieren"** (lädt nur die ausgewählten Chilis als
+  CSV-Datei herunter, Semikolon-getrennt für Excel/Numbers/Google Sheets,
+  ohne Fotos) und **„Bearbeiten"**: Pflanzdatum, Erntedatum, Status oder
+  Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B. ein
+  ganzer Satz Chilis am selben Tag umgesetzt oder geerntet wurde.
+  „Fertig" beendet die Auswahl wieder.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
 „App installieren" (Android) mit eigenem Chili-Icon abgelegt werden. In
