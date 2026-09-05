@@ -39,6 +39,9 @@ Das **⋮-Menü** oben rechts im Header bündelt:
 - Fotos werden vor dem Hochladen automatisch verkleinert und komprimiert
   (max. 800px Kante, ~100–150 KB), EXIF-Drehung wird korrekt übernommen –
   spart Speicherplatz und Ladezeit, ohne dass man selbst etwas tun muss.
+- Mehrere Fotos einer Pflanze lassen sich in der Vorschau durchwischen
+  (Touch/Trackpad) oder über die Pfeil-Buttons durchklicken, mit Zähler
+  ("2 / 5"); eine Miniatur unten anklicken springt direkt zu diesem Foto.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
 - Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
   mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
