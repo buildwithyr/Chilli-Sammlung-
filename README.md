@@ -11,8 +11,20 @@ Zwei Reiter oben unter dem Kopfbereich:
 - **🌶️ Sammlung**: die Chili-Pflanzen (siehe unten).
 - **📋 Bestellungen**: eigene Liste für gekaufte/bestellte Samen und Pflanzen,
   mit eigenen Jahres-Reitern (2020, 2022–2027) und eigenem Suchfeld (Name,
-  „Bestellt bei"). Pro Bestellung: Jahr, Chili/Sorte, Menge, „Bestellt bei",
-  Bestelldatum, Preis, Notizen.
+  „Bestellung von"). Pro Bestellung: Jahr, Chili/Sorte, Menge, „Bestellung
+  von" (mit Vorschlägen aus bereits erfassten Namen), Bestelldatum, Preis,
+  Notizen. Auch hier **Mehrere auswählen** mit CSV-Export, wie bei der
+  Sammlung (siehe unten).
+
+Das **⋮-Menü** oben rechts im Header bündelt:
+
+- **Hell-/Dunkelmodus**: folgt anfangs der Geräte-Einstellung, danach wird
+  eine eigene Wahl gemerkt.
+- **📊 Statistik**: eigene Ansicht mit Gesamtzahl, Anzahl verschiedener
+  Sorten, meistgezogener Sorte und einem Balkendiagramm je Sorte – zählt bei
+  jedem Aufruf frisch aus der aktuellen Sammlung.
+- **ℹ️ Info**: kurze Beschreibung der App plus Copyright-Hinweis (steht
+  zusätzlich klein im Footer, auf jeder Seite).
 
 ## Nutzen
 
@@ -30,20 +42,27 @@ Zwei Reiter oben unter dem Kopfbereich:
 - Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
   mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
 - Sortierung nach Katalog-Nr. (Standard), Schärfe (schärfste/mildeste
-  zuerst) oder Name.
+  zuerst), Name, Sorte/Art oder Erstellungsdatum (neueste zuerst).
+- Schärfegrad wird beim Anlegen/Bearbeiten über eine anklickbare Reihe von
+  10 Chilis gesetzt (auf die 8. Chili klicken → Sg 8), nicht mehr als
+  Freitext. Nochmal auf denselben Wert klicken löscht ihn wieder.
 - Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2022 / 2023 / 2024 / 2025 /
   2026 / 2027): filtert die Sammlung nach Anbau-Jahr, damit auch vergangene
-  Saisons festgehalten werden können. Bleibt beim Scrollen fix unter dem
-  Header stehen; auf dem Handy als seitlich wischbarer Streifen statt
-  umbrechender Kacheln.
-- **Mehrere auswählen** (Button neben den Jahres-Reitern): Chilis anklicken
+  Saisons festgehalten werden können. Header, Sammlung/Bestellungen-Reiter
+  und Jahres-Leiste bilden zusammen einen fixierten Bereich (Chili-Foto als
+  durchsichtiges Glas im Hintergrund), der beim Scrollen oben stehen bleibt;
+  auf dem Handy sind Jahres-Reiter und Haupt-Reiter je ein seitlich
+  wischbarer Streifen statt umbrechender Kacheln.
+- **Mehrere auswählen** (Button unter den Jahres-Reitern): Chilis anklicken
   statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
   oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
   ein ganzer Satz Chilis am selben Tag umgesetzt oder geerntet wurde.
-  In diesem Modus auch **„CSV exportieren"**: lädt nur die ausgewählten
-  Chilis als CSV-Datei herunter (Semikolon-getrennt, für Excel/Numbers/
-  Google Sheets), zum Ausdrucken oder Teilen ohne die App. Fotos sind
-  darin nicht enthalten, alle Textfelder schon.
+  In diesem Modus auch **„Alle auswählen"** (markiert/entmarkiert alle
+  gerade sichtbaren, also gefilterten Chilis auf einmal) und
+  **„CSV exportieren"**: lädt nur die ausgewählten Chilis als CSV-Datei
+  herunter (Semikolon-getrennt, für Excel/Numbers/Google Sheets), zum
+  Ausdrucken oder Teilen ohne die App. Fotos sind darin nicht enthalten,
+  alle Textfelder schon.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
 „App installieren" (Android) mit eigenem Chili-Icon abgelegt werden. In
