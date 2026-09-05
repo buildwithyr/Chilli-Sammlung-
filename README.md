@@ -12,6 +12,11 @@ für Handy und Desktop.
   hochladen, Felder ausfüllen.
 - Auf eine Karte klicken, um Angaben zu bearbeiten oder zu löschen.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
+- Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
+  mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
+
+Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
+„App installieren" (Android) mit eigenem Chili-Icon abgelegt werden.
 
 Beim allerersten Öffnen ist die Sammlung bereits mit den 58 Chilis aus dem
 „Chili 2026"-Buch vorbefüllt (`data/seed-chilis.js`), inklusive Katalog-Nummer

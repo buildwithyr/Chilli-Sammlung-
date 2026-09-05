@@ -1,4 +1,5 @@
 const STORAGE_KEY = "chiliSammlung";
+const VIEW_KEY = "chiliViewMode";
 
 const STATUS_OPTIONS = [
   "Aussaat",
@@ -46,6 +47,21 @@ const grid = document.getElementById("chiliGrid");
 const emptyState = document.getElementById("emptyState");
 const searchInput = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
+const viewGridBtn = document.getElementById("viewGridBtn");
+const viewListBtn = document.getElementById("viewListBtn");
+
+let viewMode = localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
+
+function setViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem(VIEW_KEY, mode);
+  viewGridBtn.classList.toggle("active", mode === "grid");
+  viewListBtn.classList.toggle("active", mode === "list");
+  render();
+}
+
+viewGridBtn.addEventListener("click", () => setViewMode("grid"));
+viewListBtn.addEventListener("click", () => setViewMode("list"));
 
 function populateStatusFilter() {
   for (const status of STATUS_OPTIONS) {
@@ -80,49 +96,69 @@ function render() {
 
   grid.innerHTML = "";
   emptyState.hidden = chilis.length > 0;
+  grid.className = viewMode === "list" ? "chili-list" : "chili-grid";
 
   for (const c of filtered) {
-    const card = document.createElement("div");
-    card.className = "chili-card";
-    card.addEventListener("click", () => openModal(c.id));
-
-    const photoWrap = document.createElement("div");
-    photoWrap.className = "card-photo-wrap";
-
-    const photo = c.fotos && c.fotos[0];
-    if (photo) {
-      const img = document.createElement("img");
-      img.className = "card-photo";
-      img.src = photo;
-      img.alt = c.name;
-      photoWrap.appendChild(img);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "card-photo-placeholder";
-      placeholder.textContent = "🌶️";
-      photoWrap.appendChild(placeholder);
-    }
-    if (c.nr) {
-      const nrBadge = document.createElement("span");
-      nrBadge.className = "card-nr";
-      nrBadge.textContent = `#${c.nr}`;
-      photoWrap.appendChild(nrBadge);
-    }
-    card.appendChild(photoWrap);
-
-    const body = document.createElement("div");
-    body.className = "card-body";
-    body.innerHTML = `
-      <h3>${escapeHtml(c.name)}</h3>
-      <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
-      <div class="card-badges">
-        <span class="badge">${sgBadge(c.sg)}</span>
-        <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
-      </div>
-    `;
-    card.appendChild(body);
-    grid.appendChild(card);
+    grid.appendChild(viewMode === "list" ? buildRow(c) : buildCard(c));
   }
+}
+
+function buildCard(c) {
+  const card = document.createElement("div");
+  card.className = "chili-card";
+  card.addEventListener("click", () => openModal(c.id));
+
+  const photoWrap = document.createElement("div");
+  photoWrap.className = "card-photo-wrap";
+
+  const photo = c.fotos && c.fotos[0];
+  if (photo) {
+    const img = document.createElement("img");
+    img.className = "card-photo";
+    img.src = photo;
+    img.alt = c.name;
+    photoWrap.appendChild(img);
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "card-photo-placeholder";
+    placeholder.textContent = "🌶️";
+    photoWrap.appendChild(placeholder);
+  }
+  if (c.nr) {
+    const nrBadge = document.createElement("span");
+    nrBadge.className = "card-nr";
+    nrBadge.textContent = `#${c.nr}`;
+    photoWrap.appendChild(nrBadge);
+  }
+  card.appendChild(photoWrap);
+
+  const body = document.createElement("div");
+  body.className = "card-body";
+  body.innerHTML = `
+    <h3>${escapeHtml(c.name)}</h3>
+    <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
+    <div class="card-badges">
+      <span class="badge">${sgBadge(c.sg)}</span>
+      <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
+    </div>
+  `;
+  card.appendChild(body);
+  return card;
+}
+
+function buildRow(c) {
+  const row = document.createElement("div");
+  row.className = "chili-row";
+  row.addEventListener("click", () => openModal(c.id));
+  row.innerHTML = `
+    <span class="row-nr">${c.nr ? `#${escapeHtml(c.nr)}` : ""}</span>
+    <span class="row-name">${escapeHtml(c.name)}</span>
+    <div class="row-badges">
+      <span class="badge">${sgBadge(c.sg)}</span>
+      <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
+    </div>
+  `;
+  return row;
 }
 
 function escapeHtml(str) {
@@ -309,4 +345,6 @@ importFile.addEventListener("change", async () => {
 // --- Init ---
 
 populateStatusFilter();
+viewGridBtn.classList.toggle("active", viewMode === "grid");
+viewListBtn.classList.toggle("active", viewMode === "list");
 render();

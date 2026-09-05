@@ -115,6 +115,28 @@ input[type="search"], select, input[type="text"], input[type="date"], textarea {
 .header-actions input[type="search"]::placeholder { color: rgba(255,255,255,0.75); }
 .header-actions select option { color: var(--color-text); }
 
+.view-toggle {
+  display: flex;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.view-btn {
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.view-btn.active {
+  background: #fff;
+  color: var(--color-primary);
+}
+
 textarea { resize: vertical; }
 
 /* --- Buttons --- */
@@ -268,6 +290,48 @@ main {
   background: rgba(75,127,63,0.15);
   color: var(--color-accent);
   font-weight: 600;
+}
+
+.chili-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.chili-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-border);
+}
+.chili-row:last-child { border-bottom: none; }
+.chili-row:hover { background: var(--color-bg); }
+
+.row-nr {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.row-name {
+  flex: 1;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .empty-state {
@@ -468,4 +532,7 @@ main {
   }
 
   .form-grid { grid-template-columns: 1fr; }
+
+  .chili-row { padding: 10px 12px; }
+  .row-badges .badge-status { display: none; }
 }

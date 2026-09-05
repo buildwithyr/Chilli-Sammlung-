@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#c1440e">
 <title>Opa Reiters Chili Sammlung</title>
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,6 +26,10 @@
         <select id="statusFilter">
           <option value="">Alle Status</option>
         </select>
+        <div class="view-toggle" role="group" aria-label="Ansicht wählen">
+          <button type="button" id="viewGridBtn" class="view-btn" aria-label="Kachelansicht mit Fotos" title="Kacheln mit Fotos">▦</button>
+          <button type="button" id="viewListBtn" class="view-btn" aria-label="Listenansicht ohne Fotos" title="Liste ohne Fotos">☰</button>
+        </div>
       </div>
     </div>
   </header>

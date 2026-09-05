@@ -1,0 +1,12 @@
+{
+  "name": "Opa Reiters Chili Sammlung",
+  "short_name": "Chili Sammlung",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fdf4ec",
+  "theme_color": "#c1440e",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
