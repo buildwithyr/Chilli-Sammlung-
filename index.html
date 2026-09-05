@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#c1440e">
+<title>Opa Reiters Chili Sammlung</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-overlay">
+      <div class="brand">
+        <span class="brand-icon">🌶️</span>
+        <div>
+          <h1>Opa Reiters Chili Sammlung</h1>
+          <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
+        <select id="statusFilter">
+          <option value="">Alle Status</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="emptyState" class="empty-state" hidden>
+      <span class="empty-icon">🌶️</span>
+      <p>Noch keine Chilis in der Sammlung.<br>Leg mit dem <strong>+</strong>-Button los.</p>
+    </div>
+    <div id="chiliGrid" class="chili-grid"></div>
+  </main>
+
+  <button id="addChiliBtn" class="fab" aria-label="Neue Chili hinzufügen">
+    <span class="fab-icon">+</span><span class="fab-label">Neue Chili</span>
+  </button>
+
+  <footer class="app-footer">
+    <button id="exportBtn" class="btn btn-secondary">Daten exportieren (JSON)</button>
+    <button id="importBtn" class="btn btn-secondary">Daten importieren</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+    <span class="footer-hint">Export regelmäßig sichern – Daten liegen nur in diesem Browser.</span>
+  </footer>
+
+  <!-- Detail-/Editier-Modal -->
+  <div id="chiliModal" class="modal" hidden>
+    <div class="modal-content">
+      <button class="modal-close" id="modalCloseBtn">&times;</button>
+      <form id="chiliForm">
+        <input type="hidden" id="chiliId">
+
+        <div class="form-section">
+          <label class="photo-upload-label">
+            <img id="photoPreview" class="photo-preview" src="" alt="Foto" hidden>
+            <span id="photoPlaceholder" class="photo-placeholder">📷 Foto(s) hinzufügen</span>
+            <input type="file" id="photoInput" accept="image/*" multiple hidden>
+          </label>
+          <div id="photoThumbs" class="photo-thumbs"></div>
+        </div>
+
+        <div class="form-grid">
+          <label>Katalog-Nr.
+            <input type="text" id="fieldNr" placeholder="z.B. 51">
+          </label>
+          <label>Name
+            <input type="text" id="fieldName" required placeholder="z.B. Carolina Reaper">
+          </label>
+          <label>Sorte / Art
+            <input type="text" id="fieldSorte" placeholder="z.B. Capsicum chinense">
+          </label>
+          <label>Herkunft
+            <input type="text" id="fieldHerkunft" placeholder="z.B. Samen von XY, USA">
+          </label>
+          <label>Schärfegrad (Sg-Skala 1–10)
+            <input type="text" id="fieldSg" placeholder="z.B. 6 oder 10+">
+          </label>
+          <label>Schärfegrad in Scoville (optional)
+            <input type="text" id="fieldScoville" placeholder="z.B. 1.500.000–2.200.000">
+          </label>
+          <label>Status
+            <select id="fieldStatus">
+              <option>Aussaat</option>
+              <option>Keimling</option>
+              <option>Wachstum</option>
+              <option>Blüte</option>
+              <option>Fruchtansatz</option>
+              <option>Erntereif</option>
+              <option>Ernte läuft</option>
+              <option>Saison beendet</option>
+            </select>
+          </label>
+          <label>Pflanzdatum
+            <input type="date" id="fieldPflanzdatum">
+          </label>
+          <label>Erntedatum
+            <input type="date" id="fieldErntedatum">
+          </label>
+        </div>
+
+        <label class="full-width">Wie läuft die Ernte?
+          <textarea id="fieldErntenotizen" rows="2" placeholder="z.B. erste 3 Früchte geerntet, weitere Blüten kommen nach"></textarea>
+        </label>
+
+        <label class="full-width">Geschmack / Aroma
+          <textarea id="fieldGeschmack" rows="2" placeholder="z.B. fruchtig, süß am Anfang, dann brutale Schärfe"></textarea>
+        </label>
+
+        <label class="full-width">Sonstige Notizen
+          <textarea id="fieldNotizen" rows="3" placeholder="Standort, Gießverhalten, Krankheiten, Dünger, was auch immer dir auffällt ..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="deleteBtn" class="btn btn-danger">Löschen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="data/seed-chilis.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
