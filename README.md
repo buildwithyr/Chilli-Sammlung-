@@ -10,8 +10,9 @@ Zwei Reiter oben unter dem Kopfbereich:
 
 - **🌶️ Sammlung**: die Chili-Pflanzen (siehe unten).
 - **📋 Bestellungen**: eigene Liste für gekaufte/bestellte Samen und Pflanzen,
-  mit eigenen Jahres-Reitern (2020, 2022–2027). Pro Bestellung: Jahr,
-  Chili/Sorte, Menge, „Bestellt bei", Bestelldatum, Preis, Notizen.
+  mit eigenen Jahres-Reitern (2020, 2022–2027) und eigenem Suchfeld (Name,
+  „Bestellt bei"). Pro Bestellung: Jahr, Chili/Sorte, Menge, „Bestellt bei",
+  Bestelldatum, Preis, Notizen.
 
 ## Nutzen
 

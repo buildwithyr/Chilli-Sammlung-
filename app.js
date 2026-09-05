@@ -333,6 +333,7 @@ const orderFilterBar = document.getElementById("orderFilterBar");
 const ordersMain = document.getElementById("ordersMain");
 const addOrderBtn = document.getElementById("addOrderBtn");
 const sammlungHeaderActions = document.getElementById("sammlungHeaderActions");
+const orderHeaderActions = document.getElementById("orderHeaderActions");
 
 let appTab = localStorage.getItem(APP_TAB_KEY) === "bestellungen" ? "bestellungen" : "sammlung";
 
@@ -344,6 +345,7 @@ function setAppTab(tab) {
   tabSammlungBtn.classList.toggle("active", showSammlung);
   tabBestellungenBtn.classList.toggle("active", !showSammlung);
   sammlungHeaderActions.hidden = !showSammlung;
+  orderHeaderActions.hidden = showSammlung;
   sammlungFilterBar.hidden = !showSammlung;
   sammlungMain.hidden = !showSammlung;
   orderFilterBar.hidden = showSammlung;
@@ -401,6 +403,9 @@ function renderYearTabs() {
 const orderYearTabs = document.getElementById("orderYearTabs");
 const ordersList = document.getElementById("ordersList");
 const ordersEmptyState = document.getElementById("ordersEmptyState");
+const orderSearchInput = document.getElementById("orderSearchInput");
+
+orderSearchInput.addEventListener("input", renderOrders);
 
 let orderActiveYear = localStorage.getItem(ORDER_YEAR_KEY) || "";
 
@@ -432,8 +437,17 @@ function renderOrderYearTabs() {
 }
 
 function renderOrders() {
+  const query = orderSearchInput.value.trim().toLowerCase();
+
   const filtered = orders
-    .filter((o) => !orderActiveYear || o.jahr === orderActiveYear)
+    .filter((o) => {
+      const matchesYear = !orderActiveYear || o.jahr === orderActiveYear;
+      const matchesQuery =
+        !query ||
+        o.name.toLowerCase().includes(query) ||
+        (o.haendler || "").toLowerCase().includes(query);
+      return matchesYear && matchesQuery;
+    })
     .sort((a, b) => (b.datum || "").localeCompare(a.datum || ""));
 
   ordersList.innerHTML = "";
@@ -441,7 +455,7 @@ function renderOrders() {
   ordersEmptyState.querySelector("p").innerHTML =
     orders.length === 0
       ? 'Noch keine Bestellungen erfasst.<br>Leg mit dem <strong>+</strong>-Button los.'
-      : 'Keine Bestellungen für dieses Jahr.<br>Anderes Jahr probieren.';
+      : 'Keine Bestellungen für diese Auswahl.<br>Anderes Jahr oder anderen Suchbegriff probieren.';
 
   for (const o of filtered) {
     ordersList.appendChild(buildOrderRow(o));
