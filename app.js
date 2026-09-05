@@ -461,6 +461,7 @@ function updateBulkBar() {
   bulkCount.textContent = `${selectedIds.size} ausgewählt`;
   bulkEditBtn.disabled = selectedIds.size === 0;
   bulkExportCsvBtn.disabled = selectedIds.size === 0;
+  bulkQrBtn.disabled = selectedIds.size === 0;
 }
 
 bulkDoneBtn.addEventListener("click", () => setSelectionMode(false));
@@ -1542,18 +1543,21 @@ function closeModal() {
   ocrStatus.hidden = true;
   ocrRawText.value = "";
   ocrSuggestions.innerHTML = "";
-  qrPreviewPanel.hidden = true;
 }
 
-// --- QR-Code fürs Topf-Etikett (Desktop) ---
-// Kodiert einen Link zurück auf genau diese Chili (?chili=<id>), damit man
-// nach dem Scannen direkt in den Details landet statt nur auf der Startseite.
+// --- QR-Etiketten fürs Topf (Desktop) ---
+// Kodiert je Chili einen Link zurück auf genau diese (?chili=<id>), damit
+// man nach dem Scannen direkt in den Details landet statt nur auf der
+// Startseite. Ein einziges gemeinsames Modal für "eine Chili" (Button im
+// Bearbeiten-Fenster) und "mehrere markierte" (Button in der Auswahl-
+// Leiste) - mehrere Etiketten passen nebeneinander auf ein Blatt, statt
+// pro QR-Code eine eigene Seite zu verschwenden.
 
 const qrPrintBtn = document.getElementById("qrPrintBtn");
-const qrPreviewPanel = document.getElementById("qrPreviewPanel");
-const qrCodeCanvas = document.getElementById("qrCodeCanvas");
-const qrPrintName = document.getElementById("qrPrintName");
-const qrPrintNr = document.getElementById("qrPrintNr");
+const bulkQrBtn = document.getElementById("bulkQrBtn");
+const qrLabelsModal = document.getElementById("qrLabelsModal");
+const qrLabelsCloseBtn = document.getElementById("qrLabelsCloseBtn");
+const qrPrintArea = document.getElementById("qrPrintArea");
 const qrDoPrintBtn = document.getElementById("qrDoPrintBtn");
 const qrClosePreviewBtn = document.getElementById("qrClosePreviewBtn");
 
@@ -1565,27 +1569,64 @@ function chiliDeepLink(id) {
   return url.toString();
 }
 
+function buildQrLabel(chili) {
+  const qr = qrcode(0, "M");
+  qr.addData(chiliDeepLink(chili.id));
+  qr.make();
+
+  const label = document.createElement("div");
+  label.className = "qr-label";
+
+  const canvasWrap = document.createElement("div");
+  canvasWrap.className = "qr-code-canvas";
+  canvasWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2 });
+  label.appendChild(canvasWrap);
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "qr-print-name";
+  nameEl.textContent = chili.name || "Chili";
+  label.appendChild(nameEl);
+
+  if (chili.nr) {
+    const nrEl = document.createElement("div");
+    nrEl.className = "qr-print-nr";
+    nrEl.textContent = `Katalog-Nr. ${chili.nr}`;
+    label.appendChild(nrEl);
+  }
+
+  return label;
+}
+
+function openQrLabelsModal(chiliList) {
+  qrPrintArea.innerHTML = "";
+  chiliList.forEach((c) => qrPrintArea.appendChild(buildQrLabel(c)));
+  qrLabelsModal.hidden = false;
+}
+
+function closeQrLabelsModal() {
+  qrLabelsModal.hidden = true;
+}
+
 qrPrintBtn.addEventListener("click", () => {
   const id = document.getElementById("chiliId").value;
-  if (!id || !chilis.some((c) => c.id === id)) {
+  const chili = chilis.find((c) => c.id === id);
+  if (!chili) {
     alert("Bitte diese Chili zuerst speichern - danach hat sie eine feste Adresse für den QR-Code.");
     return;
   }
-  const name = document.getElementById("fieldName").value.trim() || "Chili";
-  const nr = document.getElementById("fieldNr").value.trim();
-
-  const qr = qrcode(0, "M");
-  qr.addData(chiliDeepLink(id));
-  qr.make();
-  qrCodeCanvas.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2 });
-  qrPrintName.textContent = name;
-  qrPrintNr.textContent = nr ? `Katalog-Nr. ${nr}` : "";
-
-  qrPreviewPanel.hidden = false;
+  openQrLabelsModal([chili]);
 });
 
-qrClosePreviewBtn.addEventListener("click", () => {
-  qrPreviewPanel.hidden = true;
+bulkQrBtn.addEventListener("click", () => {
+  const selected = chilis.filter((c) => selectedIds.has(c.id));
+  if (selected.length === 0) return;
+  openQrLabelsModal(selected);
+});
+
+qrLabelsCloseBtn.addEventListener("click", closeQrLabelsModal);
+qrClosePreviewBtn.addEventListener("click", closeQrLabelsModal);
+qrLabelsModal.addEventListener("click", (e) => {
+  if (e.target === qrLabelsModal) closeQrLabelsModal();
 });
 
 qrDoPrintBtn.addEventListener("click", () => {

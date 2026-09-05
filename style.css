@@ -1188,8 +1188,10 @@ main {
    zusätzlich zu belegen. */
 .qr-print-trigger {
   display: none;
-  margin-left: auto;
   flex-shrink: 0;
+}
+.modal-header .qr-print-trigger {
+  margin-left: auto;
 }
 @media (min-width: 900px) {
   .qr-print-trigger {
@@ -1198,43 +1200,55 @@ main {
   }
 }
 
-.qr-preview-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  background: var(--color-badge);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 16px;
-}
-.qr-preview-panel[hidden] {
-  display: none;
+/* Kann aus dem Bearbeiten-Fenster heraus geöffnet werden (einzelne Chili)
+   und muss dann über diesem liegen, nicht dahinter verschwinden. */
+#qrLabelsModal {
+  z-index: 30;
 }
 
+.qr-labels-hint {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin: -8px 0 16px;
+}
+
+/* Mehrere Etiketten nebeneinander/untereinander, damit ein Blatt Papier
+   auch bei mehreren markierten Chilis sinnvoll ausgenutzt wird statt pro
+   QR-Code eine eigene A4-Seite zu verschwenden. */
 .qr-print-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.qr-label {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   background: #fff;
-  padding: 16px;
+  border: 1px solid var(--color-border);
+  padding: 14px;
   border-radius: 8px;
+  width: 180px;
+  break-inside: avoid;
 }
 
-.qr-code-canvas svg {
+.qr-label .qr-code-canvas svg {
   display: block;
 }
 
-.qr-print-name {
+.qr-label .qr-print-name {
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #1a1a1a;
   text-align: center;
 }
 
-.qr-print-nr {
-  font-size: 0.85rem;
+.qr-label .qr-print-nr {
+  font-size: 0.8rem;
   color: #555;
 }
 
@@ -1243,8 +1257,8 @@ main {
   gap: 10px;
 }
 
-/* Beim Drucken: alles ausblenden außer dem Etikett selbst, damit nicht die
-   ganze App-Seite mitgedruckt wird. */
+/* Beim Drucken: alles ausblenden außer den Etiketten selbst, damit nicht
+   die ganze App-Seite mitgedruckt wird. */
 @media print {
   body.qr-print-mode * {
     visibility: hidden;
@@ -1256,7 +1270,7 @@ main {
   body.qr-print-mode .qr-print-area {
     display: flex !important;
     position: absolute;
-    top: 40px;
+    top: 20px;
     left: 0;
     right: 0;
     margin: 0 auto;
