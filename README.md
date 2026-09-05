@@ -14,6 +14,8 @@ für Handy und Desktop.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
 - Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
   mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
+- Sortierung nach Katalog-Nr. (Standard), Schärfe (schärfste/mildeste
+  zuerst) oder Name.
 - Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2024 / 2025 / 2026 / 2027):
   filtert die Sammlung nach Anbau-Jahr, damit auch vergangene Saisons
   festgehalten werden können.

@@ -1,6 +1,7 @@
 const STORAGE_KEY = "chiliSammlung";
 const VIEW_KEY = "chiliViewMode";
 const YEAR_KEY = "chiliActiveYear";
+const SORT_KEY = "chiliSortMode";
 
 const YEAR_OPTIONS = ["2024", "2025", "2026", "2027"];
 const DEFAULT_YEAR = "2026";
@@ -53,6 +54,7 @@ const grid = document.getElementById("chiliGrid");
 const emptyState = document.getElementById("emptyState");
 const searchInput = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
+const sortSelect = document.getElementById("sortSelect");
 const viewGridBtn = document.getElementById("viewGridBtn");
 const viewListBtn = document.getElementById("viewListBtn");
 const yearTabs = document.getElementById("yearTabs");
@@ -117,11 +119,33 @@ function populateYearSelect() {
   }
 }
 
+function sgValue(sg) {
+  return parseInt(sg, 10) || 0;
+}
+
 function sgBadge(sg) {
   if (!sg) return "–";
-  const num = parseInt(sg, 10) || 0;
+  const num = sgValue(sg);
   const peppers = Math.max(1, Math.min(5, Math.ceil(num / 2)));
   return "🌶️".repeat(peppers) + ` Sg ${sg}`;
+}
+
+function sortChilis(list) {
+  const sorted = [...list];
+  switch (sortSelect.value) {
+    case "sg-desc":
+      sorted.sort((a, b) => sgValue(b.sg) - sgValue(a.sg));
+      break;
+    case "sg-asc":
+      sorted.sort((a, b) => sgValue(a.sg) - sgValue(b.sg));
+      break;
+    case "name":
+      sorted.sort((a, b) => a.name.localeCompare(b.name, "de"));
+      break;
+    default:
+      sorted.sort((a, b) => (parseInt(a.nr, 10) || 0) - (parseInt(b.nr, 10) || 0));
+  }
+  return sorted;
 }
 
 function render() {
@@ -139,6 +163,7 @@ function render() {
     const matchesYear = !activeYear || c.jahr === activeYear;
     return matchesQuery && matchesStatus && matchesYear;
   });
+  const sorted = sortChilis(filtered);
 
   grid.innerHTML = "";
   emptyState.hidden = filtered.length > 0;
@@ -148,7 +173,7 @@ function render() {
       : 'Keine Chilis für diese Auswahl.<br>Anderes Jahr oder anderen Filter probieren.';
   grid.className = viewMode === "list" ? "chili-list" : "chili-grid";
 
-  for (const c of filtered) {
+  for (const c of sorted) {
     grid.appendChild(viewMode === "list" ? buildRow(c) : buildCard(c));
   }
 }
@@ -362,6 +387,10 @@ modal.addEventListener("click", (e) => {
 
 searchInput.addEventListener("input", render);
 statusFilter.addEventListener("change", render);
+sortSelect.addEventListener("change", () => {
+  localStorage.setItem(SORT_KEY, sortSelect.value);
+  render();
+});
 
 // --- Export / Import ---
 
@@ -467,6 +496,7 @@ function setupPullToRefresh() {
 populateStatusFilter();
 populateYearSelect();
 renderYearTabs();
+sortSelect.value = localStorage.getItem(SORT_KEY) || "nr";
 viewGridBtn.classList.toggle("active", viewMode === "grid");
 viewListBtn.classList.toggle("active", viewMode === "list");
 setupPullToRefresh();

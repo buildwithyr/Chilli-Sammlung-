@@ -546,7 +546,9 @@ main {
   .header-actions {
     justify-content: stretch;
   }
-  .header-actions input[type="search"],
+  .header-actions input[type="search"] {
+    flex-basis: 100%;
+  }
   .header-actions select {
     flex: 1;
     min-width: 0;
