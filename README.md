@@ -19,6 +19,10 @@ für Handy und Desktop.
 - Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2024 / 2025 / 2026 / 2027):
   filtert die Sammlung nach Anbau-Jahr, damit auch vergangene Saisons
   festgehalten werden können.
+- **Mehrere auswählen** (Button neben den Jahres-Reitern): Chilis anklicken
+  statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
+  oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
+  ein ganzer Satz Chilis am selben Tag umgesetzt oder geerntet wurde.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
 „App installieren" (Android) mit eigenem Chili-Icon abgelegt werden. In

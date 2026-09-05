@@ -58,9 +58,46 @@ const sortSelect = document.getElementById("sortSelect");
 const viewGridBtn = document.getElementById("viewGridBtn");
 const viewListBtn = document.getElementById("viewListBtn");
 const yearTabs = document.getElementById("yearTabs");
+const selectModeBtn = document.getElementById("selectModeBtn");
+const bulkBar = document.getElementById("bulkBar");
+const bulkCount = document.getElementById("bulkCount");
+const bulkEditBtn = document.getElementById("bulkEditBtn");
+const bulkDoneBtn = document.getElementById("bulkDoneBtn");
+const fab = document.getElementById("addChiliBtn");
 
 let viewMode = localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
 let activeYear = localStorage.getItem(YEAR_KEY) || "";
+let selectionMode = false;
+let selectedIds = new Set();
+
+function setSelectionMode(on) {
+  selectionMode = on;
+  if (!on) selectedIds.clear();
+  selectModeBtn.classList.toggle("active", on);
+  selectModeBtn.textContent = on ? "Auswahl beenden" : "Mehrere auswählen";
+  fab.hidden = on;
+  updateBulkBar();
+  render();
+}
+
+function toggleSelected(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+  } else {
+    selectedIds.add(id);
+  }
+  updateBulkBar();
+  render();
+}
+
+function updateBulkBar() {
+  bulkBar.hidden = !selectionMode;
+  bulkCount.textContent = `${selectedIds.size} ausgewählt`;
+  bulkEditBtn.disabled = selectedIds.size === 0;
+}
+
+selectModeBtn.addEventListener("click", () => setSelectionMode(!selectionMode));
+bulkDoneBtn.addEventListener("click", () => setSelectionMode(false));
 
 function setViewMode(mode) {
   viewMode = mode;
@@ -100,23 +137,21 @@ function renderYearTabs() {
   }
 }
 
-function populateStatusFilter() {
-  for (const status of STATUS_OPTIONS) {
+function fillOptions(select, values) {
+  for (const value of values) {
     const opt = document.createElement("option");
-    opt.value = status;
-    opt.textContent = status;
-    statusFilter.appendChild(opt);
+    opt.value = value;
+    opt.textContent = value;
+    select.appendChild(opt);
   }
 }
 
+function populateStatusFilter() {
+  fillOptions(statusFilter, STATUS_OPTIONS);
+}
+
 function populateYearSelect() {
-  const select = document.getElementById("fieldJahr");
-  for (const year of YEAR_OPTIONS) {
-    const opt = document.createElement("option");
-    opt.value = year;
-    opt.textContent = year;
-    select.appendChild(opt);
-  }
+  fillOptions(document.getElementById("fieldJahr"), YEAR_OPTIONS);
 }
 
 function sgValue(sg) {
@@ -179,9 +214,16 @@ function render() {
 }
 
 function buildCard(c) {
+  const isSelected = selectedIds.has(c.id);
   const card = document.createElement("div");
-  card.className = "chili-card";
-  card.addEventListener("click", () => openModal(c.id));
+  card.className = "chili-card" + (isSelected ? " selected" : "");
+  card.addEventListener("click", () => {
+    if (selectionMode) {
+      toggleSelected(c.id);
+    } else {
+      openModal(c.id);
+    }
+  });
 
   const photoWrap = document.createElement("div");
   photoWrap.className = "card-photo-wrap";
@@ -205,6 +247,12 @@ function buildCard(c) {
     nrBadge.textContent = `#${c.nr}`;
     photoWrap.appendChild(nrBadge);
   }
+  if (selectionMode) {
+    const checkbox = document.createElement("span");
+    checkbox.className = "card-select-checkbox" + (isSelected ? " checked" : "");
+    checkbox.textContent = isSelected ? "✓" : "";
+    photoWrap.appendChild(checkbox);
+  }
   card.appendChild(photoWrap);
 
   const body = document.createElement("div");
@@ -223,10 +271,18 @@ function buildCard(c) {
 }
 
 function buildRow(c) {
+  const isSelected = selectedIds.has(c.id);
   const row = document.createElement("div");
-  row.className = "chili-row";
-  row.addEventListener("click", () => openModal(c.id));
+  row.className = "chili-row" + (isSelected ? " selected" : "");
+  row.addEventListener("click", () => {
+    if (selectionMode) {
+      toggleSelected(c.id);
+    } else {
+      openModal(c.id);
+    }
+  });
   row.innerHTML = `
+    ${selectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
     <span class="row-nr">${c.nr ? `#${escapeHtml(c.nr)}` : ""}</span>
     <span class="row-name">${escapeHtml(c.name)}</span>
     <div class="row-badges">
@@ -390,6 +446,77 @@ statusFilter.addEventListener("change", render);
 sortSelect.addEventListener("change", () => {
   localStorage.setItem(SORT_KEY, sortSelect.value);
   render();
+});
+
+// --- Sammel-Bearbeiten ---
+
+const bulkModal = document.getElementById("bulkModal");
+const bulkForm = document.getElementById("bulkForm");
+const bulkModalCount = document.getElementById("bulkModalCount");
+
+const bulkFieldPairs = [
+  ["bulkUsePflanzdatum", "bulkPflanzdatum"],
+  ["bulkUseErntedatum", "bulkErntedatum"],
+  ["bulkUseStatus", "bulkStatus"],
+  ["bulkUseJahr", "bulkJahr"],
+];
+
+fillOptions(document.getElementById("bulkStatus"), STATUS_OPTIONS);
+fillOptions(document.getElementById("bulkJahr"), YEAR_OPTIONS);
+
+for (const [checkboxId, inputId] of bulkFieldPairs) {
+  document.getElementById(checkboxId).addEventListener("change", (e) => {
+    document.getElementById(inputId).disabled = !e.target.checked;
+  });
+}
+
+function resetBulkForm() {
+  bulkForm.reset();
+  for (const [, inputId] of bulkFieldPairs) {
+    document.getElementById(inputId).disabled = true;
+  }
+}
+
+function closeBulkModal() {
+  bulkModal.hidden = true;
+  resetBulkForm();
+}
+
+bulkEditBtn.addEventListener("click", () => {
+  bulkModalCount.textContent = selectedIds.size;
+  bulkModal.hidden = false;
+});
+
+document.getElementById("bulkModalCloseBtn").addEventListener("click", closeBulkModal);
+document.getElementById("bulkCancelBtn").addEventListener("click", closeBulkModal);
+bulkModal.addEventListener("click", (e) => {
+  if (e.target === bulkModal) closeBulkModal();
+});
+
+bulkForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const changes = {};
+  if (document.getElementById("bulkUsePflanzdatum").checked) {
+    changes.pflanzdatum = document.getElementById("bulkPflanzdatum").value;
+  }
+  if (document.getElementById("bulkUseErntedatum").checked) {
+    changes.erntedatum = document.getElementById("bulkErntedatum").value;
+  }
+  if (document.getElementById("bulkUseStatus").checked) {
+    changes.status = document.getElementById("bulkStatus").value;
+  }
+  if (document.getElementById("bulkUseJahr").checked) {
+    changes.jahr = document.getElementById("bulkJahr").value;
+  }
+
+  if (Object.keys(changes).length > 0) {
+    chilis = chilis.map((c) => (selectedIds.has(c.id) ? { ...c, ...changes } : c));
+    saveChilis();
+  }
+
+  closeBulkModal();
+  setSelectionMode(false);
 });
 
 // --- Export / Import ---

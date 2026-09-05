@@ -43,7 +43,10 @@
     </div>
   </header>
 
-  <nav id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></nav>
+  <nav class="year-tabs-bar">
+    <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
+    <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
+  </nav>
 
   <main>
     <div id="emptyState" class="empty-state" hidden>
@@ -56,6 +59,14 @@
   <button id="addChiliBtn" class="fab" aria-label="Neue Chili hinzufügen">
     <span class="fab-icon">+</span><span class="fab-label">Neue Chili</span>
   </button>
+
+  <div id="bulkBar" class="bulk-bar" hidden>
+    <span id="bulkCount">0 ausgewählt</span>
+    <div class="bulk-bar-actions">
+      <button type="button" id="bulkEditBtn" class="btn btn-primary" disabled>Bearbeiten</button>
+      <button type="button" id="bulkDoneBtn" class="btn btn-secondary">Fertig</button>
+    </div>
+  </div>
 
   <footer class="app-footer">
     <button id="exportBtn" class="btn btn-secondary">Daten exportieren (JSON)</button>
@@ -137,6 +148,42 @@
         <div class="modal-actions">
           <button type="button" id="deleteBtn" class="btn btn-danger">Löschen</button>
           <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sammel-Bearbeiten-Modal -->
+  <div id="bulkModal" class="modal" hidden>
+    <div class="modal-content">
+      <button class="modal-close" id="bulkModalCloseBtn">&times;</button>
+      <h2><span id="bulkModalCount">0</span> Chilis gleichzeitig ändern</h2>
+      <p class="bulk-modal-hint">Nur angehakte Felder werden bei allen ausgewählten Chilis überschrieben.</p>
+      <form id="bulkForm">
+        <label class="bulk-field">
+          <input type="checkbox" id="bulkUsePflanzdatum">
+          <span>Pflanzdatum setzen auf</span>
+          <input type="date" id="bulkPflanzdatum" disabled>
+        </label>
+        <label class="bulk-field">
+          <input type="checkbox" id="bulkUseErntedatum">
+          <span>Erntedatum setzen auf</span>
+          <input type="date" id="bulkErntedatum" disabled>
+        </label>
+        <label class="bulk-field">
+          <input type="checkbox" id="bulkUseStatus">
+          <span>Status setzen auf</span>
+          <select id="bulkStatus" disabled></select>
+        </label>
+        <label class="bulk-field">
+          <input type="checkbox" id="bulkUseJahr">
+          <span>Jahr setzen auf</span>
+          <select id="bulkJahr" disabled></select>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="bulkCancelBtn" class="btn btn-secondary">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Übernehmen</button>
         </div>
       </form>
     </div>

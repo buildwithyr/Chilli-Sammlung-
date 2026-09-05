@@ -199,13 +199,21 @@ textarea { resize: vertical; }
 .fab:hover { background: var(--color-primary-dark); }
 .fab-icon { font-size: 1.2rem; line-height: 1; }
 
+.year-tabs-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px 0;
+}
+
 .year-tabs {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 24px 0;
 }
 
 .year-tab {
@@ -220,6 +228,24 @@ textarea { resize: vertical; }
 }
 
 .year-tab.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.select-toggle-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.select-toggle-btn.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: #fff;
@@ -276,6 +302,56 @@ main {
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 999px;
+}
+
+.chili-card.selected {
+  outline: 3px solid var(--color-primary);
+  outline-offset: -3px;
+}
+
+.card-select-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.card-select-checkbox.checked {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.row-select-checkbox {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.row-select-checkbox.checked {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.chili-row.selected {
+  background: var(--color-badge);
 }
 
 .card-photo-placeholder {
@@ -417,7 +493,7 @@ main {
   justify-content: center;
   padding: 24px;
   overflow-y: auto;
-  z-index: 10;
+  z-index: 20;
 }
 
 .modal[hidden] {
@@ -527,6 +603,71 @@ main {
   margin-top: 8px;
 }
 
+/* --- Mehrfachauswahl / Sammel-Bearbeiten --- */
+
+.bulk-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+  z-index: 15;
+}
+
+.bulk-bar[hidden] {
+  display: none;
+}
+
+.bulk-bar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bulk-modal-hint {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+.bulk-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+.bulk-field:last-of-type { border-bottom: none; }
+
+.bulk-field span {
+  flex: 1;
+  color: var(--color-text);
+}
+
+.bulk-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.bulk-field input[type="date"],
+.bulk-field select {
+  flex: 1;
+  max-width: 180px;
+}
+
+.bulk-field input:disabled,
+.bulk-field select:disabled {
+  opacity: 0.4;
+}
+
 /* --- Desktop: roomier layout --- */
 
 @media (min-width: 900px) {
@@ -555,7 +696,7 @@ main {
   }
 
   main { padding: 16px; padding-bottom: 100px; }
-  .year-tabs { padding: 12px 16px 0; }
+  .year-tabs-bar { padding: 12px 16px 0; }
 
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
 
@@ -585,6 +726,15 @@ main {
 
   .chili-row { padding: 10px 12px; }
   .row-badges .badge-status { display: none; }
+
+  .bulk-field { flex-wrap: wrap; }
+  .bulk-field input[type="date"],
+  .bulk-field select {
+    max-width: none;
+    flex-basis: 100%;
+    margin-left: 28px;
+  }
+  .bulk-bar { padding: 12px 16px; }
 }
 
 /* --- Pull-to-refresh (für "Zum Home-Bildschirm hinzufügen", ohne Browser-UI) --- */
