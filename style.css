@@ -53,6 +53,16 @@ body {
   background-color: var(--header-grad-end);
 }
 
+/* Auf breiten Bildschirmen bräuchte ein Hochkant-Foto als reines
+   background-size:cover einen extremen Ausschnitt (wirkt "reingezoomt").
+   Deshalb zeigt .bg-photo-crisp das Foto ab Desktop-Breite unbeschnitten
+   (Höhe = 100%), während .bg-photo im Hintergrund weich verwischt als
+   randfüllende Farbe dient statt eines harten Farbblocks.
+   Auf dem Handy bleibt .bg-photo alleine aktiv (Hochformat passt zum Foto). */
+.bg-photo-crisp {
+  display: none;
+}
+
 /* --- Header --- */
 
 .app-header {
@@ -674,6 +684,21 @@ main {
   main { padding: 32px 40px; }
   .header-overlay { padding: 24px 40px; }
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+  .bg-photo {
+    filter: blur(28px) brightness(0.85);
+    transform: scale(1.15);
+  }
+
+  .bg-photo-crisp {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(35,14,6,0.4), rgba(35,14,6,0.6)),
+      url("assets/hero.jpg") center 30% / auto 100% no-repeat;
+  }
 }
 
 /* --- Mobile --- */
