@@ -50,8 +50,10 @@
   </nav>
 
   <nav class="year-tabs-bar" id="sammlungFilterBar">
-    <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
-    <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
+    <div class="year-tabs-inner">
+      <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
+      <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
+    </div>
   </nav>
 
   <main id="sammlungMain">
@@ -63,7 +65,9 @@
   </main>
 
   <nav class="year-tabs-bar" id="orderFilterBar" hidden>
-    <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
+    <div class="year-tabs-inner">
+      <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
+    </div>
   </nav>
 
   <main id="ordersMain" hidden>
@@ -101,7 +105,10 @@
   <!-- Detail-/Editier-Modal -->
   <div id="chiliModal" class="modal" hidden>
     <div class="modal-content">
-      <button class="modal-close" id="modalCloseBtn">&times;</button>
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="modalCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title" id="chiliModalTitle">Chili bearbeiten</h2>
+      </div>
       <form id="chiliForm">
         <input type="hidden" id="chiliId">
 
@@ -179,8 +186,10 @@
   <!-- Sammel-Bearbeiten-Modal -->
   <div id="bulkModal" class="modal" hidden>
     <div class="modal-content">
-      <button class="modal-close" id="bulkModalCloseBtn">&times;</button>
-      <h2><span id="bulkModalCount">0</span> Chilis gleichzeitig ändern</h2>
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="bulkModalCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title"><span id="bulkModalCount">0</span> Chilis gleichzeitig ändern</h2>
+      </div>
       <p class="bulk-modal-hint">Nur angehakte Felder werden bei allen ausgewählten Chilis überschrieben.</p>
       <form id="bulkForm">
         <label class="bulk-field">
@@ -215,7 +224,10 @@
   <!-- Bestellung-Modal -->
   <div id="orderModal" class="modal" hidden>
     <div class="modal-content">
-      <button class="modal-close" id="orderModalCloseBtn">&times;</button>
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="orderModalCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title" id="orderModalTitle">Bestellung</h2>
+      </div>
       <form id="orderForm">
         <input type="hidden" id="orderId">
 

@@ -10,7 +10,7 @@ const SORT_KEY = "chiliSortMode";
 const APP_TAB_KEY = "chiliAppTab";
 const ORDER_YEAR_KEY = "chiliOrderActiveYear";
 
-const YEAR_OPTIONS = ["2024", "2025", "2026", "2027"];
+const YEAR_OPTIONS = ["2022", "2023", "2024", "2025", "2026", "2027"];
 const DEFAULT_YEAR = "2026";
 const ORDER_YEAR_OPTIONS = ["2020", "2022", "2023", "2024", "2025", "2026", "2027"];
 
@@ -34,6 +34,120 @@ let currentPhotos = [];
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// --- Bildkompression vor dem Upload ---
+// Handyfotos sind oft mehrere MB groß und durch EXIF-Metadaten gedreht.
+// compressImage() verkleinert auf max. 800px (längere Kante, kein
+// Hochskalieren) und exportiert als JPEG mit sinkender Qualität, bis die
+// Datei unter ca. 150 KB liegt (oder Qualität 0.35 erreicht ist).
+//
+// Zur Drehung: alle relevanten Browser (Safari, Chrome, Firefox) wenden die
+// EXIF-Rotation seit Jahren selbst automatisch beim Decodieren an - sowohl
+// für <img> als auch für createImageBitmap mit imageOrientation:"from-image"
+// (nachgemessen: Chromium ignoriert "none" hier sogar und korrigiert immer).
+// Deshalb wird bewusst NICHT manuell anhand der rohen EXIF-Bytes gedreht -
+// das würde bei Browsern, die schon selbst korrigieren, zu einer doppelten
+// (und damit falschen) Drehung führen.
+
+const IMAGE_MAX_DIMENSION = 800;
+const IMAGE_TARGET_BYTES = 150 * 1024;
+const IMAGE_MIN_QUALITY = 0.35;
+const IMAGE_QUALITY_STEP = 0.05;
+const IMAGE_START_QUALITY = 0.6;
+
+function loadImageElement(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Bild konnte nicht decodiert werden"));
+    };
+    img.src = url;
+  });
+}
+
+async function decodeOrientedImage(file) {
+  if (typeof createImageBitmap === "function") {
+    try {
+      return await createImageBitmap(file, { imageOrientation: "from-image" });
+    } catch (e) {
+      // z.B. HEIC in einem Browser, der das per createImageBitmap nicht mag -
+      // <img> schafft es in manchen Fällen trotzdem.
+    }
+  }
+  return loadImageElement(file);
+}
+
+function intrinsicSize(source) {
+  if (typeof ImageBitmap !== "undefined" && source instanceof ImageBitmap) {
+    return { width: source.width, height: source.height };
+  }
+  return { width: source.naturalWidth, height: source.naturalHeight };
+}
+
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("Canvas-Export fehlgeschlagen"))),
+      type,
+      quality
+    );
+  });
+}
+
+/**
+ * Komprimiert ein Foto vor dem Upload: auf max. 800px Kantenlänge
+ * verkleinern (kein Hochskalieren, EXIF-Drehung übernimmt der Browser
+ * beim Decodieren), als JPEG mit absinkender Qualität exportieren bis
+ * ~150 KB oder Qualität 0.35.
+ * @param {File|Blob} file
+ * @returns {Promise<Blob>}
+ */
+async function compressImage(file) {
+  let source;
+  try {
+    source = await decodeOrientedImage(file);
+  } catch (e) {
+    throw new Error(
+      "Dieses Bild konnte nicht gelesen werden (evtl. ein Format wie HEIC, das dieser Browser nicht unterstützt). Bitte als JPG oder PNG speichern und erneut versuchen."
+    );
+  }
+
+  const { width, height } = intrinsicSize(source);
+  if (!width || !height) {
+    throw new Error("Dieses Bild konnte nicht gelesen werden.");
+  }
+
+  const scale = Math.min(1, IMAGE_MAX_DIMENSION / Math.max(width, height));
+  const outWidth = Math.round(width * scale);
+  const outHeight = Math.round(height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = outWidth;
+  canvas.height = outHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(source, 0, 0, outWidth, outHeight);
+  if (typeof source.close === "function") source.close();
+
+  let quality = IMAGE_START_QUALITY;
+  let blob = await canvasToBlob(canvas, "image/jpeg", quality);
+  while (blob.size > IMAGE_TARGET_BYTES && quality > IMAGE_MIN_QUALITY) {
+    quality = Math.max(IMAGE_MIN_QUALITY, quality - IMAGE_QUALITY_STEP);
+    blob = await canvasToBlob(canvas, "image/jpeg", quality);
+  }
+
+  console.log(
+    `Bild komprimiert: ${(file.size / 1024).toFixed(0)} KB -> ${(blob.size / 1024).toFixed(0)} KB ` +
+      `(Qualität ${quality.toFixed(2)}, ${outWidth}x${outHeight})`
+  );
+
+  return blob;
 }
 
 async function fetchChilis() {
@@ -84,11 +198,12 @@ async function deleteOrderRemote(id) {
 
 async function uploadDataUrlToStorage(dataUrl, chiliId) {
   try {
-    const blob = await (await fetch(dataUrl)).blob();
+    const rawBlob = await (await fetch(dataUrl)).blob();
+    const blob = await compressImage(rawBlob).catch(() => rawBlob);
     const path = `${chiliId}/${uid()}.jpg`;
     const { error } = await sb.storage
       .from(FOTOS_BUCKET)
-      .upload(path, blob, { contentType: blob.type || "image/jpeg" });
+      .upload(path, blob, { contentType: "image/jpeg" });
     if (error) throw error;
     return sb.storage.from(FOTOS_BUCKET).getPublicUrl(path).data.publicUrl;
   } catch (e) {
@@ -367,6 +482,7 @@ function openOrderModal(id) {
   document.getElementById("orderFieldPreis").value = order?.preis || "";
   document.getElementById("orderFieldNotizen").value = order?.notizen || "";
 
+  document.getElementById("orderModalTitle").textContent = order ? "Bestellung bearbeiten" : "Neue Bestellung";
   orderDeleteBtn.hidden = !order;
   orderModal.hidden = false;
 }
@@ -623,6 +739,7 @@ function openModal(id) {
   currentPhotos = chili?.fotos ? [...chili.fotos] : [];
   renderPhotoPreview();
 
+  document.getElementById("chiliModalTitle").textContent = chili ? "Chili bearbeiten" : "Neue Chili";
   deleteBtn.hidden = !chili;
   modal.hidden = false;
 }
@@ -671,10 +788,18 @@ photoInput.addEventListener("change", async () => {
   photoPlaceholder.textContent = "⏳ Wird hochgeladen ...";
 
   for (const file of files) {
-    const path = `${chiliId}/${uid()}-${file.name}`;
+    let compressed;
+    try {
+      compressed = await compressImage(file);
+    } catch (e) {
+      alert(e.message);
+      continue;
+    }
+
+    const path = `${chiliId}/${uid()}.jpg`;
     const { error } = await sb.storage
       .from(FOTOS_BUCKET)
-      .upload(path, file, { contentType: file.type || "image/jpeg" });
+      .upload(path, compressed, { contentType: "image/jpeg" });
     if (error) {
       alert("Foto-Upload fehlgeschlagen: " + error.message);
       continue;
@@ -944,6 +1069,20 @@ importFile.addEventListener("change", async () => {
   importFile.value = "";
 });
 
+// --- Fixe Höhe des Headers als CSS-Variable ---
+// Die Jahres-Leiste soll direkt unter dem (fixierten) Header andocken.
+// Die Header-Höhe schwankt (Notch-Sicherheitsabstand, Zeilenumbruch bei
+// schmalen Fenstern), deshalb wird sie hier gemessen statt fest verdrahtet.
+
+function updateHeaderHeightVar() {
+  const header = document.querySelector(".app-header");
+  if (!header) return;
+  document.documentElement.style.setProperty("--header-height", `${header.offsetHeight}px`);
+}
+
+window.addEventListener("resize", updateHeaderHeightVar);
+window.addEventListener("orientationchange", updateHeaderHeightVar);
+
 // --- Pull-to-refresh ---
 // Als "Zum Home-Bildschirm hinzugefügte" App (display: standalone) hat iOS
 // keine eigene Browser-Leiste mehr und damit auch keine native
@@ -1021,6 +1160,7 @@ function setupPullToRefresh() {
   viewGridBtn.classList.toggle("active", viewMode === "grid");
   viewListBtn.classList.toggle("active", viewMode === "list");
   setupPullToRefresh();
+  updateHeaderHeightVar();
 
   // Sicherheitsnetz: bei sehr langsamer/fehlender Verbindung soll die Seite
   // trotzdem nutzbar werden statt unbegrenzt leer/eingefroren zu wirken.

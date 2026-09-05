@@ -19,15 +19,22 @@ Zwei Reiter oben unter dem Kopfbereich:
 
 - **+ Neue Chili** (runder Button unten rechts): Karte anlegen, Foto(s)
   hochladen, Felder ausfüllen.
-- Auf eine Karte klicken, um Angaben zu bearbeiten oder zu löschen.
+- Auf eine Karte klicken, um Angaben zu bearbeiten oder zu löschen. Im
+  Bearbeiten-Fenster oben ein klarer „‹ Zurück"-Button statt eines kleinen
+  Kreuzes; bleibt beim Scrollen durch ein langes Formular sichtbar.
+- Fotos werden vor dem Hochladen automatisch verkleinert und komprimiert
+  (max. 800px Kante, ~100–150 KB), EXIF-Drehung wird korrekt übernommen –
+  spart Speicherplatz und Ladezeit, ohne dass man selbst etwas tun muss.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
 - Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
   mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
 - Sortierung nach Katalog-Nr. (Standard), Schärfe (schärfste/mildeste
   zuerst) oder Name.
-- Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2024 / 2025 / 2026 / 2027):
-  filtert die Sammlung nach Anbau-Jahr, damit auch vergangene Saisons
-  festgehalten werden können.
+- Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2022 / 2023 / 2024 / 2025 /
+  2026 / 2027): filtert die Sammlung nach Anbau-Jahr, damit auch vergangene
+  Saisons festgehalten werden können. Bleibt beim Scrollen fix unter dem
+  Header stehen; auf dem Handy als seitlich wischbarer Streifen statt
+  umbrechender Kacheln.
 - **Mehrere auswählen** (Button neben den Jahres-Reitern): Chilis anklicken
   statt zu öffnen, dann über „Bearbeiten" Pflanzdatum, Erntedatum, Status
   oder Jahr für alle ausgewählten auf einmal setzen – praktisch, wenn z.B.
