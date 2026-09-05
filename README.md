@@ -4,6 +4,15 @@ Kleine Web-App, um eine Chili-Sammlung zu verwalten: alle Pflanzen als Karten,
 mit Foto, Schärfegrad, Herkunft, Erntestand und eigenen Notizen. Responsive
 für Handy und Desktop.
 
+## Bereiche
+
+Zwei Reiter oben unter dem Kopfbereich:
+
+- **🌶️ Sammlung**: die Chili-Pflanzen (siehe unten).
+- **📋 Bestellungen**: eigene Liste für gekaufte/bestellte Samen und Pflanzen,
+  mit eigenen Jahres-Reitern (2020, 2022–2027). Pro Bestellung: Jahr,
+  Chili/Sorte, Menge, „Bestellt bei", Bestelldatum, Preis, Notizen.
+
 ## Nutzen
 
 `index.html` im Browser öffnen (Doppelklick reicht, kein Server nötig).
@@ -54,7 +63,8 @@ nicht im Git-Repository. Das heißt:
 
 Deshalb: regelmäßig auf **„Daten exportieren (JSON)"** klicken und die Datei
 sichern. Mit **„Daten importieren"** kann die Sammlung wiederhergestellt oder
-auf ein anderes Gerät übertragen werden.
+auf ein anderes Gerät übertragen werden. Der Export enthält Sammlung und
+Bestellungen zusammen in einer Datei.
 
 Updates an der App (neues Design, neue Funktionen) fassen deinen
 gespeicherten Bestand nie an: Die Startliste wird nur beim allerersten

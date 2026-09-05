@@ -25,7 +25,7 @@
           <p class="brand-sub">Alle Pflanzen, ein Blick</p>
         </div>
       </div>
-      <div class="header-actions">
+      <div class="header-actions" id="sammlungHeaderActions">
         <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
         <select id="statusFilter">
           <option value="">Alle Status</option>
@@ -44,12 +44,17 @@
     </div>
   </header>
 
-  <nav class="year-tabs-bar">
+  <nav class="main-tabs" aria-label="Bereich wählen">
+    <button type="button" id="tabSammlungBtn" class="main-tab active">🌶️ Sammlung</button>
+    <button type="button" id="tabBestellungenBtn" class="main-tab">📋 Bestellungen</button>
+  </nav>
+
+  <nav class="year-tabs-bar" id="sammlungFilterBar">
     <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
     <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
   </nav>
 
-  <main>
+  <main id="sammlungMain">
     <div id="emptyState" class="empty-state" hidden>
       <span class="empty-icon">🌶️</span>
       <p>Noch keine Chilis in der Sammlung.<br>Leg mit dem <strong>+</strong>-Button los.</p>
@@ -57,8 +62,24 @@
     <div id="chiliGrid" class="chili-grid"></div>
   </main>
 
+  <nav class="year-tabs-bar" id="orderFilterBar" hidden>
+    <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
+  </nav>
+
+  <main id="ordersMain" hidden>
+    <div id="ordersEmptyState" class="empty-state" hidden>
+      <span class="empty-icon">📋</span>
+      <p>Noch keine Bestellungen erfasst.<br>Leg mit dem <strong>+</strong>-Button los.</p>
+    </div>
+    <div id="ordersList" class="chili-list"></div>
+  </main>
+
   <button id="addChiliBtn" class="fab" aria-label="Neue Chili hinzufügen">
     <span class="fab-icon">+</span><span class="fab-label">Neue Chili</span>
+  </button>
+
+  <button id="addOrderBtn" class="fab" aria-label="Neue Bestellung hinzufügen" hidden>
+    <span class="fab-icon">+</span><span class="fab-label">Neue Bestellung</span>
   </button>
 
   <div id="bulkBar" class="bulk-bar" hidden>
@@ -185,6 +206,46 @@
         <div class="modal-actions">
           <button type="button" id="bulkCancelBtn" class="btn btn-secondary">Abbrechen</button>
           <button type="submit" class="btn btn-primary">Übernehmen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bestellung-Modal -->
+  <div id="orderModal" class="modal" hidden>
+    <div class="modal-content">
+      <button class="modal-close" id="orderModalCloseBtn">&times;</button>
+      <form id="orderForm">
+        <input type="hidden" id="orderId">
+
+        <div class="form-grid">
+          <label>Jahr
+            <select id="orderFieldJahr"></select>
+          </label>
+          <label>Chili / Sorte
+            <input type="text" id="orderFieldName" required placeholder="z.B. Carolina Reaper">
+          </label>
+          <label>Menge
+            <input type="text" id="orderFieldMenge" placeholder="z.B. 10 Samen">
+          </label>
+          <label>Bestellt bei
+            <input type="text" id="orderFieldHaendler" placeholder="z.B. Reinsaat, eBay, Chili-Shop XY">
+          </label>
+          <label>Bestelldatum
+            <input type="date" id="orderFieldDatum">
+          </label>
+          <label>Preis
+            <input type="text" id="orderFieldPreis" placeholder="z.B. 3,90 €">
+          </label>
+        </div>
+
+        <label class="full-width">Notizen
+          <textarea id="orderFieldNotizen" rows="3" placeholder="z.B. Bestellnummer, Lieferzeit, Keimrate ..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="orderDeleteBtn" class="btn btn-danger">Löschen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
         </div>
       </form>
     </div>

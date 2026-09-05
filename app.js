@@ -2,9 +2,13 @@ const STORAGE_KEY = "chiliSammlung";
 const VIEW_KEY = "chiliViewMode";
 const YEAR_KEY = "chiliActiveYear";
 const SORT_KEY = "chiliSortMode";
+const APP_TAB_KEY = "chiliAppTab";
+const ORDERS_STORAGE_KEY = "chiliBestellungen";
+const ORDER_YEAR_KEY = "chiliOrderActiveYear";
 
 const YEAR_OPTIONS = ["2024", "2025", "2026", "2027"];
 const DEFAULT_YEAR = "2026";
+const ORDER_YEAR_OPTIONS = ["2020", "2022", "2023", "2024", "2025", "2026", "2027"];
 
 const STATUS_OPTIONS = [
   "Aussaat",
@@ -46,6 +50,22 @@ function saveChilis() {
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+let orders = loadOrders();
+
+function loadOrders() {
+  try {
+    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error("Konnte gespeicherte Bestellungen nicht lesen", e);
+    return [];
+  }
+}
+
+function saveOrders() {
+  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 }
 
 // --- Rendering ---
@@ -99,6 +119,41 @@ function updateBulkBar() {
 selectModeBtn.addEventListener("click", () => setSelectionMode(!selectionMode));
 bulkDoneBtn.addEventListener("click", () => setSelectionMode(false));
 
+// --- Haupt-Reiter: Sammlung / Bestellungen ---
+
+const tabSammlungBtn = document.getElementById("tabSammlungBtn");
+const tabBestellungenBtn = document.getElementById("tabBestellungenBtn");
+const sammlungFilterBar = document.getElementById("sammlungFilterBar");
+const sammlungMain = document.getElementById("sammlungMain");
+const orderFilterBar = document.getElementById("orderFilterBar");
+const ordersMain = document.getElementById("ordersMain");
+const addOrderBtn = document.getElementById("addOrderBtn");
+const sammlungHeaderActions = document.getElementById("sammlungHeaderActions");
+
+let appTab = localStorage.getItem(APP_TAB_KEY) === "bestellungen" ? "bestellungen" : "sammlung";
+
+function setAppTab(tab) {
+  appTab = tab;
+  localStorage.setItem(APP_TAB_KEY, tab);
+
+  const showSammlung = tab === "sammlung";
+  tabSammlungBtn.classList.toggle("active", showSammlung);
+  tabBestellungenBtn.classList.toggle("active", !showSammlung);
+  sammlungHeaderActions.hidden = !showSammlung;
+  sammlungFilterBar.hidden = !showSammlung;
+  sammlungMain.hidden = !showSammlung;
+  orderFilterBar.hidden = showSammlung;
+  ordersMain.hidden = showSammlung;
+  fab.hidden = !showSammlung || selectionMode;
+  addOrderBtn.hidden = showSammlung;
+
+  if (!showSammlung && selectionMode) setSelectionMode(false);
+  if (!showSammlung) renderOrders();
+}
+
+tabSammlungBtn.addEventListener("click", () => setAppTab("sammlung"));
+tabBestellungenBtn.addEventListener("click", () => setAppTab("bestellungen"));
+
 function setViewMode(mode) {
   viewMode = mode;
   localStorage.setItem(VIEW_KEY, mode);
@@ -136,6 +191,144 @@ function renderYearTabs() {
     yearTabs.appendChild(tab);
   }
 }
+
+// --- Bestellungen ---
+
+const orderYearTabs = document.getElementById("orderYearTabs");
+const ordersList = document.getElementById("ordersList");
+const ordersEmptyState = document.getElementById("ordersEmptyState");
+
+let orderActiveYear = localStorage.getItem(ORDER_YEAR_KEY) || "";
+
+function setOrderActiveYear(year) {
+  orderActiveYear = year;
+  localStorage.setItem(ORDER_YEAR_KEY, year);
+  renderOrderYearTabs();
+  renderOrders();
+}
+
+function renderOrderYearTabs() {
+  orderYearTabs.innerHTML = "";
+
+  const allTab = document.createElement("button");
+  allTab.type = "button";
+  allTab.className = "year-tab" + (orderActiveYear === "" ? " active" : "");
+  allTab.textContent = "Alle Jahre";
+  allTab.addEventListener("click", () => setOrderActiveYear(""));
+  orderYearTabs.appendChild(allTab);
+
+  for (const year of ORDER_YEAR_OPTIONS) {
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "year-tab" + (orderActiveYear === year ? " active" : "");
+    tab.textContent = year;
+    tab.addEventListener("click", () => setOrderActiveYear(year));
+    orderYearTabs.appendChild(tab);
+  }
+}
+
+function renderOrders() {
+  const filtered = orders
+    .filter((o) => !orderActiveYear || o.jahr === orderActiveYear)
+    .sort((a, b) => (b.datum || "").localeCompare(a.datum || ""));
+
+  ordersList.innerHTML = "";
+  ordersEmptyState.hidden = filtered.length > 0;
+  ordersEmptyState.querySelector("p").innerHTML =
+    orders.length === 0
+      ? 'Noch keine Bestellungen erfasst.<br>Leg mit dem <strong>+</strong>-Button los.'
+      : 'Keine Bestellungen für dieses Jahr.<br>Anderes Jahr probieren.';
+
+  for (const o of filtered) {
+    ordersList.appendChild(buildOrderRow(o));
+  }
+}
+
+function buildOrderRow(o) {
+  const row = document.createElement("div");
+  row.className = "chili-row";
+  row.addEventListener("click", () => openOrderModal(o.id));
+  row.innerHTML = `
+    <span class="row-name">${escapeHtml(o.name)}</span>
+    <div class="row-badges">
+      ${o.menge ? `<span class="badge">${escapeHtml(o.menge)}</span>` : ""}
+      ${o.haendler ? `<span class="badge">${escapeHtml(o.haendler)}</span>` : ""}
+      ${o.preis ? `<span class="badge">${escapeHtml(o.preis)}</span>` : ""}
+      <span class="badge badge-status">${escapeHtml(o.jahr)}</span>
+    </div>
+  `;
+  return row;
+}
+
+const orderModal = document.getElementById("orderModal");
+const orderForm = document.getElementById("orderForm");
+const orderDeleteBtn = document.getElementById("orderDeleteBtn");
+
+fillOptions(document.getElementById("orderFieldJahr"), ORDER_YEAR_OPTIONS);
+
+function openOrderModal(id) {
+  const order = id ? orders.find((o) => o.id === id) : null;
+
+  document.getElementById("orderId").value = order ? order.id : "";
+  document.getElementById("orderFieldJahr").value = order?.jahr || orderActiveYear || DEFAULT_YEAR;
+  document.getElementById("orderFieldName").value = order?.name || "";
+  document.getElementById("orderFieldMenge").value = order?.menge || "";
+  document.getElementById("orderFieldHaendler").value = order?.haendler || "";
+  document.getElementById("orderFieldDatum").value = order?.datum || "";
+  document.getElementById("orderFieldPreis").value = order?.preis || "";
+  document.getElementById("orderFieldNotizen").value = order?.notizen || "";
+
+  orderDeleteBtn.hidden = !order;
+  orderModal.hidden = false;
+}
+
+function closeOrderModal() {
+  orderModal.hidden = true;
+  orderForm.reset();
+}
+
+orderForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById("orderId").value || uid();
+  const data = {
+    id,
+    jahr: document.getElementById("orderFieldJahr").value,
+    name: document.getElementById("orderFieldName").value.trim(),
+    menge: document.getElementById("orderFieldMenge").value.trim(),
+    haendler: document.getElementById("orderFieldHaendler").value.trim(),
+    datum: document.getElementById("orderFieldDatum").value,
+    preis: document.getElementById("orderFieldPreis").value.trim(),
+    notizen: document.getElementById("orderFieldNotizen").value.trim(),
+  };
+
+  const existingIndex = orders.findIndex((o) => o.id === id);
+  if (existingIndex >= 0) {
+    orders[existingIndex] = data;
+  } else {
+    orders.push(data);
+  }
+
+  saveOrders();
+  closeOrderModal();
+  renderOrders();
+});
+
+orderDeleteBtn.addEventListener("click", () => {
+  const id = document.getElementById("orderId").value;
+  if (!id) return;
+  if (!confirm("Diese Bestellung wirklich löschen?")) return;
+  orders = orders.filter((o) => o.id !== id);
+  saveOrders();
+  closeOrderModal();
+  renderOrders();
+});
+
+document.getElementById("orderModalCloseBtn").addEventListener("click", closeOrderModal);
+addOrderBtn.addEventListener("click", () => openOrderModal(null));
+orderModal.addEventListener("click", (e) => {
+  if (e.target === orderModal) closeOrderModal();
+});
 
 function fillOptions(select, values) {
   for (const value of values) {
@@ -527,7 +720,8 @@ bulkForm.addEventListener("submit", (e) => {
 // --- Export / Import ---
 
 document.getElementById("exportBtn").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(chilis, null, 2)], { type: "application/json" });
+  const payload = { chilis, bestellungen: orders };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -546,11 +740,19 @@ importFile.addEventListener("change", async () => {
   try {
     const text = await file.text();
     const imported = JSON.parse(text);
-    if (!Array.isArray(imported)) throw new Error("Ungültiges Format");
-    if (chilis.length > 0 && !confirm("Vorhandene Sammlung durch Import ersetzen?")) return;
-    chilis = imported;
+
+    // Ältere Exporte waren ein reines Chili-Array ohne Bestellungen.
+    const importedChilis = Array.isArray(imported) ? imported : imported.chilis;
+    const importedOrders = Array.isArray(imported) ? [] : imported.bestellungen || [];
+    if (!Array.isArray(importedChilis)) throw new Error("Ungültiges Format");
+
+    if ((chilis.length > 0 || orders.length > 0) && !confirm("Vorhandene Daten durch Import ersetzen?")) return;
+    chilis = importedChilis;
+    orders = importedOrders;
     saveChilis();
+    saveOrders();
     render();
+    renderOrders();
   } catch (err) {
     alert("Import fehlgeschlagen: " + err.message);
   }
@@ -628,8 +830,10 @@ function setupPullToRefresh() {
 populateStatusFilter();
 populateYearSelect();
 renderYearTabs();
+renderOrderYearTabs();
 sortSelect.value = localStorage.getItem(SORT_KEY) || "nr";
 viewGridBtn.classList.toggle("active", viewMode === "grid");
 viewListBtn.classList.toggle("active", viewMode === "list");
 setupPullToRefresh();
+setAppTab(appTab);
 render();
