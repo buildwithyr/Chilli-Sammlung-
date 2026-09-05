@@ -794,6 +794,13 @@ function getFilteredOrders() {
     .sort((a, b) => (b.datum || "").localeCompare(a.datum || ""));
 }
 
+function findChiliNrForOrderName(name) {
+  const key = varietyKey(name);
+  if (!key) return "";
+  const match = chilis.find((c) => varietyKey(c.name) === key && c.nr);
+  return match?.nr || "";
+}
+
 function renderOrders() {
   const filtered = getFilteredOrders();
 
@@ -823,8 +830,10 @@ function buildOrderRow(o) {
   attachLongPress(row, () => {
     if (!orderSelectionMode) enterOrderSelectionMode(o.id);
   });
+  const nr = findChiliNrForOrderName(o.name);
   row.innerHTML = `
     ${orderSelectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
+    <span class="row-nr">${nr ? `#${escapeHtml(nr)}` : ""}</span>
     <span class="row-name">${escapeHtml(o.name)}</span>
     <div class="row-badges">
       ${o.menge ? `<span class="badge">${escapeHtml(o.menge)}</span>` : ""}
