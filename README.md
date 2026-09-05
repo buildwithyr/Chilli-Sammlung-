@@ -1,20 +1,28 @@
-# Chilli-Sammlung
+# Opa Reiters Chili Sammlung
 
 Kleine Web-App, um eine Chili-Sammlung zu verwalten: alle Pflanzen als Karten,
-mit Foto, Schärfegrad, Herkunft, Erntestand und eigenen Notizen.
+mit Foto, Schärfegrad, Herkunft, Erntestand und eigenen Notizen. Responsive
+für Handy und Desktop.
 
 ## Nutzen
 
 `index.html` im Browser öffnen (Doppelklick reicht, kein Server nötig).
 
-- **+ Neue Chili**: Karte anlegen, Foto(s) hochladen, Felder ausfüllen.
+- **+ Neue Chili** (runder Button unten rechts): Karte anlegen, Foto(s)
+  hochladen, Felder ausfüllen.
 - Auf eine Karte klicken, um Angaben zu bearbeiten oder zu löschen.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
 
+Beim allerersten Öffnen ist die Sammlung bereits mit den 58 Chilis aus dem
+„Chili 2026"-Buch vorbefüllt (`data/seed-chilis.js`), inklusive Katalog-Nummer
+und Schärfegrad. Herkunft, Fotos und Notizen fehlen noch – die trägst du
+nach und nach über die Karten nach.
+
 ## Felder pro Chili
 
-- Name, Sorte/Art, Herkunft
-- Schärfegrad (Sterne 1–5, optional Scoville-Wert)
+- Katalog-Nr., Name, Sorte/Art, Herkunft
+- Schärfegrad (eigene Sg-Skala 1–10(+) aus dem Chili-Buch, optional
+  zusätzlich ein Scoville-Wert)
 - Status (Aussaat → Ernte läuft → Saison beendet)
 - Freitext: Wie läuft die Ernte, Geschmack/Aroma, sonstige Notizen
 - Fotos (mehrere pro Pflanze)

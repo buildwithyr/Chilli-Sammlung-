@@ -14,10 +14,18 @@ const STATUS_OPTIONS = [
 let chilis = loadChilis();
 let currentPhotos = [];
 
+if (localStorage.getItem(STORAGE_KEY) === null) {
+  saveChilis();
+}
+
 function loadChilis() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw === null) {
+      // Erster Start: mit der Chili-2026-Liste vorbefüllen.
+      return typeof SEED_CHILIS !== "undefined" ? [...SEED_CHILIS] : [];
+    }
+    return JSON.parse(raw);
   } catch (e) {
     console.error("Konnte gespeicherte Daten nicht lesen", e);
     return [];
@@ -48,9 +56,11 @@ function populateStatusFilter() {
   }
 }
 
-function starEmoji(n) {
-  n = Number(n) || 0;
-  return n > 0 ? "🌶️".repeat(n) : "–";
+function sgBadge(sg) {
+  if (!sg) return "–";
+  const num = parseInt(sg, 10) || 0;
+  const peppers = Math.max(1, Math.min(5, Math.ceil(num / 2)));
+  return "🌶️".repeat(peppers) + ` Sg ${sg}`;
 }
 
 function render() {
@@ -62,7 +72,8 @@ function render() {
       !query ||
       c.name.toLowerCase().includes(query) ||
       (c.herkunft || "").toLowerCase().includes(query) ||
-      (c.sorte || "").toLowerCase().includes(query);
+      (c.sorte || "").toLowerCase().includes(query) ||
+      (c.nr || "").toLowerCase().includes(query);
     const matchesStatus = !statusQuery || c.status === statusQuery;
     return matchesQuery && matchesStatus;
   });
@@ -75,19 +86,29 @@ function render() {
     card.className = "chili-card";
     card.addEventListener("click", () => openModal(c.id));
 
+    const photoWrap = document.createElement("div");
+    photoWrap.className = "card-photo-wrap";
+
     const photo = c.fotos && c.fotos[0];
     if (photo) {
       const img = document.createElement("img");
       img.className = "card-photo";
       img.src = photo;
       img.alt = c.name;
-      card.appendChild(img);
+      photoWrap.appendChild(img);
     } else {
       const placeholder = document.createElement("div");
       placeholder.className = "card-photo-placeholder";
       placeholder.textContent = "🌶️";
-      card.appendChild(placeholder);
+      photoWrap.appendChild(placeholder);
     }
+    if (c.nr) {
+      const nrBadge = document.createElement("span");
+      nrBadge.className = "card-nr";
+      nrBadge.textContent = `#${c.nr}`;
+      photoWrap.appendChild(nrBadge);
+    }
+    card.appendChild(photoWrap);
 
     const body = document.createElement("div");
     body.className = "card-body";
@@ -95,7 +116,7 @@ function render() {
       <h3>${escapeHtml(c.name)}</h3>
       <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
       <div class="card-badges">
-        <span class="badge">${starEmoji(c.sterne)}</span>
+        <span class="badge">${sgBadge(c.sg)}</span>
         <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
       </div>
     `;
@@ -124,10 +145,11 @@ function openModal(id) {
   const chili = id ? chilis.find((c) => c.id === id) : null;
 
   document.getElementById("chiliId").value = chili ? chili.id : "";
+  document.getElementById("fieldNr").value = chili?.nr || "";
   document.getElementById("fieldName").value = chili?.name || "";
   document.getElementById("fieldSorte").value = chili?.sorte || "";
   document.getElementById("fieldHerkunft").value = chili?.herkunft || "";
-  document.getElementById("fieldSterne").value = chili?.sterne || 0;
+  document.getElementById("fieldSg").value = chili?.sg || "";
   document.getElementById("fieldScoville").value = chili?.scoville || "";
   document.getElementById("fieldStatus").value = chili?.status || "Aussaat";
   document.getElementById("fieldPflanzdatum").value = chili?.pflanzdatum || "";
@@ -205,10 +227,11 @@ form.addEventListener("submit", (e) => {
   const id = document.getElementById("chiliId").value || uid();
   const data = {
     id,
+    nr: document.getElementById("fieldNr").value.trim(),
     name: document.getElementById("fieldName").value.trim(),
     sorte: document.getElementById("fieldSorte").value.trim(),
     herkunft: document.getElementById("fieldHerkunft").value.trim(),
-    sterne: Number(document.getElementById("fieldSterne").value),
+    sg: document.getElementById("fieldSg").value.trim(),
     scoville: document.getElementById("fieldScoville").value.trim(),
     status: document.getElementById("fieldStatus").value,
     pflanzdatum: document.getElementById("fieldPflanzdatum").value,

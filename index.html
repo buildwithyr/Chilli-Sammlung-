@@ -9,18 +9,20 @@
 </head>
 <body>
   <header class="app-header">
-    <div class="brand">
-      <span class="brand-icon">🌶️</span>
-      <div>
-        <h1>Opa Reiters Chili Sammlung</h1>
-        <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+    <div class="header-overlay">
+      <div class="brand">
+        <span class="brand-icon">🌶️</span>
+        <div>
+          <h1>Opa Reiters Chili Sammlung</h1>
+          <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+        </div>
       </div>
-    </div>
-    <div class="header-actions">
-      <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
-      <select id="statusFilter">
-        <option value="">Alle Status</option>
-      </select>
+      <div class="header-actions">
+        <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
+        <select id="statusFilter">
+          <option value="">Alle Status</option>
+        </select>
+      </div>
     </div>
   </header>
 
@@ -60,6 +62,9 @@
         </div>
 
         <div class="form-grid">
+          <label>Katalog-Nr.
+            <input type="text" id="fieldNr" placeholder="z.B. 51">
+          </label>
           <label>Name
             <input type="text" id="fieldName" required placeholder="z.B. Carolina Reaper">
           </label>
@@ -69,15 +74,8 @@
           <label>Herkunft
             <input type="text" id="fieldHerkunft" placeholder="z.B. Samen von XY, USA">
           </label>
-          <label>Schärfegrad (Sterne 1–5)
-            <select id="fieldSterne">
-              <option value="0">–</option>
-              <option value="1">🌶️ (mild)</option>
-              <option value="2">🌶️🌶️</option>
-              <option value="3">🌶️🌶️🌶️</option>
-              <option value="4">🌶️🌶️🌶️🌶️</option>
-              <option value="5">🌶️🌶️🌶️🌶️🌶️ (extrem)</option>
-            </select>
+          <label>Schärfegrad (Sg-Skala 1–10)
+            <input type="text" id="fieldSg" placeholder="z.B. 6 oder 10+">
           </label>
           <label>Schärfegrad in Scoville (optional)
             <input type="text" id="fieldScoville" placeholder="z.B. 1.500.000–2.200.000">
@@ -122,6 +120,7 @@
     </div>
   </div>
 
+  <script src="data/seed-chilis.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
