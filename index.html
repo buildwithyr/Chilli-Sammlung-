@@ -216,7 +216,21 @@
       <div class="modal-header">
         <button type="button" class="modal-back-btn" id="modalCloseBtn">‹ Zurück</button>
         <h2 class="modal-title" id="chiliModalTitle">Chili bearbeiten</h2>
+        <button type="button" id="qrPrintBtn" class="btn btn-secondary qr-print-trigger" title="QR-Code zum Ausdrucken erzeugen (z.B. für ein Topf-Etikett)">🏷️ QR-Code</button>
       </div>
+
+      <div id="qrPreviewPanel" class="qr-preview-panel" hidden>
+        <div id="qrPrintArea" class="qr-print-area">
+          <div id="qrCodeCanvas" class="qr-code-canvas"></div>
+          <div id="qrPrintName" class="qr-print-name"></div>
+          <div id="qrPrintNr" class="qr-print-nr"></div>
+        </div>
+        <div class="qr-preview-actions">
+          <button type="button" id="qrDoPrintBtn" class="btn btn-primary">Drucken</button>
+          <button type="button" id="qrClosePreviewBtn" class="btn btn-secondary">Schließen</button>
+        </div>
+      </div>
+
       <form id="chiliForm">
         <input type="hidden" id="chiliId">
 
@@ -433,6 +447,7 @@
   <script src="vendor/supabase.js"></script>
   <script src="vendor/chart.umd.min.js"></script>
   <script src="vendor/tesseract.min.js"></script>
+  <script src="vendor/qrcode.min.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

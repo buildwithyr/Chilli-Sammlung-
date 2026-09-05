@@ -1181,6 +1181,89 @@ main {
   margin-top: 8px;
 }
 
+/* --- QR-Code fürs Topf-Etikett (nur Desktop) --- */
+/* Am Handy fotografiert/gepflegt man die Sammlung meist direkt, gedruckt
+   wird typischerweise vom Rechner aus - deshalb bleibt der Button unterhalb
+   von 900px ausgeblendet statt den ohnehin knappen mobilen Modal-Header
+   zusätzlich zu belegen. */
+.qr-print-trigger {
+  display: none;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+@media (min-width: 900px) {
+  .qr-print-trigger {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+.qr-preview-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-badge);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.qr-preview-panel[hidden] {
+  display: none;
+}
+
+.qr-print-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.qr-code-canvas svg {
+  display: block;
+}
+
+.qr-print-name {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.qr-print-nr {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.qr-preview-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Beim Drucken: alles ausblenden außer dem Etikett selbst, damit nicht die
+   ganze App-Seite mitgedruckt wird. */
+@media print {
+  body.qr-print-mode * {
+    visibility: hidden;
+  }
+  body.qr-print-mode .qr-print-area,
+  body.qr-print-mode .qr-print-area * {
+    visibility: visible;
+  }
+  body.qr-print-mode .qr-print-area {
+    display: flex !important;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: fit-content;
+  }
+}
+
 /* --- Mehrfachauswahl / Sammel-Bearbeiten --- */
 
 .bulk-bar {

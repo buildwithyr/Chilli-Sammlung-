@@ -1542,7 +1542,60 @@ function closeModal() {
   ocrStatus.hidden = true;
   ocrRawText.value = "";
   ocrSuggestions.innerHTML = "";
+  qrPreviewPanel.hidden = true;
 }
+
+// --- QR-Code fürs Topf-Etikett (Desktop) ---
+// Kodiert einen Link zurück auf genau diese Chili (?chili=<id>), damit man
+// nach dem Scannen direkt in den Details landet statt nur auf der Startseite.
+
+const qrPrintBtn = document.getElementById("qrPrintBtn");
+const qrPreviewPanel = document.getElementById("qrPreviewPanel");
+const qrCodeCanvas = document.getElementById("qrCodeCanvas");
+const qrPrintName = document.getElementById("qrPrintName");
+const qrPrintNr = document.getElementById("qrPrintNr");
+const qrDoPrintBtn = document.getElementById("qrDoPrintBtn");
+const qrClosePreviewBtn = document.getElementById("qrClosePreviewBtn");
+
+function chiliDeepLink(id) {
+  const url = new URL(location.href);
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("chili", id);
+  return url.toString();
+}
+
+qrPrintBtn.addEventListener("click", () => {
+  const id = document.getElementById("chiliId").value;
+  if (!id || !chilis.some((c) => c.id === id)) {
+    alert("Bitte diese Chili zuerst speichern - danach hat sie eine feste Adresse für den QR-Code.");
+    return;
+  }
+  const name = document.getElementById("fieldName").value.trim() || "Chili";
+  const nr = document.getElementById("fieldNr").value.trim();
+
+  const qr = qrcode(0, "M");
+  qr.addData(chiliDeepLink(id));
+  qr.make();
+  qrCodeCanvas.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2 });
+  qrPrintName.textContent = name;
+  qrPrintNr.textContent = nr ? `Katalog-Nr. ${nr}` : "";
+
+  qrPreviewPanel.hidden = false;
+});
+
+qrClosePreviewBtn.addEventListener("click", () => {
+  qrPreviewPanel.hidden = true;
+});
+
+qrDoPrintBtn.addEventListener("click", () => {
+  document.body.classList.add("qr-print-mode");
+  window.print();
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("qr-print-mode");
+});
 
 function renderPhotoPreview() {
   photoGallery.innerHTML = "";
@@ -2259,4 +2312,12 @@ function setupPullToRefresh() {
 
   setAppTab(appTab);
   render();
+
+  // Deep-Link vom QR-Code-Etikett (?chili=<id>): direkt die Details öffnen
+  // statt nur die Startseite zu zeigen.
+  const deepLinkId = new URL(location.href).searchParams.get("chili");
+  if (deepLinkId && chilis.some((c) => c.id === deepLinkId)) {
+    setAppTab("sammlung");
+    openModal(deepLinkId);
+  }
 })();
