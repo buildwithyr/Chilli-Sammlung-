@@ -14,8 +14,12 @@
   --radius: 14px;
 }
 
+/* Dunkelmodus: greift automatisch nach Systemeinstellung, wenn der Umschalter
+   im Header noch keine explizite Wahl gespeichert hat (kein [data-theme]);
+   :root[data-theme="dark"] erzwingt Dunkel unabhängig vom System, sobald
+   jemand das per Klick gewählt hat. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-bg: #1a120d;
     --color-surface: #261c16;
     --color-text: #f3e6da;
@@ -30,50 +34,85 @@
   }
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #1a120d;
+  --color-surface: #261c16;
+  --color-text: #f3e6da;
+  --color-muted: #c2a692;
+  --color-border: #3d2c22;
+  --color-primary: #e2622a;
+  --color-primary-dark: #ff7a3d;
+  --color-accent: #7fb86a;
+  --color-badge: #392920;
+  --header-grad-start: #7a2410;
+  --header-grad-end: #b5540f;
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: transparent;
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Foto als durchgehender Seitenhintergrund. Ein fixiertes Element statt
-   background-attachment:fixed auf body, weil iOS Safari letzteres beim
-   Scrollen ignoriert. */
-.bg-photo {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(35,14,6,0.55), rgba(35,14,6,0.72)),
-    url("assets/hero.jpg") center 30% / cover no-repeat;
-  background-color: var(--header-grad-end);
+/* --- Fixierte Kopfleiste: Header + Haupt-Reiter + Jahres-Leiste als EINE
+   zusammenhängende, abgerundete Glas-Einheit über dem Chili-Foto. Das
+   Foto ist nur noch hier sichtbar (nicht mehr als Seitenhintergrund) -
+   der Rest der Seite bekommt eine ruhige, einfarbige Fläche (--color-bg).
+   Ein einziger position:sticky-Container statt drei einzelner sorgt auch
+   dafür, dass keine Höhen mehr per JS aufsummiert werden müssen. */
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  overflow: hidden;
+  border-radius: 0 0 26px 26px;
+  box-shadow: 0 10px 24px -10px rgba(20,8,4,0.45);
+  color: #fff;
 }
 
-/* Auf breiten Bildschirmen bräuchte ein Hochkant-Foto als reines
-   background-size:cover einen extremen Ausschnitt (wirkt "reingezoomt").
-   Deshalb zeigt .bg-photo-crisp das Foto ab Desktop-Breite unbeschnitten
-   (Höhe = 100%), während .bg-photo im Hintergrund weich verwischt als
-   randfüllende Farbe dient statt eines harten Farbblocks.
-   Auf dem Handy bleibt .bg-photo alleine aktiv (Hochformat passt zum Foto). */
-.bg-photo-crisp {
-  display: none;
+.top-bar-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(30,12,5,0.3), rgba(30,12,5,0.55)),
+    url("assets/hero.jpg") center 28% / cover no-repeat;
 }
+
+/* Durchsichtiges Glas über dem Foto - das eigentliche "Frosted Glass" der
+   Einheit; Header/Reiter/Jahres-Leiste selbst bleiben transparent und
+   liegen als Inhalt einfach darüber. */
+.top-bar-glass {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(25,10,5,0.22);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.top-bar > .app-header,
+.top-bar > .main-tabs,
+.top-bar > .year-tabs-bar {
+  position: relative;
+}
+
+/* Header immer über den Reitern darunter, damit das Menü-Dropdown (das über
+   den Header hinaus in die main-tabs-Zeile ragt) nicht von ihnen verdeckt
+   und deren Klicks nicht durch das Dropdown hindurch abgefangen werden. */
+.top-bar > .app-header { z-index: 4; }
+.top-bar > .main-tabs { z-index: 3; }
+.top-bar > .year-tabs-bar { z-index: 2; }
 
 /* --- Header --- */
 
 .app-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: linear-gradient(120deg, rgba(148,40,10,0.55), rgba(198,88,20,0.45));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
 }
 
 .header-overlay {
@@ -121,6 +160,74 @@ body {
   display: none;
 }
 
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.icon-btn:hover {
+  background: rgba(255,255,255,0.28);
+}
+.icon-btn.active {
+  background: #fff;
+  color: var(--color-primary);
+}
+
+.menu-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+  z-index: 30;
+}
+
+.menu-dropdown[hidden] {
+  display: none;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background: var(--color-badge);
+}
+
 input, select, textarea, button {
   font-family: inherit;
   font-size: 0.95rem;
@@ -136,8 +243,10 @@ input[type="search"], select, input[type="text"], input[type="date"], textarea {
 
 .header-actions input[type="search"],
 .header-actions select {
-  border: 1px solid rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   color: #fff;
 }
 .header-actions input[type="search"]::placeholder { color: rgba(255,255,255,0.75); }
@@ -145,19 +254,22 @@ input[type="search"], select, input[type="text"], input[type="date"], textarea {
 
 .view-toggle {
   display: flex;
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: 10px;
   overflow: hidden;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .view-btn {
   border: none;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.16);
   color: #fff;
   padding: 9px 12px;
   cursor: pointer;
   font-size: 1rem;
   line-height: 1;
+  transition: background 0.15s ease;
 }
 
 .view-btn.active {
@@ -220,39 +332,35 @@ textarea { resize: vertical; }
 .main-tabs {
   display: flex;
   gap: 6px;
+}
+
+.main-tabs-inner {
+  display: flex;
+  gap: 6px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 24px 0;
+  padding: 6px 24px 14px;
+  width: 100%;
 }
 
 .main-tab {
-  border: none;
-  background: rgba(255,255,255,0.5);
-  color: var(--color-text);
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
   padding: 10px 20px;
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-}
-
-@media (prefers-color-scheme: dark) {
-  .main-tab { background: rgba(38,28,22,0.6); }
+  transition: background 0.15s ease;
 }
 
 .main-tab.active {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.year-tabs-bar {
-  position: sticky;
-  top: var(--header-height, 76px);
-  z-index: 9;
-  background: linear-gradient(120deg, rgba(148,40,10,0.85), rgba(198,88,20,0.8));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-primary);
 }
 
 .year-tabs-bar[hidden] {
@@ -266,7 +374,7 @@ textarea { resize: vertical; }
   gap: 10px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 12px 24px;
+  padding: 6px 24px 18px;
 }
 
 .year-tabs {
@@ -276,38 +384,44 @@ textarea { resize: vertical; }
 }
 
 .year-tab {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
   padding: 7px 16px;
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .year-tab.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-primary);
 }
 
 .select-toggle-btn {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
   padding: 7px 16px;
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.15s ease;
 }
 
 .select-toggle-btn.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-primary);
 }
 
 main {
@@ -535,8 +649,9 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
-  .app-footer { background: rgba(38,28,22,0.85); }
+  :root:not([data-theme="light"]) .app-footer { background: rgba(38,28,22,0.85); }
 }
+:root[data-theme="dark"] .app-footer { background: rgba(38,28,22,0.85); }
 
 .footer-hint {
   color: var(--color-muted);
@@ -686,6 +801,41 @@ main {
   margin-bottom: 12px;
 }
 
+.sg-scale {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sg-scale-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.35;
+  filter: grayscale(1);
+  transition: opacity 0.1s ease, filter 0.1s ease;
+}
+
+.sg-scale-btn:hover {
+  opacity: 0.7;
+}
+
+.sg-scale-btn.filled {
+  opacity: 1;
+  filter: none;
+}
+
+.sg-scale-label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
 .modal-actions {
   display: flex;
   justify-content: space-between;
@@ -765,28 +915,6 @@ main {
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 }
 
-/* Ab hier (jedes Fenster, das nicht die schmale Handy-Ansicht ist) das
-   Hochkant-Foto unbeschnitten zeigen statt hart reingezoomt - siehe
-   .bg-photo-crisp weiter unten. Ein eigener Breakpoint statt an die
-   900px-Layout-Anpassungen gekoppelt, damit es keine "tote Zone" zwischen
-   641px und 899px gibt, in der noch der alte harte Zoom greift. */
-@media (min-width: 641px) {
-  .bg-photo {
-    filter: blur(28px) brightness(0.85);
-    transform: scale(1.15);
-  }
-
-  .bg-photo-crisp {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background:
-      linear-gradient(180deg, rgba(35,14,6,0.4), rgba(35,14,6,0.6)),
-      url("assets/hero.jpg") center 30% / auto 100% no-repeat;
-  }
-}
-
 /* --- Mobile --- */
 
 @media (max-width: 640px) {
@@ -807,16 +935,25 @@ main {
   }
 
   main { padding: 16px; padding-bottom: 100px; }
-  .main-tabs { padding: 12px 16px 0; }
+  .main-tabs-inner {
+    padding: 10px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .main-tabs-inner::-webkit-scrollbar { display: none; }
+  .main-tab { flex-shrink: 0; padding: 8px 14px; font-size: 0.85rem; }
 
-  .year-tabs-bar { top: var(--header-height, 118px); }
+  /* "Mehrere auswählen" bekommt eine eigene Zeile unter der wischbaren
+     Jahres-Leiste statt daneben zu stehen - auf schmalen Screens sonst
+     Überlappungsgefahr mit den Jahren. */
   .year-tabs-inner {
     padding: 10px 16px;
-    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
   .year-tabs {
-    flex: 1;
-    min-width: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -830,7 +967,8 @@ main {
     flex-shrink: 0;
   }
   .year-tabs-inner .select-toggle-btn {
-    flex-shrink: 0;
+    width: 100%;
+    text-align: center;
   }
 
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
@@ -927,4 +1065,75 @@ main {
 @keyframes pull-spin {
   from { transform: translateY(70px) rotate(0deg); }
   to { transform: translateY(70px) rotate(360deg); }
+}
+
+/* --- Footer-Copyright / Info-Modal --- */
+
+.footer-copyright {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+#infoModal p {
+  line-height: 1.6;
+}
+#infoModal .footer-copyright {
+  margin-left: 0;
+  margin-top: 20px;
+}
+
+/* --- Statistik --- */
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-tile {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-tile-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  overflow-wrap: break-word;
+}
+
+.stat-tile-label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.stats-chart-card {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+.stats-chart-title {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+}
+
+.stats-chart-wrap {
+  position: relative;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .stat-tiles { grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-tile { padding: 14px; flex-direction: row; align-items: center; justify-content: space-between; text-align: left; }
 }

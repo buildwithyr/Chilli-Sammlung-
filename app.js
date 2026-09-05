@@ -28,6 +28,40 @@ const STATUS_OPTIONS = [
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const FOTOS_BUCKET = "chili-fotos";
 
+// --- Hell-/Dunkelmodus ---
+// Ohne gespeicherte Wahl folgt die App der Systemeinstellung (siehe CSS
+// data-theme-Muster); eine explizite Wahl über den Umschalter überschreibt das.
+
+const THEME_KEY = "chiliTheme";
+
+function getEffectiveTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+function initTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  applyTheme(stored === "light" || stored === "dark" ? stored : null);
+}
+
+function toggleTheme() {
+  const next = getEffectiveTheme() === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+  if (appTab === "statistik") renderStats();
+}
+
+initTheme();
+
 let chilis = [];
 let orders = [];
 let currentPhotos = [];
@@ -285,8 +319,59 @@ const bulkBar = document.getElementById("bulkBar");
 const bulkCount = document.getElementById("bulkCount");
 const bulkEditBtn = document.getElementById("bulkEditBtn");
 const bulkExportCsvBtn = document.getElementById("bulkExportCsvBtn");
+const bulkSelectAllBtn = document.getElementById("bulkSelectAllBtn");
 const bulkDoneBtn = document.getElementById("bulkDoneBtn");
 const fab = document.getElementById("addChiliBtn");
+
+// --- Menü (⋮): Hell/Dunkel, Statistik, Info - statt einzeln sichtbarer
+// Icons im Header sitzt das gebündelt in einem Dropdown.
+
+const menuBtn = document.getElementById("menuBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+const menuThemeBtn = document.getElementById("menuThemeBtn");
+const menuThemeLabel = document.getElementById("menuThemeLabel");
+const menuStatsBtn = document.getElementById("menuStatsBtn");
+const menuInfoBtn = document.getElementById("menuInfoBtn");
+
+function openMenu() {
+  menuThemeLabel.textContent = getEffectiveTheme() === "dark" ? "Hellmodus" : "Dunkelmodus";
+  menuDropdown.hidden = false;
+  menuBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeMenu() {
+  menuDropdown.hidden = true;
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+
+menuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (menuDropdown.hidden) openMenu(); else closeMenu();
+});
+document.addEventListener("click", (e) => {
+  if (!menuDropdown.hidden && !e.target.closest(".menu-wrap")) closeMenu();
+});
+menuThemeBtn.addEventListener("click", () => {
+  toggleTheme();
+  closeMenu();
+});
+menuStatsBtn.addEventListener("click", () => {
+  setAppTab("statistik");
+  closeMenu();
+});
+
+const infoModal = document.getElementById("infoModal");
+const infoModalCloseBtn = document.getElementById("infoModalCloseBtn");
+menuInfoBtn.addEventListener("click", () => {
+  infoModal.hidden = false;
+  closeMenu();
+});
+infoModalCloseBtn.addEventListener("click", () => {
+  infoModal.hidden = true;
+});
+infoModal.addEventListener("click", (e) => {
+  if (e.target === infoModal) infoModal.hidden = true;
+});
 
 let viewMode = localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
 let activeYear = localStorage.getItem(YEAR_KEY) || "";
@@ -322,6 +407,17 @@ function updateBulkBar() {
 
 selectModeBtn.addEventListener("click", () => setSelectionMode(!selectionMode));
 bulkDoneBtn.addEventListener("click", () => setSelectionMode(false));
+bulkSelectAllBtn.addEventListener("click", () => {
+  const filtered = getFilteredChilis();
+  const allSelected = filtered.length > 0 && filtered.every((c) => selectedIds.has(c.id));
+  if (allSelected) {
+    selectedIds.clear();
+  } else {
+    for (const c of filtered) selectedIds.add(c.id);
+  }
+  updateBulkBar();
+  render();
+});
 
 // --- Haupt-Reiter: Sammlung / Bestellungen ---
 
@@ -331,30 +427,40 @@ const sammlungFilterBar = document.getElementById("sammlungFilterBar");
 const sammlungMain = document.getElementById("sammlungMain");
 const orderFilterBar = document.getElementById("orderFilterBar");
 const ordersMain = document.getElementById("ordersMain");
+const statsMain = document.getElementById("statsMain");
 const addOrderBtn = document.getElementById("addOrderBtn");
 const sammlungHeaderActions = document.getElementById("sammlungHeaderActions");
 const orderHeaderActions = document.getElementById("orderHeaderActions");
 
-let appTab = localStorage.getItem(APP_TAB_KEY) === "bestellungen" ? "bestellungen" : "sammlung";
+const APP_TABS = ["sammlung", "bestellungen", "statistik"];
+let appTab = APP_TABS.includes(localStorage.getItem(APP_TAB_KEY)) ? localStorage.getItem(APP_TAB_KEY) : "sammlung";
 
 function setAppTab(tab) {
   appTab = tab;
   localStorage.setItem(APP_TAB_KEY, tab);
 
   const showSammlung = tab === "sammlung";
+  const showBestellungen = tab === "bestellungen";
+  const showStatistik = tab === "statistik";
+
   tabSammlungBtn.classList.toggle("active", showSammlung);
-  tabBestellungenBtn.classList.toggle("active", !showSammlung);
+  tabBestellungenBtn.classList.toggle("active", showBestellungen);
+  menuBtn.classList.toggle("active", showStatistik);
+
   sammlungHeaderActions.hidden = !showSammlung;
-  orderHeaderActions.hidden = showSammlung;
+  orderHeaderActions.hidden = !showBestellungen;
   sammlungFilterBar.hidden = !showSammlung;
   sammlungMain.hidden = !showSammlung;
-  orderFilterBar.hidden = showSammlung;
-  ordersMain.hidden = showSammlung;
+  orderFilterBar.hidden = !showBestellungen;
+  ordersMain.hidden = !showBestellungen;
+  statsMain.hidden = !showStatistik;
   fab.hidden = !showSammlung || selectionMode;
-  addOrderBtn.hidden = showSammlung;
+  addOrderBtn.hidden = !showBestellungen || orderSelectionMode;
 
   if (!showSammlung && selectionMode) setSelectionMode(false);
-  if (!showSammlung) renderOrders();
+  if (!showBestellungen && orderSelectionMode) setOrderSelectionMode(false);
+  if (showBestellungen) renderOrders();
+  if (showStatistik) renderStats();
 }
 
 tabSammlungBtn.addEventListener("click", () => setAppTab("sammlung"));
@@ -404,8 +510,68 @@ const orderYearTabs = document.getElementById("orderYearTabs");
 const ordersList = document.getElementById("ordersList");
 const ordersEmptyState = document.getElementById("ordersEmptyState");
 const orderSearchInput = document.getElementById("orderSearchInput");
+const haendlerOptions = document.getElementById("haendlerOptions");
 
 orderSearchInput.addEventListener("input", renderOrders);
+
+function populateHaendlerOptions() {
+  const names = [...new Set(orders.map((o) => (o.haendler || "").trim()).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, "de")
+  );
+  haendlerOptions.innerHTML = names.map((name) => `<option value="${escapeHtml(name)}"></option>`).join("");
+}
+
+// --- Bestellungen: Mehrfachauswahl + CSV-Export (spiegelt die Sammlung) ---
+
+const orderSelectModeBtn = document.getElementById("orderSelectModeBtn");
+const orderBulkBar = document.getElementById("orderBulkBar");
+const orderBulkCount = document.getElementById("orderBulkCount");
+const orderBulkSelectAllBtn = document.getElementById("orderBulkSelectAllBtn");
+const orderBulkExportCsvBtn = document.getElementById("orderBulkExportCsvBtn");
+const orderBulkDoneBtn = document.getElementById("orderBulkDoneBtn");
+
+let orderSelectionMode = false;
+let orderSelectedIds = new Set();
+
+function setOrderSelectionMode(on) {
+  orderSelectionMode = on;
+  if (!on) orderSelectedIds.clear();
+  orderSelectModeBtn.classList.toggle("active", on);
+  orderSelectModeBtn.textContent = on ? "Auswahl beenden" : "Mehrere auswählen";
+  addOrderBtn.hidden = on || appTab !== "bestellungen";
+  updateOrderBulkBar();
+  renderOrders();
+}
+
+function toggleOrderSelected(id) {
+  if (orderSelectedIds.has(id)) {
+    orderSelectedIds.delete(id);
+  } else {
+    orderSelectedIds.add(id);
+  }
+  updateOrderBulkBar();
+  renderOrders();
+}
+
+function updateOrderBulkBar() {
+  orderBulkBar.hidden = !orderSelectionMode;
+  orderBulkCount.textContent = `${orderSelectedIds.size} ausgewählt`;
+  orderBulkExportCsvBtn.disabled = orderSelectedIds.size === 0;
+}
+
+orderSelectModeBtn.addEventListener("click", () => setOrderSelectionMode(!orderSelectionMode));
+orderBulkDoneBtn.addEventListener("click", () => setOrderSelectionMode(false));
+orderBulkSelectAllBtn.addEventListener("click", () => {
+  const filtered = getFilteredOrders();
+  const allSelected = filtered.length > 0 && filtered.every((o) => orderSelectedIds.has(o.id));
+  if (allSelected) {
+    orderSelectedIds.clear();
+  } else {
+    for (const o of filtered) orderSelectedIds.add(o.id);
+  }
+  updateOrderBulkBar();
+  renderOrders();
+});
 
 let orderActiveYear = localStorage.getItem(ORDER_YEAR_KEY) || "";
 
@@ -436,10 +602,10 @@ function renderOrderYearTabs() {
   }
 }
 
-function renderOrders() {
+function getFilteredOrders() {
   const query = orderSearchInput.value.trim().toLowerCase();
 
-  const filtered = orders
+  return orders
     .filter((o) => {
       const matchesYear = !orderActiveYear || o.jahr === orderActiveYear;
       const matchesQuery =
@@ -449,6 +615,10 @@ function renderOrders() {
       return matchesYear && matchesQuery;
     })
     .sort((a, b) => (b.datum || "").localeCompare(a.datum || ""));
+}
+
+function renderOrders() {
+  const filtered = getFilteredOrders();
 
   ordersList.innerHTML = "";
   ordersEmptyState.hidden = filtered.length > 0;
@@ -463,10 +633,18 @@ function renderOrders() {
 }
 
 function buildOrderRow(o) {
+  const isSelected = orderSelectedIds.has(o.id);
   const row = document.createElement("div");
-  row.className = "chili-row";
-  row.addEventListener("click", () => openOrderModal(o.id));
+  row.className = "chili-row" + (isSelected ? " selected" : "");
+  row.addEventListener("click", () => {
+    if (orderSelectionMode) {
+      toggleOrderSelected(o.id);
+    } else {
+      openOrderModal(o.id);
+    }
+  });
   row.innerHTML = `
+    ${orderSelectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
     <span class="row-name">${escapeHtml(o.name)}</span>
     <div class="row-badges">
       ${o.menge ? `<span class="badge">${escapeHtml(o.menge)}</span>` : ""}
@@ -498,6 +676,7 @@ function openOrderModal(id) {
 
   document.getElementById("orderModalTitle").textContent = order ? "Bestellung bearbeiten" : "Neue Bestellung";
   orderDeleteBtn.hidden = !order;
+  populateHaendlerOptions();
   orderModal.hidden = false;
 }
 
@@ -597,17 +776,23 @@ function sortChilis(list) {
     case "name":
       sorted.sort((a, b) => a.name.localeCompare(b.name, "de"));
       break;
+    case "sorte":
+      sorted.sort((a, b) => (a.sorte || "").localeCompare(b.sorte || "", "de"));
+      break;
+    case "created-desc":
+      sorted.sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""));
+      break;
     default:
       sorted.sort((a, b) => (parseInt(a.nr, 10) || 0) - (parseInt(b.nr, 10) || 0));
   }
   return sorted;
 }
 
-function render() {
+function getFilteredChilis() {
   const query = searchInput.value.trim().toLowerCase();
   const statusQuery = statusFilter.value;
 
-  const filtered = chilis.filter((c) => {
+  return chilis.filter((c) => {
     const matchesQuery =
       !query ||
       c.name.toLowerCase().includes(query) ||
@@ -618,6 +803,10 @@ function render() {
     const matchesYear = !activeYear || c.jahr === activeYear;
     return matchesQuery && matchesStatus && matchesYear;
   });
+}
+
+function render() {
+  const filtered = getFilteredChilis();
   const sorted = sortChilis(filtered);
 
   grid.innerHTML = "";
@@ -730,6 +919,31 @@ const photoPreview = document.getElementById("photoPreview");
 const photoPlaceholder = document.getElementById("photoPlaceholder");
 const photoThumbs = document.getElementById("photoThumbs");
 
+// --- Schärfegrad: anklickbare 1-10-Skala statt Freitext ---
+// fieldSg bleibt ein normales (jetzt verstecktes) Input, damit Speichern/
+// Laden unverändert bleibt - nur die Bedienung ist jetzt eine Chili-Reihe.
+
+const sgScale = document.getElementById("sgScale");
+const sgScaleLabel = document.getElementById("sgScaleLabel");
+const fieldSg = document.getElementById("fieldSg");
+
+function setSgScale(value) {
+  const num = parseInt(value, 10) || 0;
+  fieldSg.value = num > 0 ? String(num) : "";
+  sgScaleLabel.textContent = num > 0 ? `Sg ${num}` : "Kein Wert gewählt";
+  sgScale.querySelectorAll(".sg-scale-btn").forEach((btn) => {
+    btn.classList.toggle("filled", parseInt(btn.dataset.value, 10) <= num);
+  });
+}
+
+sgScale.addEventListener("click", (e) => {
+  const btn = e.target.closest(".sg-scale-btn");
+  if (!btn) return;
+  const clicked = parseInt(btn.dataset.value, 10);
+  const current = parseInt(fieldSg.value, 10) || 0;
+  setSgScale(clicked === current ? 0 : clicked);
+});
+
 function openModal(id) {
   const chili = id ? chilis.find((c) => c.id === id) : null;
 
@@ -741,7 +955,7 @@ function openModal(id) {
   document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
   document.getElementById("fieldSorte").value = chili?.sorte || "";
   document.getElementById("fieldHerkunft").value = chili?.herkunft || "";
-  document.getElementById("fieldSg").value = chili?.sg || "";
+  setSgScale(chili?.sg || "");
   document.getElementById("fieldScoville").value = chili?.scoville || "";
   document.getElementById("fieldStatus").value = chili?.status || "Aussaat";
   document.getElementById("fieldPflanzdatum").value = chili?.pflanzdatum || "";
@@ -1014,6 +1228,38 @@ bulkExportCsvBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+// --- CSV-Export der Bestellungs-Auswahl ---
+
+const ORDER_CSV_COLUMNS = [
+  ["jahr", "Jahr"],
+  ["name", "Chili/Sorte"],
+  ["menge", "Menge"],
+  ["haendler", "Bestellung von"],
+  ["datum", "Bestelldatum"],
+  ["preis", "Preis"],
+  ["notizen", "Notizen"],
+];
+
+function ordersToCsv(list) {
+  const header = ORDER_CSV_COLUMNS.map(([, label]) => csvEscape(label)).join(";");
+  const rows = list.map((o) => ORDER_CSV_COLUMNS.map(([key]) => csvEscape(o[key])).join(";"));
+  return "﻿" + [header, ...rows].join("\r\n");
+}
+
+orderBulkExportCsvBtn.addEventListener("click", () => {
+  const selected = orders.filter((o) => orderSelectedIds.has(o.id));
+  if (selected.length === 0) return;
+
+  const csv = ordersToCsv(selected);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bestellungen-auswahl-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
 // --- Export / Import ---
 
 document.getElementById("exportBtn").addEventListener("click", () => {
@@ -1083,19 +1329,74 @@ importFile.addEventListener("change", async () => {
   importFile.value = "";
 });
 
-// --- Fixe Höhe des Headers als CSS-Variable ---
-// Die Jahres-Leiste soll direkt unter dem (fixierten) Header andocken.
-// Die Header-Höhe schwankt (Notch-Sicherheitsabstand, Zeilenumbruch bei
-// schmalen Fenstern), deshalb wird sie hier gemessen statt fest verdrahtet.
+// --- Statistik ---
+// Zählt bei jedem Aufruf frisch aus den geladenen Chilis (kein eigener
+// Supabase-Query nötig, chilis ist ohnehin die aktuelle Quelle), gruppiert
+// nach Sorte - fehlt die Sorte, wird der Name verwendet, damit auch
+// unvollständig gepflegte Einträge sinnvoll auftauchen.
 
-function updateHeaderHeightVar() {
-  const header = document.querySelector(".app-header");
-  if (!header) return;
-  document.documentElement.style.setProperty("--header-height", `${header.offsetHeight}px`);
+let sortenChartInstance = null;
+
+function renderStats() {
+  const total = chilis.length;
+  const counts = new Map();
+  for (const c of chilis) {
+    const key = (c.sorte && c.sorte.trim()) || c.name || "Unbekannt";
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  const entries = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statVarieties").textContent = counts.size;
+  document.getElementById("statTop").textContent =
+    entries.length > 0 ? `${entries[0][0]} (${entries[0][1]})` : "–";
+
+  const styles = getComputedStyle(document.documentElement);
+  const textColor = styles.getPropertyValue("--color-text").trim() || "#333333";
+  const gridColor = styles.getPropertyValue("--color-border").trim() || "#dddddd";
+  const barColor = styles.getPropertyValue("--color-primary").trim() || "#c1440e";
+
+  const canvas = document.getElementById("sortenChart");
+  const wrap = canvas.parentElement;
+  wrap.style.height = `${Math.max(160, entries.length * 36)}px`;
+
+  if (sortenChartInstance) {
+    sortenChartInstance.destroy();
+  }
+  sortenChartInstance = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: entries.map(([name]) => name),
+      datasets: [
+        {
+          label: "Anzahl",
+          data: entries.map(([, count]) => count),
+          backgroundColor: barColor,
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { color: textColor, precision: 0 },
+          grid: { color: gridColor },
+        },
+        y: {
+          ticks: { color: textColor },
+          grid: { color: gridColor },
+        },
+      },
+    },
+  });
 }
-
-window.addEventListener("resize", updateHeaderHeightVar);
-window.addEventListener("orientationchange", updateHeaderHeightVar);
 
 // --- Pull-to-refresh ---
 // Als "Zum Home-Bildschirm hinzugefügte" App (display: standalone) hat iOS
@@ -1174,7 +1475,6 @@ function setupPullToRefresh() {
   viewGridBtn.classList.toggle("active", viewMode === "grid");
   viewListBtn.classList.toggle("active", viewMode === "list");
   setupPullToRefresh();
-  updateHeaderHeightVar();
 
   // Sicherheitsnetz: bei sehr langsamer/fehlender Verbindung soll die Seite
   // trotzdem nutzbar werden statt unbegrenzt leer/eingefroren zu wirken.

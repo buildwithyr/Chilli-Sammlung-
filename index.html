@@ -12,52 +12,74 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="bg-photo" aria-hidden="true"></div>
-  <div class="bg-photo-crisp" aria-hidden="true"></div>
   <div id="pullIndicator" class="pull-indicator" aria-hidden="true">🌶️</div>
 
-  <header class="app-header">
-    <div class="header-overlay">
-      <div class="brand">
-        <span class="brand-icon">🌶️</span>
-        <div>
-          <h1>Opa Reiters Chili Sammlung</h1>
-          <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+  <div id="topBar" class="top-bar">
+    <div class="top-bar-photo" aria-hidden="true"></div>
+    <div class="top-bar-glass" aria-hidden="true"></div>
+
+    <header class="app-header">
+      <div class="header-overlay">
+        <div class="brand">
+          <span class="brand-icon">🌶️</span>
+          <div>
+            <h1>Opa Reiters Chili Sammlung</h1>
+            <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+          </div>
+        </div>
+        <div class="header-actions" id="sammlungHeaderActions">
+          <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
+          <select id="statusFilter">
+            <option value="">Alle Status</option>
+          </select>
+          <select id="sortSelect">
+            <option value="nr">Sortierung: Katalog-Nr.</option>
+            <option value="sg-desc">Schärfe: schärfste zuerst</option>
+            <option value="sg-asc">Schärfe: mildeste zuerst</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="sorte">Sorte / Art (A-Z)</option>
+            <option value="created-desc">Neueste zuerst</option>
+          </select>
+          <div class="view-toggle" role="group" aria-label="Ansicht wählen">
+            <button type="button" id="viewGridBtn" class="view-btn" aria-label="Kachelansicht mit Fotos" title="Kacheln mit Fotos">▦</button>
+            <button type="button" id="viewListBtn" class="view-btn" aria-label="Listenansicht ohne Fotos" title="Liste ohne Fotos">☰</button>
+          </div>
+        </div>
+        <div class="header-actions" id="orderHeaderActions" hidden>
+          <input type="search" id="orderSearchInput" placeholder="Suche nach Name, Bestellung von ...">
+        </div>
+        <div class="menu-wrap">
+          <button type="button" id="menuBtn" class="icon-btn" aria-label="Menü öffnen" aria-haspopup="true" aria-expanded="false" title="Menü">⋮</button>
+          <div id="menuDropdown" class="menu-dropdown" hidden>
+            <button type="button" id="menuThemeBtn" class="menu-item">🌓 <span id="menuThemeLabel">Dunkelmodus</span></button>
+            <button type="button" id="menuStatsBtn" class="menu-item">📊 Statistik</button>
+            <button type="button" id="menuInfoBtn" class="menu-item">ℹ️ Info</button>
+          </div>
         </div>
       </div>
-      <div class="header-actions" id="sammlungHeaderActions">
-        <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
-        <select id="statusFilter">
-          <option value="">Alle Status</option>
-        </select>
-        <select id="sortSelect">
-          <option value="nr">Sortierung: Katalog-Nr.</option>
-          <option value="sg-desc">Schärfe: schärfste zuerst</option>
-          <option value="sg-asc">Schärfe: mildeste zuerst</option>
-          <option value="name">Name (A-Z)</option>
-        </select>
-        <div class="view-toggle" role="group" aria-label="Ansicht wählen">
-          <button type="button" id="viewGridBtn" class="view-btn" aria-label="Kachelansicht mit Fotos" title="Kacheln mit Fotos">▦</button>
-          <button type="button" id="viewListBtn" class="view-btn" aria-label="Listenansicht ohne Fotos" title="Liste ohne Fotos">☰</button>
-        </div>
-      </div>
-      <div class="header-actions" id="orderHeaderActions" hidden>
-        <input type="search" id="orderSearchInput" placeholder="Suche nach Name, Bestellt bei ...">
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <nav class="main-tabs" aria-label="Bereich wählen">
-    <button type="button" id="tabSammlungBtn" class="main-tab active">🌶️ Sammlung</button>
-    <button type="button" id="tabBestellungenBtn" class="main-tab">📋 Bestellungen</button>
-  </nav>
+    <nav class="main-tabs" aria-label="Bereich wählen">
+      <div class="main-tabs-inner">
+        <button type="button" id="tabSammlungBtn" class="main-tab active">🌶️ Sammlung</button>
+        <button type="button" id="tabBestellungenBtn" class="main-tab">📋 Bestellungen</button>
+      </div>
+    </nav>
 
-  <nav class="year-tabs-bar" id="sammlungFilterBar">
-    <div class="year-tabs-inner">
-      <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
-      <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
-    </div>
-  </nav>
+    <nav class="year-tabs-bar" id="sammlungFilterBar">
+      <div class="year-tabs-inner">
+        <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
+        <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
+      </div>
+    </nav>
+
+    <nav class="year-tabs-bar" id="orderFilterBar" hidden>
+      <div class="year-tabs-inner">
+        <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
+        <button type="button" id="orderSelectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
+      </div>
+    </nav>
+  </div>
 
   <main id="sammlungMain">
     <div id="emptyState" class="empty-state" hidden>
@@ -67,18 +89,35 @@
     <div id="chiliGrid" class="chili-grid"></div>
   </main>
 
-  <nav class="year-tabs-bar" id="orderFilterBar" hidden>
-    <div class="year-tabs-inner">
-      <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
-    </div>
-  </nav>
-
   <main id="ordersMain" hidden>
     <div id="ordersEmptyState" class="empty-state" hidden>
       <span class="empty-icon">📋</span>
       <p>Noch keine Bestellungen erfasst.<br>Leg mit dem <strong>+</strong>-Button los.</p>
     </div>
     <div id="ordersList" class="chili-list"></div>
+  </main>
+
+  <main id="statsMain" hidden>
+    <div class="stat-tiles">
+      <div class="stat-tile">
+        <span class="stat-tile-value" id="statTotal">–</span>
+        <span class="stat-tile-label">Pflanzen gesamt</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-tile-value" id="statVarieties">–</span>
+        <span class="stat-tile-label">Verschiedene Sorten</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-tile-value" id="statTop">–</span>
+        <span class="stat-tile-label">Meistgezogen</span>
+      </div>
+    </div>
+    <div class="stats-chart-card">
+      <h2 class="stats-chart-title">Anbau je Sorte</h2>
+      <div class="stats-chart-wrap">
+        <canvas id="sortenChart"></canvas>
+      </div>
+    </div>
   </main>
 
   <button id="addChiliBtn" class="fab" aria-label="Neue Chili hinzufügen">
@@ -92,9 +131,19 @@
   <div id="bulkBar" class="bulk-bar" hidden>
     <span id="bulkCount">0 ausgewählt</span>
     <div class="bulk-bar-actions">
+      <button type="button" id="bulkSelectAllBtn" class="btn btn-secondary">Alle auswählen</button>
       <button type="button" id="bulkExportCsvBtn" class="btn btn-secondary" disabled>CSV exportieren</button>
       <button type="button" id="bulkEditBtn" class="btn btn-primary" disabled>Bearbeiten</button>
       <button type="button" id="bulkDoneBtn" class="btn btn-secondary">Fertig</button>
+    </div>
+  </div>
+
+  <div id="orderBulkBar" class="bulk-bar" hidden>
+    <span id="orderBulkCount">0 ausgewählt</span>
+    <div class="bulk-bar-actions">
+      <button type="button" id="orderBulkSelectAllBtn" class="btn btn-secondary">Alle auswählen</button>
+      <button type="button" id="orderBulkExportCsvBtn" class="btn btn-secondary" disabled>CSV exportieren</button>
+      <button type="button" id="orderBulkDoneBtn" class="btn btn-secondary">Fertig</button>
     </div>
   </div>
 
@@ -103,7 +152,25 @@
     <button id="importBtn" class="btn btn-secondary">Daten importieren</button>
     <input type="file" id="importFile" accept="application/json" hidden>
     <span class="footer-hint">Export regelmäßig sichern – Daten liegen nur in diesem Browser.</span>
+    <span class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</span>
   </footer>
+
+  <!-- Info-Modal -->
+  <div id="infoModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="infoModalCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title">Info</h2>
+      </div>
+      <p>
+        Diese App hilft dabei, eine Chili-Sammlung zu verwalten: Pflanzen mit
+        Foto, Sorte, Schärfegrad, Anbau- und Erntestand dokumentieren, dazu
+        eine Übersicht über gekaufte/bestellte Samen und Pflanzen sowie eine
+        kleine Statistik über die angebauten Sorten.
+      </p>
+      <p class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</p>
+    </div>
+  </div>
 
   <!-- Detail-/Editier-Modal -->
   <div id="chiliModal" class="modal" hidden>
@@ -141,7 +208,20 @@
             <input type="text" id="fieldHerkunft" placeholder="z.B. Samen von XY, USA">
           </label>
           <label>Schärfegrad (Sg-Skala 1–10)
-            <input type="text" id="fieldSg" placeholder="z.B. 6 oder 10+">
+            <div id="sgScale" class="sg-scale" role="group" aria-label="Schärfegrad auswählen">
+              <button type="button" class="sg-scale-btn" data-value="1">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="2">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="3">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="4">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="5">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="6">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="7">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="8">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="9">🌶️</button>
+              <button type="button" class="sg-scale-btn" data-value="10">🌶️</button>
+            </div>
+            <span id="sgScaleLabel" class="sg-scale-label">Kein Wert gewählt</span>
+            <input type="hidden" id="fieldSg">
           </label>
           <label>Schärfegrad in Scoville (optional)
             <input type="text" id="fieldScoville" placeholder="z.B. 1.500.000–2.200.000">
@@ -244,8 +324,9 @@
           <label>Menge
             <input type="text" id="orderFieldMenge" placeholder="z.B. 10 Samen">
           </label>
-          <label>Bestellt bei
-            <input type="text" id="orderFieldHaendler" placeholder="z.B. Reinsaat, eBay, Chili-Shop XY">
+          <label>Bestellung von
+            <input type="text" id="orderFieldHaendler" placeholder="z.B. Papa, Onkel Franz" list="haendlerOptions" autocomplete="off">
+            <datalist id="haendlerOptions"></datalist>
           </label>
           <label>Bestelldatum
             <input type="date" id="orderFieldDatum">
@@ -269,6 +350,7 @@
 
   <script src="data/seed-chilis.js"></script>
   <script src="vendor/supabase.js"></script>
+  <script src="vendor/chart.umd.min.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
