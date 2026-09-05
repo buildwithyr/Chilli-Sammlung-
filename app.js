@@ -432,6 +432,50 @@ const addOrderBtn = document.getElementById("addOrderBtn");
 const sammlungHeaderActions = document.getElementById("sammlungHeaderActions");
 const orderHeaderActions = document.getElementById("orderHeaderActions");
 
+// --- Mobil: Haupt-Reiter und Jahres-Leiste als kompakte Dropdowns statt
+// Pillen-Reihen, damit der fixierte Kopfbereich am Handy nicht so viel Platz
+// braucht. Auf dem Desktop bleiben es ganz normale Reiter (CSS zeigt die
+// Toggle-Buttons nur unterhalb von 641px).
+
+const mainTabsToggle = document.getElementById("mainTabsToggle");
+const mainTabsToggleLabel = document.getElementById("mainTabsToggleLabel");
+const mainTabsNav = mainTabsToggle.closest(".main-tabs");
+
+function closeMainTabsDropdown() {
+  mainTabsNav.classList.remove("open");
+  mainTabsToggle.setAttribute("aria-expanded", "false");
+}
+
+mainTabsToggle.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const isOpen = mainTabsNav.classList.toggle("open");
+  mainTabsToggle.setAttribute("aria-expanded", String(isOpen));
+});
+document.addEventListener("click", (e) => {
+  if (mainTabsNav.classList.contains("open") && !mainTabsNav.contains(e.target)) closeMainTabsDropdown();
+});
+
+function closeYearDropdown(bar) {
+  const wrap = bar.querySelector(".year-tabs-inner");
+  wrap.classList.remove("open");
+  wrap.querySelector(".year-tabs-toggle")?.setAttribute("aria-expanded", "false");
+}
+
+document.querySelectorAll(".year-tabs-toggle").forEach((toggleBtn) => {
+  const wrap = toggleBtn.closest(".year-tabs-inner");
+  toggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = wrap.classList.toggle("open");
+    toggleBtn.setAttribute("aria-expanded", String(isOpen));
+  });
+  document.addEventListener("click", (e) => {
+    if (wrap.classList.contains("open") && !wrap.contains(e.target)) {
+      wrap.classList.remove("open");
+      toggleBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+});
+
 const APP_TABS = ["sammlung", "bestellungen", "statistik"];
 let appTab = APP_TABS.includes(localStorage.getItem(APP_TAB_KEY)) ? localStorage.getItem(APP_TAB_KEY) : "sammlung";
 
@@ -446,6 +490,9 @@ function setAppTab(tab) {
   tabSammlungBtn.classList.toggle("active", showSammlung);
   tabBestellungenBtn.classList.toggle("active", showBestellungen);
   menuBtn.classList.toggle("active", showStatistik);
+  if (showSammlung) mainTabsToggleLabel.textContent = "🌶️ Sammlung";
+  if (showBestellungen) mainTabsToggleLabel.textContent = "📋 Bestellungen";
+  closeMainTabsDropdown();
 
   sammlungHeaderActions.hidden = !showSammlung;
   orderHeaderActions.hidden = !showBestellungen;
@@ -482,9 +529,11 @@ function setActiveYear(year) {
   localStorage.setItem(YEAR_KEY, year);
   renderYearTabs();
   render();
+  closeYearDropdown(sammlungFilterBar);
 }
 
 function renderYearTabs() {
+  sammlungFilterBar.querySelector(".year-tabs-toggle-label").textContent = activeYear || "Alle Jahre";
   yearTabs.innerHTML = "";
 
   const allTab = document.createElement("button");
@@ -580,9 +629,11 @@ function setOrderActiveYear(year) {
   localStorage.setItem(ORDER_YEAR_KEY, year);
   renderOrderYearTabs();
   renderOrders();
+  closeYearDropdown(orderFilterBar);
 }
 
 function renderOrderYearTabs() {
+  orderFilterBar.querySelector(".year-tabs-toggle-label").textContent = orderActiveYear || "Alle Jahre";
   orderYearTabs.innerHTML = "";
 
   const allTab = document.createElement("button");
@@ -1262,7 +1313,7 @@ orderBulkExportCsvBtn.addEventListener("click", () => {
 
 // --- Export / Import ---
 
-document.getElementById("exportBtn").addEventListener("click", () => {
+document.getElementById("menuExportBtn").addEventListener("click", () => {
   const payload = { chilis, bestellungen: orders };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1271,12 +1322,16 @@ document.getElementById("exportBtn").addEventListener("click", () => {
   a.download = `chili-sammlung-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  closeMenu();
 });
 
-const importBtn = document.getElementById("importBtn");
+const importBtn = document.getElementById("menuImportBtn");
 const importFile = document.getElementById("importFile");
 
-importBtn.addEventListener("click", () => importFile.click());
+importBtn.addEventListener("click", () => {
+  closeMenu();
+  importFile.click();
+});
 async function replaceRemoteTable(table, rows) {
   const { error: delError } = await sb.from(table).delete().neq("id", "");
   if (delError) throw delError;

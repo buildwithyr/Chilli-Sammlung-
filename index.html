@@ -15,8 +15,10 @@
   <div id="pullIndicator" class="pull-indicator" aria-hidden="true">🌶️</div>
 
   <div id="topBar" class="top-bar">
-    <div class="top-bar-photo" aria-hidden="true"></div>
-    <div class="top-bar-glass" aria-hidden="true"></div>
+    <div class="top-bar-bg" aria-hidden="true">
+      <div class="top-bar-photo"></div>
+      <div class="top-bar-glass"></div>
+    </div>
 
     <header class="app-header">
       <div class="header-overlay">
@@ -53,6 +55,11 @@
           <div id="menuDropdown" class="menu-dropdown" hidden>
             <button type="button" id="menuThemeBtn" class="menu-item">🌓 <span id="menuThemeLabel">Dunkelmodus</span></button>
             <button type="button" id="menuStatsBtn" class="menu-item">📊 Statistik</button>
+            <div class="menu-divider" aria-hidden="true"></div>
+            <button type="button" id="menuExportBtn" class="menu-item">📤 Daten exportieren (JSON)</button>
+            <button type="button" id="menuImportBtn" class="menu-item">📥 Daten importieren</button>
+            <input type="file" id="importFile" accept="application/json" hidden>
+            <div class="menu-divider" aria-hidden="true"></div>
             <button type="button" id="menuInfoBtn" class="menu-item">ℹ️ Info</button>
           </div>
         </div>
@@ -60,7 +67,10 @@
     </header>
 
     <nav class="main-tabs" aria-label="Bereich wählen">
-      <div class="main-tabs-inner">
+      <button type="button" id="mainTabsToggle" class="tabs-toggle" aria-expanded="false">
+        <span id="mainTabsToggleLabel">🌶️ Sammlung</span><span class="toggle-caret">▾</span>
+      </button>
+      <div class="main-tabs-inner" id="mainTabsInner">
         <button type="button" id="tabSammlungBtn" class="main-tab active">🌶️ Sammlung</button>
         <button type="button" id="tabBestellungenBtn" class="main-tab">📋 Bestellungen</button>
       </div>
@@ -68,6 +78,9 @@
 
     <nav class="year-tabs-bar" id="sammlungFilterBar">
       <div class="year-tabs-inner">
+        <button type="button" class="tabs-toggle year-tabs-toggle" data-panel="yearTabs" aria-expanded="false">
+          <span class="year-tabs-toggle-label">Alle Jahre</span><span class="toggle-caret">▾</span>
+        </button>
         <div id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></div>
         <button type="button" id="selectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
       </div>
@@ -75,6 +88,9 @@
 
     <nav class="year-tabs-bar" id="orderFilterBar" hidden>
       <div class="year-tabs-inner">
+        <button type="button" class="tabs-toggle year-tabs-toggle" data-panel="orderYearTabs" aria-expanded="false">
+          <span class="year-tabs-toggle-label">Alle Jahre</span><span class="toggle-caret">▾</span>
+        </button>
         <div id="orderYearTabs" class="year-tabs" aria-label="Bestelljahr wählen"></div>
         <button type="button" id="orderSelectModeBtn" class="select-toggle-btn">Mehrere auswählen</button>
       </div>
@@ -148,10 +164,7 @@
   </div>
 
   <footer class="app-footer">
-    <button id="exportBtn" class="btn btn-secondary">Daten exportieren (JSON)</button>
-    <button id="importBtn" class="btn btn-secondary">Daten importieren</button>
-    <input type="file" id="importFile" accept="application/json" hidden>
-    <span class="footer-hint">Export regelmäßig sichern – Daten liegen nur in diesem Browser.</span>
+    <span class="footer-hint">Tipp: im ⋮-Menü regelmäßig „Daten exportieren (JSON)" sichern – als Backup unabhängig von Supabase.</span>
     <span class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</span>
   </footer>
 
