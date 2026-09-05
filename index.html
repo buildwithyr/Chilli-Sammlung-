@@ -3,27 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chili-Sammlung</title>
+<meta name="theme-color" content="#c1440e">
+<title>Opa Reiters Chili Sammlung</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="app-header">
-    <h1>🌶️ Meine Chili-Sammlung</h1>
+    <div class="brand">
+      <span class="brand-icon">🌶️</span>
+      <div>
+        <h1>Opa Reiters Chili Sammlung</h1>
+        <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+      </div>
+    </div>
     <div class="header-actions">
       <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
       <select id="statusFilter">
         <option value="">Alle Status</option>
       </select>
-      <button id="addChiliBtn" class="btn btn-primary">+ Neue Chili</button>
     </div>
   </header>
 
   <main>
     <div id="emptyState" class="empty-state" hidden>
-      <p>Noch keine Chilis in der Sammlung. Leg mit „+ Neue Chili" los.</p>
+      <span class="empty-icon">🌶️</span>
+      <p>Noch keine Chilis in der Sammlung.<br>Leg mit dem <strong>+</strong>-Button los.</p>
     </div>
     <div id="chiliGrid" class="chili-grid"></div>
   </main>
+
+  <button id="addChiliBtn" class="fab" aria-label="Neue Chili hinzufügen">
+    <span class="fab-icon">+</span><span class="fab-label">Neue Chili</span>
+  </button>
 
   <footer class="app-footer">
     <button id="exportBtn" class="btn btn-secondary">Daten exportieren (JSON)</button>

@@ -94,8 +94,10 @@ function render() {
     body.innerHTML = `
       <h3>${escapeHtml(c.name)}</h3>
       <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
-      <span class="badge">${starEmoji(c.sterne)}</span>
-      <span class="badge">${escapeHtml(c.status || "Aussaat")}</span>
+      <div class="card-badges">
+        <span class="badge">${starEmoji(c.sterne)}</span>
+        <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
+      </div>
     `;
     card.appendChild(body);
     grid.appendChild(card);
