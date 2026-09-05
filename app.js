@@ -1219,7 +1219,7 @@ function buildCard(c) {
     <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
     <div class="card-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
-      ${c._linkedChilis ? `<span class="badge badge-status">${c._years.length} ${c._years.length === 1 ? "Anbaujahr" : "Anbaujahre"}</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
+      ${c._linkedChilis && c._years.length > 1 ? `<span class="badge badge-status">${c._years.length} Anbaujahre</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
       ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
@@ -1248,7 +1248,7 @@ function buildRow(c) {
     <span class="row-name">${escapeHtml(c.name)}</span>
     <div class="row-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
-      ${c._linkedChilis ? `<span class="badge badge-status">${c._years.length} ${c._years.length === 1 ? "Anbaujahr" : "Anbaujahre"}</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
+      ${c._linkedChilis && c._years.length > 1 ? `<span class="badge badge-status">${c._years.length} Anbaujahre</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
       ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
@@ -1257,7 +1257,7 @@ function buildRow(c) {
 }
 
 function appendYearLinks(container, chili) {
-  if (!chili._linkedChilis) return;
+  if (!chili._linkedChilis || chili._years.length <= 1) return;
   const entriesByYear = new Map();
   for (const entry of chili._linkedChilis) {
     const year = entry.jahr || "ohne Jahr";
