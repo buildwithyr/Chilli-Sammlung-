@@ -1339,6 +1339,9 @@ async function loadReferenceDb() {
       scovilleMin: e.scovilleMin || e.scovilleMin === 0 ? e.scovilleMin : null,
       scovilleMax: e.scovilleMax || e.scovilleMax === 0 ? e.scovilleMax : null,
       geschmack: e.geschmack || "",
+      geschmackTags: e.geschmack_tags || [],
+      quelle: e.quelle || "",
+      quelleDetail: e.quelle_detail || "",
     });
   }
   for (const e of dynamicEntries) {
@@ -1349,6 +1352,9 @@ async function loadReferenceDb() {
       scovilleMin: e.scoville_min ?? null,
       scovilleMax: e.scoville_max ?? null,
       geschmack: e.geschmack || "",
+      geschmackTags: e.geschmack_tags || [],
+      quelle: e.quelle || "",
+      quelleDetail: e.quelle_detail || "",
     });
   }
   referenceDb = [...merged.values()];
@@ -1411,9 +1417,14 @@ function updateReferenceSuggestion() {
     currentReferenceMatch.art ||
     currentReferenceMatch.scovilleMin != null ||
     currentReferenceMatch.scovilleMax != null ||
-    currentReferenceMatch.geschmack;
+    currentReferenceMatch.geschmack ||
+    (currentReferenceMatch.geschmackTags && currentReferenceMatch.geschmackTags.length > 0);
   if (!hasAnyInfo) {
     referenceSuggestion.hidden = true;
+    // Zwar ein (leerer) Referenz-Eintrag vorhanden (z.B. "keine verlässliche
+    // Quelle gefunden"), aber keine brauchbaren Werte - Nutzer soll trotzdem
+    // die Möglichkeit haben, selbst Recherchiertes/Gewusstes zu ergänzen.
+    referenceSaveBackWrap.hidden = !name;
     return;
   }
 
@@ -1424,7 +1435,14 @@ function updateReferenceSuggestion() {
   if (currentReferenceMatch.art) rows.push(`Botanische Art: ${escapeHtml(currentReferenceMatch.art)}`);
   const scovilleText = formatScovilleRange(currentReferenceMatch.scovilleMin, currentReferenceMatch.scovilleMax);
   if (scovilleText) rows.push(`Scoville: ${escapeHtml(scovilleText)}`);
-  if (currentReferenceMatch.geschmack) rows.push(`Geschmack: ${escapeHtml(currentReferenceMatch.geschmack)}`);
+  if (currentReferenceMatch.geschmackTags && currentReferenceMatch.geschmackTags.length > 0) {
+    rows.push(`Geschmack: ${escapeHtml(currentReferenceMatch.geschmackTags.join(", "))}`);
+  }
+  if (currentReferenceMatch.geschmack) rows.push(`Notiz: ${escapeHtml(currentReferenceMatch.geschmack)}`);
+  if (currentReferenceMatch.quelle) {
+    const detail = currentReferenceMatch.quelleDetail ? ` (${currentReferenceMatch.quelleDetail})` : "";
+    rows.push(`<em>Quelle: ${escapeHtml(currentReferenceMatch.quelle)}${escapeHtml(detail)}</em>`);
+  }
   referenceSuggestionDetails.innerHTML = rows.map((r) => `<li>${r}</li>`).join("");
 
   referenceSuggestion.hidden = false;
@@ -1438,6 +1456,10 @@ referenceApplyBtn.addEventListener("click", () => {
   if (currentReferenceMatch.art) document.getElementById("fieldArt").value = currentReferenceMatch.art;
   const scovilleText = formatScovilleRange(currentReferenceMatch.scovilleMin, currentReferenceMatch.scovilleMax);
   if (scovilleText) document.getElementById("fieldScoville").value = scovilleText;
+  if (currentReferenceMatch.geschmackTags && currentReferenceMatch.geschmackTags.length > 0) {
+    selectedTasteTags = [...new Set([...selectedTasteTags, ...currentReferenceMatch.geschmackTags])];
+    renderTasteTagChips();
+  }
   referenceSuggestion.hidden = true;
 });
 

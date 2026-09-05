@@ -1,109 +1,1414 @@
 [
-  {"name": "7pot Jonah Strain", "herkunft": "Trinidad", "art": "Capsicum chinense", "scovilleMin": 1000000, "scovilleMax": 2000000, "geschmack": "Fruchtig-süßlich mit sehr langer, intensiver Schärfe."},
-  {"name": "Aji Amarillo", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig, leicht beerig, in der peruanischen Küche sehr verbreitet."},
-  {"name": "Aji Charapita gelb", "herkunft": "Peru", "art": "Capsicum chinense", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig-blumig, gilt als eine der aromatischsten Aji-Sorten."},
-  {"name": "Aji Charapita rot", "herkunft": "Peru", "art": "Capsicum chinense", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig-blumig, gilt als eine der aromatischsten Aji-Sorten."},
-  {"name": "Aji Cristal", "herkunft": "Chile", "art": "Capsicum baccatum", "scovilleMin": 1000, "scovilleMax": 2000, "geschmack": "Mild, dünnfleischig, wird in Chile oft grün gegessen."},
-  {"name": "Aji Mango", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Fruchtig-süßliche Aji-Sorte."},
-  {"name": "Aji Omnicolor", "herkunft": "Peru/Bolivien", "art": "Capsicum baccatum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig, oft als Zierpflanze wegen der bunten Schoten angebaut."},
-  {"name": "Anaheim Chili", "herkunft": "USA (New Mexico/Kalifornien)", "art": "Capsicum annuum", "scovilleMin": 500, "scovilleMax": 2500, "geschmack": "Mild, erdig-grasig, klassisch für Chiles Rellenos."},
-  {"name": "Apache F1 Balkon", "herkunft": "Züchtung (Hybride)", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Kompakte Balkonsorte, fruchtig-scharf."},
-  {"name": "Aribibi Gusano", "herkunft": "Bolivien", "art": "Capsicum baccatum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig-erdig, ungewöhnlich geformte, wurmartige Schoten."},
-  {"name": "Atomic Heart", "herkunft": "", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Ballito", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Basken-Chili Gorria", "herkunft": "Baskenland (Spanien/Frankreich)", "art": "Capsicum annuum", "scovilleMin": 500, "scovilleMax": 2000, "geschmack": "Mild-würzig, wie die verwandte Piment d'Espelette."},
-  {"name": "Baum Chili Rot", "herkunft": "Südamerika", "art": "Capsicum pubescens", "scovilleMin": 30000, "scovilleMax": 100000, "geschmack": "Fruchtig, dickfleischig, kennzeichnende schwarze Samen (Rocoto-Typ)."},
-  {"name": "Birdseye Chili", "herkunft": "Thailand/Südostasien", "art": "Capsicum annuum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Scharf-brennend, klein, typisch für südostasiatische Küche."},
-  {"name": "Black Bison", "herkunft": "", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Black Cobra", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Black Namaqualand", "herkunft": "Südafrika", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Black Royal", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Black Ruby Orange", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Black Scorp. Tongue", "herkunft": "", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Brasilia PI 543205", "herkunft": "Brasilien", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Bulgarian Carrot", "herkunft": "Bulgarien", "art": "Capsicum annuum", "scovilleMin": 5000, "scovilleMax": 30000, "geschmack": "Fruchtig-scharf, karottenförmige orange Schoten."},
-  {"name": "Cabe Kerting", "herkunft": "Indonesien", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Carolina Reaper", "herkunft": "USA (South Carolina)", "art": "Capsicum chinense", "scovilleMin": 1400000, "scovilleMax": 2200000, "geschmack": "Fruchtig-süßlicher Antritt, dann extreme, sehr lang anhaltende Schärfe."},
-  {"name": "Carolina Reaper Yellow", "herkunft": "USA (South Carolina)", "art": "Capsicum chinense", "scovilleMin": 1000000, "scovilleMax": 1600000, "geschmack": "Fruchtig mit sehr intensiver Schärfe, gelbe Variante des Carolina Reaper."},
-  {"name": "Cayenne Braun", "herkunft": "Französisch-Guayana", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Klassisch scharf-würzig, gut zum Trocknen/Mahlen."},
-  {"name": "Cayenne Orange", "herkunft": "Französisch-Guayana", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Klassisch scharf-würzig, gut zum Trocknen/Mahlen."},
-  {"name": "Cayenne Yellow", "herkunft": "Französisch-Guayana", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Klassisch scharf-würzig, gut zum Trocknen/Mahlen."},
-  {"name": "Chilaca (Pasilla)", "herkunft": "Mexiko", "art": "Capsicum annuum", "scovilleMin": 1000, "scovilleMax": 2500, "geschmack": "Erdig-rauchig, wird getrocknet als Pasilla verwendet."},
-  {"name": "Chile Negro", "herkunft": "Mexiko", "art": "Capsicum annuum", "scovilleMin": 1000, "scovilleMax": 2500, "geschmack": "Erdig-rauchig, mexikanische Mole-Küche."},
-  {"name": "Chili Aji Pinapple", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig, an Ananas erinnernd."},
-  {"name": "Chili Aji Pineapple", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Fruchtig, an Ananas erinnernd."},
-  {"name": "Chili Ala Werna (Penis)", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Chili AS", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Chili Kusburnu", "herkunft": "Türkei", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Türkisch für „Vogelschnabel\", mittelscharf."},
-  {"name": "Chili Laterna de foc", "herkunft": "Rumänien", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Chiltepin Tucson (Schön Gabi)", "herkunft": "Mexiko/USA (Südwesten)", "art": "Capsicum annuum var. glabriusculum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Wilde Ursprungsform, rauchig-scharf, sehr kleine Schoten."},
-  {"name": "Chupetinho", "herkunft": "Brasilien", "art": "Capsicum chinense", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Kleine, fruchtig-scharfe brasilianische Vogelchili."},
-  {"name": "Coyote Zan white", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Cyclon", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "De Cayenne", "herkunft": "Französisch-Guayana", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Klassisch scharf-würzig, gut zum Trocknen/Mahlen."},
-  {"name": "De Cayenne rot", "herkunft": "Französisch-Guayana", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Klassisch scharf-würzig, gut zum Trocknen/Mahlen."},
-  {"name": "Dorset Naga Red", "herkunft": "England (gezüchtet aus Naga-Typen)", "art": "Capsicum chinense", "scovilleMin": 800000, "scovilleMax": 1000000, "geschmack": "Fruchtig mit sehr intensiver, brennender Schärfe."},
-  {"name": "Fatalii", "herkunft": "Zentralafrikanische Republik", "art": "Capsicum chinense", "scovilleMin": 125000, "scovilleMax": 325000, "geschmack": "Fruchtig-zitrusartig mit scharfer, stechender Schärfe."},
-  {"name": "Feuerwerk", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Fish Pepper", "herkunft": "USA (Chesapeake Bay)", "art": "Capsicum annuum", "scovilleMin": 5000, "scovilleMax": 30000, "geschmack": "Mittelscharf, historische Sorte der afroamerikanischen Küche."},
-  {"name": "Gelbe Kirsche", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": 2500, "scovilleMax": 5000, "geschmack": "Mild-fruchtig, kirschförmige Schoten, oft eingelegt."},
-  {"name": "Glocken rot", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Glocken Rot", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Habanero Bolivian", "herkunft": "Bolivien", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 350000, "geschmack": "Fruchtig-blumig mit intensiver Schärfe, typisch Habanero."},
-  {"name": "Habanero Schoko", "herkunft": "Mexiko (Yucatán)", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 425000, "geschmack": "Rauchig-erdig mit sehr intensiver Schärfe (Chocolate Habanero)."},
-  {"name": "Habanero Tasmanian Red", "herkunft": "Australien (Tasmanien)", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 350000, "geschmack": "Fruchtig-blumig mit intensiver Schärfe."},
-  {"name": "Habanero Tropical Red", "herkunft": "Mexiko (Yucatán)", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 350000, "geschmack": "Fruchtig-blumig mit intensiver Schärfe, typisch Habanero."},
-  {"name": "Holiday Time", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Hot Chili Yellow", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Hungarian Hot Wax", "herkunft": "Ungarn", "art": "Capsicum annuum", "scovilleMin": 5000, "scovilleMax": 15000, "geschmack": "Mittelscharf, leicht süßlich, wachsgelbe Schoten."},
-  {"name": "Inca Hot", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Incra Red Drop Peach", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Jalapeno Ballpark", "herkunft": "Mexiko/USA", "art": "Capsicum annuum", "scovilleMin": 500, "scovilleMax": 2500, "geschmack": "Mild, grasig-frisch, sehr milde Jalapeño-Variante."},
-  {"name": "Jalaro Chili", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Joe's long Cayenne", "herkunft": "USA (italienisches Erbstück)", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Scharf-würzig, sehr lange, dünne Schoten."},
-  {"name": "Kirschpfefferoni", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": 2500, "scovilleMax": 5000, "geschmack": "Mild-fruchtig, kirschförmig, oft eingelegt."},
-  {"name": "Lemon Drop", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": 15000, "scovilleMax": 30000, "geschmack": "Zitronig-zitrusartig mit deutlicher Schärfe."},
-  {"name": "Leutschacher Schottenpfeffer", "herkunft": "Österreich (Steiermark)", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Regionale steirische Sorte."},
-  {"name": "Limon", "herkunft": "Peru", "art": "Capsicum baccatum", "scovilleMin": 15000, "scovilleMax": 30000, "geschmack": "Zitrusartig-fruchtig."},
-  {"name": "Limoncello", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Long Red Marconi (Engl)", "herkunft": "Italien", "art": "Capsicum annuum", "scovilleMin": 0, "scovilleMax": 500, "geschmack": "Süß, kaum scharf, klassische italienische Bratpaprika."},
-  {"name": "Lucifer's Dream", "herkunft": "", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Monkey Face", "herkunft": "", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Mustafa", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Naga Morich", "herkunft": "Bangladesch", "art": "Capsicum chinense", "scovilleMin": 1000000, "scovilleMax": 2000000, "geschmack": "Fruchtig mit extremer, lang anhaltender Schärfe."},
-  {"name": "Numex Twilight", "herkunft": "USA (New Mexico State University)", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Scharf-würzig, Zierpflanze mit mehrfarbig reifenden Schoten."},
-  {"name": "Peperoni Jumbo", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": 0, "scovilleMax": 100, "geschmack": "Süß, praktisch keine Schärfe, klassische Gemüsepaprika."},
-  {"name": "Peruvian Purple", "herkunft": "Peru", "art": "Capsicum annuum", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Scharf, violette Schoten und violettes Laub."},
-  {"name": "Pimenta Cheiro Do Norte", "herkunft": "Brasilien", "art": "Capsicum chinense", "scovilleMin": 1000, "scovilleMax": 5000, "geschmack": "Sehr aromatisch-fruchtig bei milder Schärfe."},
-  {"name": "Pimientos de Padron", "herkunft": "Spanien (Galicien)", "art": "Capsicum annuum", "scovilleMin": 500, "scovilleMax": 2500, "geschmack": "Meist mild-grasig, gelegentlich überraschend scharfe Einzelschoten."},
-  {"name": "Piri-Piri", "herkunft": "Afrika (portugiesisch geprägt)", "art": "Capsicum frutescens", "scovilleMin": 50000, "scovilleMax": 175000, "geschmack": "Scharf-würzig, Basis der bekannten Piri-Piri-Saucen."},
-  {"name": "Purple Tiger", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": 10000, "scovilleMax": 20000, "geschmack": "Scharf, panaschiertes violett-grünes Laub."},
-  {"name": "Riviera", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Rote Flunder", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Santa Fee", "herkunft": "USA (New Mexico)", "art": "Capsicum annuum", "scovilleMin": 500, "scovilleMax": 750, "geschmack": "Mild, ähnlich Santa Fe Grande."},
-  {"name": "Sarit Gat", "herkunft": "Israel", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Scotch Bonnet Yellow", "herkunft": "Karibik (Jamaika)", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 350000, "geschmack": "Fruchtig-süßlich mit intensiver Schärfe, Basis der jamaikanischen Küche."},
-  {"name": "Shata Baladi", "herkunft": "Ägypten", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Mittelscharfe ägyptische Sorte."},
-  {"name": "Shishito Pepper", "herkunft": "Japan", "art": "Capsicum annuum", "scovilleMin": 50, "scovilleMax": 200, "geschmack": "Mild-grasig, gelegentlich eine überraschend scharfe Schote."},
-  {"name": "Sibirischer Hauspaprika", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Frühreife Zimmer-/Balkonsorte, mittlere Schärfe."},
-  {"name": "Space Chili After Glow", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Starfisch Brazil", "herkunft": "Brasilien", "art": "Capsicum chinense", "scovilleMin": "", "scovilleMax": "", "geschmack": "Sternförmige Schoten, mittlere bis hohe Schärfe."},
-  {"name": "Stavros", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Super Jalapeno", "herkunft": "Mexiko/USA", "art": "Capsicum annuum", "scovilleMin": 2500, "scovilleMax": 8000, "geschmack": "Grasig-frisch mit spürbarer Schärfe."},
-  {"name": "Tabasco", "herkunft": "USA (Louisiana, Avery Island)", "art": "Capsicum frutescens", "scovilleMin": 30000, "scovilleMax": 50000, "geschmack": "Scharf-essigartig, Basis der bekannten Tabasco-Sauce."},
-  {"name": "Takanotsume", "herkunft": "Japan", "art": "Capsicum annuum", "scovilleMin": 40000, "scovilleMax": 50000, "geschmack": "Scharf, „Falkenkralle\", typisch japanische Trockenchili."},
-  {"name": "Tapas", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Thai Chili Rot", "herkunft": "Thailand", "art": "Capsicum annuum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Scharf-brennend, klein, typisch für Thai-Küche."},
-  {"name": "Thai Chili Wild", "herkunft": "Thailand", "art": "Capsicum annuum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Scharf-brennend, wilde Form, sehr aromatisch."},
-  {"name": "Thai little red Chili", "herkunft": "Thailand", "art": "Capsicum annuum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Scharf-brennend, klein, typisch für Thai-Küche."},
-  {"name": "Thunder Cacho Brown", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Trinidad Moruga Yellow", "herkunft": "Trinidad", "art": "Capsicum chinense", "scovilleMin": 800000, "scovilleMax": 1200000, "geschmack": "Fruchtig mit extremer, sehr lang anhaltender Schärfe."},
-  {"name": "Turuncu Spiral", "herkunft": "Türkei", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Ur Chili Tepin (klein)", "herkunft": "Mexiko/USA (Südwesten)", "art": "Capsicum annuum var. glabriusculum", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Wilde Ursprungsform, rauchig-scharf, sehr kleine Schoten."},
-  {"name": "Vesena Elefant", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""},
-  {"name": "Violet Mist", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "Zierpflanze mit violettem Laub."},
-  {"name": "Vogelauge", "herkunft": "Afrika/Asien", "art": "Capsicum frutescens", "scovilleMin": 50000, "scovilleMax": 100000, "geschmack": "Scharf-brennend, kleine „Vogelaugen\"-Chili."},
-  {"name": "Weisser Habanero", "herkunft": "Mexiko (Yucatán)", "art": "Capsicum chinense", "scovilleMin": 100000, "scovilleMax": 350000, "geschmack": "Fruchtig-blumig mit intensiver Schärfe, helle Schoten."},
-  {"name": "Ziegenhorn Bello", "herkunft": "", "art": "Capsicum annuum", "scovilleMin": "", "scovilleMax": "", "geschmack": "„Ziegenhorn\"-Typ, lange gebogene Schoten."},
-  {"name": "Zuti", "herkunft": "", "art": "", "scovilleMin": "", "scovilleMax": "", "geschmack": ""}
+  {
+    "name": "7pot Jonah Strain",
+    "herkunft": "Trinidad",
+    "art": "Capsicum chinense",
+    "scovilleMin": 800000,
+    "scovilleMax": 1200000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, PepperGeek, Peppers-Database"
+  },
+  {
+    "name": "Aji Amarillo",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness, PepperGeek, Specialty Produce"
+  },
+  {
+    "name": "Aji Charapita gelb",
+    "herkunft": "Peru",
+    "art": "Capsicum chinense",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "sauer/zitrusartig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, PepperGeek (Farbvariante gelb)"
+  },
+  {
+    "name": "Aji Charapita rot",
+    "herkunft": "Peru",
+    "art": "Capsicum chinense",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "sauer/zitrusartig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, PepperGeek, Pepperworld/scharfundlecker.de (Farbvariante rot)"
+  },
+  {
+    "name": "Aji Cristal",
+    "herkunft": "Chile",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "sauer/zitrusartig",
+      "fruchtig",
+      "rauchig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness, Specialty Produce, PepperGeek"
+  },
+  {
+    "name": "Aji Mango",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 30000,
+    "scovilleMax": 150000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperJoe, RareSeeds (Samenhändler-Beschreibung), The Peppers Database"
+  },
+  {
+    "name": "Aji Omnicolor",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "sauer/zitrusartig",
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, PepperJoe"
+  },
+  {
+    "name": "Anaheim Chili",
+    "herkunft": "USA (New Mexico/California)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 500,
+    "scovilleMax": 2500,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "rauchig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, Chili Pepper Madness"
+  },
+  {
+    "name": "Apache F1 Balkon",
+    "herkunft": "UK (Zuchtsorte, F1-Hybride)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 70000,
+    "scovilleMax": 80000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Suttons, Dobies, Premier Seeds Direct)"
+  },
+  {
+    "name": "Aribibi Gusano",
+    "herkunft": "Bolivien",
+    "art": "Capsicum chinense",
+    "scovilleMin": 5000,
+    "scovilleMax": 470000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "HRSeeds, KCDGarden, SmallIslandSeedCo (Samenhändler-Beschreibungen; Scoville-Angaben widersprüchlich)"
+  },
+  {
+    "name": "Atomic Heart",
+    "herkunft": "Australien",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 5000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "chilliseedbank.com.au, Samenhändler-Beschreibung (Pepperworld, Samenhexe)"
+  },
+  {
+    "name": "Ballito",
+    "herkunft": "",
+    "art": "Capsicum frutescens",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Pepperworld, Gaissmayer, Saemereien.ch) - keine konkrete Scoville-Angabe gefunden"
+  },
+  {
+    "name": "Basken-Chili Gorria",
+    "herkunft": "Frankreich (Baskenland, Espelette)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 1000,
+    "scovilleMax": 4000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "erdig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Magic Garden Seeds, chili-plants.com), Wikipedia (Espelette pepper)"
+  },
+  {
+    "name": "Baum Chili Rot",
+    "herkunft": "Mexiko (Hochland)",
+    "art": "Capsicum pubescens",
+    "scovilleMin": 10000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "erdig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Plantura, Floragard, chili-shop24.de (Farbvariante rot)"
+  },
+  {
+    "name": "Birdseye Chili",
+    "herkunft": "Thailand/Südostasien (auch Afrika)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 50000,
+    "scovilleMax": 225000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "grasig",
+      "süß",
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia, Sonoran Spice"
+  },
+  {
+    "name": "Black Bison",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Black Cobra",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 20000,
+    "scovilleMax": 40000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, Specialty Produce"
+  },
+  {
+    "name": "Black Namaqualand",
+    "herkunft": "Südafrika (Namaqualand)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Fatalii Seeds, Pepperworld, Dave's Garden (Samenhändler-Beschreibungen)"
+  },
+  {
+    "name": "Black Royal",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Royal Black), HRSeeds, Ohio Peppers"
+  },
+  {
+    "name": "Black Ruby Orange",
+    "herkunft": "USA",
+    "art": "Capsicum frutescens",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "hoeri-chili.com, chili-planet.com (Samenhändler-Beschreibungen) - keine konkrete Scoville-Zahl gefunden"
+  },
+  {
+    "name": "Black Scorp. Tongue",
+    "herkunft": "",
+    "art": "Capsicum chinense",
+    "scovilleMin": 30000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß",
+      "blumig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale, PepperHead (Black Scorpion Tongue)"
+  },
+  {
+    "name": "Brasilia PI 543205",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Bulgarian Carrot",
+    "herkunft": "Bulgarien",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß",
+      "sauer/zitrusartig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale"
+  },
+  {
+    "name": "Cabe Kerting",
+    "herkunft": "Indonesien",
+    "art": "Capsicum annuum",
+    "scovilleMin": 15000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "grasig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibungen (Chilliavenue, Green-Door, Chili-Planet)"
+  },
+  {
+    "name": "Carolina Reaper",
+    "herkunft": "USA (South Carolina)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 1400000,
+    "scovilleMax": 2200000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Wikipedia"
+  },
+  {
+    "name": "Carolina Reaper Yellow",
+    "herkunft": "USA (South Carolina)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 1000000,
+    "scovilleMax": 2200000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß",
+      "sauer/zitrusartig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibungen (Reimer Seeds, PepperJoe, Sandia Seed) - Farbvariante der Carolina Reaper"
+  },
+  {
+    "name": "Cayenne Braun",
+    "herkunft": "Französisch-Guayana",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "erdig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Cayenne, Farbvariante)"
+  },
+  {
+    "name": "Cayenne Orange",
+    "herkunft": "Französisch-Guayana",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Cayenne, Farbvariante)"
+  },
+  {
+    "name": "Cayenne Yellow",
+    "herkunft": "Französisch-Guayana",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Cayenne, Farbvariante)"
+  },
+  {
+    "name": "Chilaca (Pasilla)",
+    "herkunft": "Mexiko (Puebla-Region)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 1000,
+    "scovilleMax": 2500,
+    "geschmack": "",
+    "geschmack_tags": [
+      "erdig",
+      "süß",
+      "rauchig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Chili Pepper Madness"
+  },
+  {
+    "name": "Chile Negro",
+    "herkunft": "Mexiko (Süd-Zentralmexiko)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 1000,
+    "scovilleMax": 2500,
+    "geschmack": "",
+    "geschmack_tags": [
+      "erdig",
+      "süß",
+      "rauchig",
+      "bitter"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Synonym/dunkle Form der Pasilla)"
+  },
+  {
+    "name": "Chili Aji Pinapple",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 20000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Pepper Geek / Chili Pepper Madness"
+  },
+  {
+    "name": "Chili Aji Pineapple",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 20000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Pepper Geek / Chili Pepper Madness"
+  },
+  {
+    "name": "Chili Ala Werna (Penis)",
+    "herkunft": "USA (Texas/Louisiana)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 10000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Samenhändler-Beschreibungen (Peter Pepper / Penis Chili, mutmaßlich identische Sorte)"
+  },
+  {
+    "name": "Chili AS",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Chili Kusburnu",
+    "herkunft": "Türkei",
+    "art": "Capsicum frutescens",
+    "scovilleMin": 30000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibungen (Reinsaat, Pepperworld Hot Shop, Chiliforum)"
+  },
+  {
+    "name": "Chili Laterna de foc",
+    "herkunft": "Kosovo",
+    "art": "Capsicum annuum",
+    "scovilleMin": 10000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "erdig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibungen (pepperseeds.eu, beetfreunde)"
+  },
+  {
+    "name": "Chiltepin Tucson (Schön Gabi)",
+    "herkunft": "USA / Mexiko (wild)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 50000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "erdig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Chili Pepper Madness"
+  },
+  {
+    "name": "Chupetinho",
+    "herkunft": "Brasilien",
+    "art": "Capsicum chinense",
+    "scovilleMin": 25000,
+    "scovilleMax": 80000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibungen (The Hippy Seed Company, Chili-Shop24, ItalianChilli)"
+  },
+  {
+    "name": "Coyote Zan white",
+    "herkunft": "Brasilien",
+    "art": "Capsicum chinense",
+    "scovilleMin": 60000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "sauer/zitrusartig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (The Hippy Seed Company)"
+  },
+  {
+    "name": "Cyclon",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "De Cayenne",
+    "herkunft": "Französisch-Guayana",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Cayenne, Farbvariante)"
+  },
+  {
+    "name": "De Cayenne rot",
+    "herkunft": "Französisch-Guayana",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Cayenne, Farbvariante)"
+  },
+  {
+    "name": "Dorset Naga Red",
+    "herkunft": "England (Dorset) / abgeleitet von Naga Morich (Bangladesch)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 1000000,
+    "scovilleMax": 1598227,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Chili Pepper Madness"
+  },
+  {
+    "name": "Fatalii",
+    "herkunft": "Zentralafrika (Zentralafrikanische Republik/südliches Afrika)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 125000,
+    "scovilleMax": 400000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "sauer/zitrusartig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / PepperScale"
+  },
+  {
+    "name": "Feuerwerk",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Fish Pepper",
+    "herkunft": "USA (Chesapeake/Karibik-Herkunft)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / Pepper Geek"
+  },
+  {
+    "name": "Gelbe Kirsche",
+    "herkunft": "Kosovo",
+    "art": "Capsicum annuum",
+    "scovilleMin": 3000,
+    "scovilleMax": 15000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Pepperworld / ReinSaat (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Glocken rot",
+    "herkunft": "Südamerika (Peru/Bolivien)",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 5000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / chili-plants.com (Bishop's Crown / Glockenchili)"
+  },
+  {
+    "name": "Glocken Rot",
+    "herkunft": "Südamerika (Peru/Bolivien)",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 5000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / chili-plants.com (Bishop's Crown / Glockenchili)"
+  },
+  {
+    "name": "Habanero Bolivian",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Habanero Schoko",
+    "herkunft": "Karibik (Jamaika/Westindien)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 425000,
+    "scovilleMax": 577000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "rauchig",
+      "erdig",
+      "süß",
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Wikipedia (Chocolate Habanero)"
+  },
+  {
+    "name": "Habanero Tasmanian Red",
+    "herkunft": "Karibik (Namensgebung nach Tasmanien wegen Fruchtform)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 300000,
+    "scovilleMax": 500000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Reimer Seeds (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Habanero Tropical Red",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Holiday Time",
+    "herkunft": "USA (Zierpaprika, All-America Selections 1980)",
+    "art": "Capsicum annuum",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "All-America Selections / Victory Seed Company (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Hot Chili Yellow",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Hungarian Hot Wax",
+    "herkunft": "Ungarn",
+    "art": "Capsicum annuum",
+    "scovilleMin": 1000,
+    "scovilleMax": 15000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / Urban Farmer (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Inca Hot",
+    "herkunft": "Peru (Anden)",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 10000,
+    "scovilleMax": 20000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Tradewinds Fruit / thespicery.com (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Incra Red Drop Peach",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 10000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale (Inca Red Drop) / Pepperworld (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Jalapeno Ballpark",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Jalaro Chili",
+    "herkunft": "USA (Texas, Züchtung Texas Agriculture Extension Service 1992)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 2500,
+    "scovilleMax": 8000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness (Jaloro)"
+  },
+  {
+    "name": "Joe's long Cayenne",
+    "herkunft": "Italien (Kalabrien)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Experimental Farm Network / Dave's Garden (Samenhändler-Beschreibung)"
+  },
+  {
+    "name": "Kirschpfefferoni",
+    "herkunft": "Ungarn/Mexiko (Hauptanbaugebiete der Kirschpaprika)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 1000,
+    "scovilleMax": 5000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia (Kirschpaprika)"
+  },
+  {
+    "name": "Lemon Drop",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 15000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "sauer/zitrusartig",
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / PepperScale"
+  },
+  {
+    "name": "Leutschacher Schottenpfeffer",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Limon",
+    "herkunft": "Peru",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 15000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "sauer/zitrusartig",
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia (Lemon Drop / Aji Limon) / Specialty Produce"
+  },
+  {
+    "name": "Limoncello",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Long Red Marconi (Engl)",
+    "herkunft": "Italien",
+    "art": "Capsicum annuum",
+    "scovilleMin": 0,
+    "scovilleMax": 100,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (True Leaf Market, Sandia Seed Company)"
+  },
+  {
+    "name": "Lucifer's Dream",
+    "herkunft": "",
+    "art": "Capsicum chinense",
+    "scovilleMin": 15000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Pepperworld Hot Shop, Fatalii Seeds, Chili-Planet)"
+  },
+  {
+    "name": "Monkey Face",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 2500,
+    "scovilleMax": 10000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Scovilla, The Hippy Seed Company)"
+  },
+  {
+    "name": "Mustafa",
+    "herkunft": "Türkei",
+    "art": "Capsicum annuum",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Pepperworld Hot Shop, HRSeeds)"
+  },
+  {
+    "name": "Naga Morich",
+    "herkunft": "Bangladesch/Nordost-Indien (Nagaland)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 1000000,
+    "scovilleMax": 1500000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "fruchtig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / PepperScale / Wikipedia"
+  },
+  {
+    "name": "Numex Twilight",
+    "herkunft": "USA (New Mexico State University)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale"
+  },
+  {
+    "name": "Peperoni Jumbo",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Peruvian Purple",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (South Georgia Seed Co, WikiGardener)"
+  },
+  {
+    "name": "Pimenta Cheiro Do Norte",
+    "herkunft": "Brasilien (Norden)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 15000,
+    "scovilleMax": 45000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "blumig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (SoFlor Sementes, Plantamundo, O Armazém da Roça)"
+  },
+  {
+    "name": "Pimientos de Padron",
+    "herkunft": "Spanien (Galicien, Padrón)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 500,
+    "scovilleMax": 2500,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Wikipedia"
+  },
+  {
+    "name": "Piri-Piri",
+    "herkunft": "Afrika (Mosambik/Angola, aus amerikanischer Malagueta-Chili gezüchtet)",
+    "art": "Capsicum frutescens",
+    "scovilleMin": 50000,
+    "scovilleMax": 175000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia"
+  },
+  {
+    "name": "Purple Tiger",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 10000,
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Annies Heirloom Seeds, True Leaf Market)"
+  },
+  {
+    "name": "Riviera",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Rote Flunder",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Santa Fee",
+    "herkunft": "USA (Südwesten, New Mexico)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 500,
+    "scovilleMax": 700,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Chili Pepper Madness (Santa Fe Grande)"
+  },
+  {
+    "name": "Sarit Gat",
+    "herkunft": "Kosovo (gezüchtet von ReinSaat, Österreich)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "sauer/zitrusartig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (pepperseeds.eu, White Hot Peppers, Uprising Seeds)"
+  },
+  {
+    "name": "Scotch Bonnet Yellow",
+    "herkunft": "Karibik/Jamaika (Amazonasbecken ursprünglich)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 100000,
+    "scovilleMax": 350000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / Specialty Produce"
+  },
+  {
+    "name": "Shata Baladi",
+    "herkunft": "Ägypten",
+    "art": "Capsicum annuum",
+    "scovilleMin": 25000,
+    "scovilleMax": 300000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Pepperworld Hot Shop, Dave's Garden)"
+  },
+  {
+    "name": "Shishito Pepper",
+    "herkunft": "Japan",
+    "art": "Capsicum annuum",
+    "scovilleMin": 0,
+    "scovilleMax": 200,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "grasig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia / PepperScale"
+  },
+  {
+    "name": "Sibirischer Hauspaprika",
+    "herkunft": "Russland (Sibirien)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 10000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (chili-shop24.de, bio-kraeuter.de)"
+  },
+  {
+    "name": "Space Chili After Glow",
+    "herkunft": "China (Hangjiao-Weltraumzucht)",
+    "art": "Capsicum annuum",
+    "scovilleMin": 6000,
+    "scovilleMax": 10000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (The Hippy Seed Company, Red Dragon Seeds, Vertiloom)"
+  },
+  {
+    "name": "Starfisch Brazil",
+    "herkunft": "Brasilien",
+    "art": "Capsicum baccatum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Pepper Geek"
+  },
+  {
+    "name": "Stavros",
+    "herkunft": "Griechenland",
+    "art": "Capsicum annuum",
+    "scovilleMin": 0,
+    "scovilleMax": 5000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (chili-shop24, Gartenrot)"
+  },
+  {
+    "name": "Super Jalapeno",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Tabasco",
+    "herkunft": "USA (Louisiana) / Mexiko (Bundesstaat Tabasco)",
+    "art": "Capsicum frutescens",
+    "scovilleMin": 30000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend",
+      "sauer/zitrusartig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Wikipedia"
+  },
+  {
+    "name": "Takanotsume",
+    "herkunft": "Japan",
+    "art": "Capsicum annuum",
+    "scovilleMin": 10000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Samenhändler-Beschreibungen"
+  },
+  {
+    "name": "Tapas",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  },
+  {
+    "name": "Thai Chili Rot",
+    "herkunft": "Thailand",
+    "art": "Capsicum annuum",
+    "scovilleMin": 50000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Specialty Produce"
+  },
+  {
+    "name": "Thai Chili Wild",
+    "herkunft": "Thailand",
+    "art": "Capsicum annuum",
+    "scovilleMin": 50000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Pepperworld / Chili Pepper Madness"
+  },
+  {
+    "name": "Thai little red Chili",
+    "herkunft": "Thailand",
+    "art": "Capsicum annuum",
+    "scovilleMin": 50000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Specialty Produce"
+  },
+  {
+    "name": "Thunder Cacho Brown",
+    "herkunft": "Dänemark (Züchtung von Jes Christiansen, aus Thunder Mountain Longhorn x Cacho Negro)",
+    "art": "",
+    "scovilleMin": 20000,
+    "scovilleMax": 50000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "rauchig"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Fatalii Seeds, Super Hot Chiles, Pepper Diaries)"
+  },
+  {
+    "name": "Trinidad Moruga Yellow",
+    "herkunft": "Trinidad (Moruga)",
+    "art": "Capsicum chinense",
+    "scovilleMin": 800000,
+    "scovilleMax": 1200000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Specialty Produce"
+  },
+  {
+    "name": "Turuncu Spiral",
+    "herkunft": "Türkei",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (ReinSaat, chili-shop24, Pepperworld)"
+  },
+  {
+    "name": "Ur Chili Tepin (klein)",
+    "herkunft": "Mexiko / USA (Südwesten)",
+    "art": "Capsicum annuum var. glabriusculum",
+    "scovilleMin": 50000,
+    "scovilleMax": 100000,
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Spices Inc. / wissenschaftliche Quellen (NCBI)"
+  },
+  {
+    "name": "Vesena Elefant",
+    "herkunft": "Kosovo",
+    "art": "Capsicum annuum",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Pepperworld Hot Shop)"
+  },
+  {
+    "name": "Violet Mist",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-/Samentauschbörse-Beschreibung (samen-tauschen.org)"
+  },
+  {
+    "name": "Vogelauge",
+    "herkunft": "Afrika (v.a. Simbabwe, Malawi)",
+    "art": "Capsicum frutescens",
+    "scovilleMin": 50000,
+    "scovilleMax": 225000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "Chili Pepper Madness / Gewuerze-der-Welt"
+  },
+  {
+    "name": "Weisser Habanero",
+    "herkunft": "Peru",
+    "art": "Capsicum chinense",
+    "scovilleMin": 100000,
+    "scovilleMax": 350000,
+    "geschmack": "",
+    "geschmack_tags": [
+      "süß",
+      "fruchtig",
+      "scharf-brennend"
+    ],
+    "quelle": "recherchiert",
+    "quelle_detail": "PepperScale / Samenhändler-Beschreibungen"
+  },
+  {
+    "name": "Ziegenhorn Bello",
+    "herkunft": "",
+    "art": "Capsicum annuum",
+    "scovilleMin": 5000,
+    "scovilleMax": 30000,
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "recherchiert",
+    "quelle_detail": "Samenhändler-Beschreibung (Austrosaat, chili-shop24, Samen Maier)"
+  },
+  {
+    "name": "Zuti",
+    "herkunft": "",
+    "art": "",
+    "scovilleMin": "",
+    "scovilleMax": "",
+    "geschmack": "",
+    "geschmack_tags": [],
+    "quelle": "",
+    "quelle_detail": "keine verlässliche Quelle gefunden"
+  }
 ]
