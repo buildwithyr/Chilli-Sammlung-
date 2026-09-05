@@ -1047,8 +1047,12 @@ const modal = document.getElementById("chiliModal");
 const form = document.getElementById("chiliForm");
 const deleteBtn = document.getElementById("deleteBtn");
 const photoInput = document.getElementById("photoInput");
-const photoPreview = document.getElementById("photoPreview");
+const photoGallery = document.getElementById("photoGallery");
 const photoPlaceholder = document.getElementById("photoPlaceholder");
+const photoGalleryCounter = document.getElementById("photoGalleryCounter");
+const photoPrevBtn = document.getElementById("photoPrevBtn");
+const photoNextBtn = document.getElementById("photoNextBtn");
+const photoAddLabel = document.getElementById("photoAddLabel");
 const photoThumbs = document.getElementById("photoThumbs");
 
 // --- Schärfegrad: anklickbare 1-10-Skala statt Freitext ---
@@ -1111,14 +1115,26 @@ function closeModal() {
 }
 
 function renderPhotoPreview() {
+  photoGallery.innerHTML = "";
+
   if (currentPhotos.length > 0) {
-    photoPreview.src = currentPhotos[0];
-    photoPreview.hidden = false;
+    photoGallery.hidden = false;
     photoPlaceholder.hidden = true;
+    currentPhotos.forEach((src) => {
+      const img = document.createElement("img");
+      img.className = "photo-gallery-slide";
+      img.src = src;
+      img.alt = "Foto";
+      photoGallery.appendChild(img);
+    });
   } else {
-    photoPreview.hidden = true;
+    photoGallery.hidden = true;
     photoPlaceholder.hidden = false;
   }
+
+  photoPrevBtn.hidden = currentPhotos.length <= 1;
+  photoNextBtn.hidden = currentPhotos.length <= 1;
+  updatePhotoGalleryCounter();
 
   photoThumbs.innerHTML = "";
   currentPhotos.forEach((src, index) => {
@@ -1126,6 +1142,7 @@ function renderPhotoPreview() {
     thumb.className = "photo-thumb";
     const img = document.createElement("img");
     img.src = src;
+    img.addEventListener("click", () => scrollPhotoGalleryTo(index));
     thumb.appendChild(img);
 
     const removeBtn = document.createElement("button");
@@ -1141,11 +1158,46 @@ function renderPhotoPreview() {
   });
 }
 
+function currentPhotoGalleryIndex() {
+  if (photoGallery.clientWidth === 0) return 0;
+  return Math.round(photoGallery.scrollLeft / photoGallery.clientWidth);
+}
+
+function updatePhotoGalleryCounter() {
+  if (currentPhotos.length <= 1) {
+    photoGalleryCounter.hidden = true;
+    return;
+  }
+  photoGalleryCounter.hidden = false;
+  const index = Math.min(currentPhotoGalleryIndex(), currentPhotos.length - 1);
+  photoGalleryCounter.textContent = `${index + 1} / ${currentPhotos.length}`;
+  photoThumbs.querySelectorAll(".photo-thumb").forEach((thumb, i) => {
+    thumb.classList.toggle("active", i === index);
+  });
+}
+
+function scrollPhotoGalleryTo(index) {
+  const slide = photoGallery.children[index];
+  if (slide) slide.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+}
+
+let photoGalleryScrollTimer = null;
+photoGallery.addEventListener("scroll", () => {
+  clearTimeout(photoGalleryScrollTimer);
+  photoGalleryScrollTimer = setTimeout(updatePhotoGalleryCounter, 80);
+});
+photoPrevBtn.addEventListener("click", () => {
+  scrollPhotoGalleryTo(Math.max(0, currentPhotoGalleryIndex() - 1));
+});
+photoNextBtn.addEventListener("click", () => {
+  scrollPhotoGalleryTo(Math.min(currentPhotos.length - 1, currentPhotoGalleryIndex() + 1));
+});
+
 photoInput.addEventListener("change", async () => {
   const files = Array.from(photoInput.files || []);
   const chiliId = document.getElementById("chiliId").value;
   photoInput.disabled = true;
-  photoPlaceholder.textContent = "⏳ Wird hochgeladen ...";
+  photoAddLabel.textContent = "⏳ Wird hochgeladen ...";
 
   for (const file of files) {
     let compressed;
@@ -1169,7 +1221,7 @@ photoInput.addEventListener("change", async () => {
   }
 
   photoInput.disabled = false;
-  photoPlaceholder.textContent = "📷 Foto(s) hinzufügen";
+  photoAddLabel.textContent = "📷 Foto(s) hinzufügen";
   photoInput.value = "";
   renderPhotoPreview();
 });

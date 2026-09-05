@@ -196,11 +196,15 @@
         <input type="hidden" id="chiliId">
 
         <div class="form-section">
-          <label class="photo-upload-label">
-            <img id="photoPreview" class="photo-preview" src="" alt="Foto" hidden>
-            <span id="photoPlaceholder" class="photo-placeholder">📷 Foto(s) hinzufügen</span>
-            <input type="file" id="photoInput" accept="image/*" multiple hidden>
-          </label>
+          <div class="photo-preview-wrap">
+            <div id="photoGallery" class="photo-gallery" hidden></div>
+            <span id="photoPlaceholder" class="photo-placeholder">📷 Noch kein Foto</span>
+            <span id="photoGalleryCounter" class="photo-gallery-counter" hidden></span>
+            <button type="button" id="photoPrevBtn" class="photo-nav-btn photo-nav-prev" aria-label="Vorheriges Foto" hidden>‹</button>
+            <button type="button" id="photoNextBtn" class="photo-nav-btn photo-nav-next" aria-label="Nächstes Foto" hidden>›</button>
+          </div>
+          <label class="photo-add-btn" for="photoInput" id="photoAddLabel">📷 Foto(s) hinzufügen</label>
+          <input type="file" id="photoInput" accept="image/*" multiple hidden>
           <div id="photoThumbs" class="photo-thumbs"></div>
         </div>
 
