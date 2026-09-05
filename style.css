@@ -684,7 +684,14 @@ main {
   main { padding: 32px 40px; }
   .header-overlay { padding: 24px 40px; }
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
 
+/* Ab hier (jedes Fenster, das nicht die schmale Handy-Ansicht ist) das
+   Hochkant-Foto unbeschnitten zeigen statt hart reingezoomt - siehe
+   .bg-photo-crisp weiter unten. Ein eigener Breakpoint statt an die
+   900px-Layout-Anpassungen gekoppelt, damit es keine "tote Zone" zwischen
+   641px und 899px gibt, in der noch der alte harte Zoom greift. */
+@media (min-width: 641px) {
   .bg-photo {
     filter: blur(28px) brightness(0.85);
     transform: scale(1.15);
