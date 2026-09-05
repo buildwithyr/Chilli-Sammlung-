@@ -208,6 +208,59 @@ async function upsertChiliRemote(data) {
   return !error;
 }
 
+async function updateLinkedChilisRemote(ids, data) {
+  if (ids.length === 0) return true;
+  const { error } = await sb.from("chilis").update(data).in("id", ids);
+  if (error) alert("Verknüpfte Sorten konnten nicht gespeichert werden: " + error.message);
+  return !error;
+}
+
+// Angaben zur Sorte gelten unabhaengig vom Anbaujahr. Werden sie bei einem
+// Eintrag geaendert, schreiben wir sie deshalb auch in alle gleichnamigen
+// Eintraege der anderen Jahre. Die Saison-Felder (Status, Daten, Notizen und
+// Fotos) bleiben dagegen beim jeweiligen Jahres-Eintrag.
+const SHARED_VARIETY_FIELDS = [
+  "name",
+  "sorte",
+  "herkunft",
+  "art",
+  "sg",
+  "scoville",
+  "geschmack",
+  "geschmack_tags",
+];
+
+function varietyKey(name) {
+  return String(name || "")
+    .trim()
+    .toLocaleLowerCase("de")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function linkSharedVarietyData(list) {
+  const newestByVariety = new Map();
+  for (const chili of list) {
+    const key = varietyKey(chili.name);
+    if (!key) continue;
+    const current = newestByVariety.get(key);
+    if (!current || String(chili.jahr || "").localeCompare(String(current.jahr || "")) > 0) {
+      newestByVariety.set(key, chili);
+    }
+  }
+
+  return list.map((chili) => {
+    const source = newestByVariety.get(varietyKey(chili.name));
+    if (!source) return chili;
+    return {
+      ...chili,
+      ...Object.fromEntries(SHARED_VARIETY_FIELDS.map((field) => [field, source[field]])),
+    };
+  });
+}
+
 async function deleteChiliRemote(id) {
   const { error } = await sb.from("chilis").delete().eq("id", id);
   if (error) alert("Löschen fehlgeschlagen: " + error.message);
@@ -1069,9 +1122,37 @@ function getFilteredChilis() {
   });
 }
 
+function groupChilisByVariety(list) {
+  const groups = new Map();
+  for (const chili of list) {
+    // Ein leerer Name darf nicht alle unvollstaendigen Datensaetze verbinden.
+    const key = varietyKey(chili.name) || `id:${chili.id}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(chili);
+  }
+
+  return [...groups.values()].map((entries) => {
+    const ordered = [...entries].sort(
+      (a, b) => String(b.jahr || "").localeCompare(String(a.jahr || ""))
+    );
+    const representative = { ...ordered[0] };
+    representative._linkedChilis = ordered;
+    representative._years = [...new Set(ordered.map((c) => c.jahr).filter(Boolean))].sort((a, b) =>
+      String(b).localeCompare(String(a))
+    );
+    if (!representative.fotos?.length) {
+      representative.fotos = ordered.find((c) => c.fotos?.length)?.fotos || [];
+    }
+    return representative;
+  });
+}
+
 function render() {
   const filtered = getFilteredChilis();
-  const sorted = sortChilis(filtered);
+  // In "Alle Jahre" wird jede Sorte nur einmal gezeigt. Waehrend der
+  // Mehrfachauswahl bleiben die einzelnen Pflanzen sichtbar und waehlbar.
+  const visible = !activeYear && !selectionMode ? groupChilisByVariety(filtered) : filtered;
+  const sorted = sortChilis(visible);
 
   grid.innerHTML = "";
   emptyState.hidden = filtered.length > 0;
@@ -1138,10 +1219,11 @@ function buildCard(c) {
     <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
     <div class="card-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
-      <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
-      ${activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
+      ${c._linkedChilis ? `<span class="badge badge-status">${c._years.length} ${c._years.length === 1 ? "Anbaujahr" : "Anbaujahre"}</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
+      ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
+  appendYearLinks(body.querySelector(".card-badges"), c);
   card.appendChild(body);
   return card;
 }
@@ -1166,11 +1248,33 @@ function buildRow(c) {
     <span class="row-name">${escapeHtml(c.name)}</span>
     <div class="row-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
-      <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
-      ${activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
+      ${c._linkedChilis ? `<span class="badge badge-status">${c._years.length} ${c._years.length === 1 ? "Anbaujahr" : "Anbaujahre"}</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
+      ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
+  appendYearLinks(row.querySelector(".row-badges"), c);
   return row;
+}
+
+function appendYearLinks(container, chili) {
+  if (!chili._linkedChilis) return;
+  const entriesByYear = new Map();
+  for (const entry of chili._linkedChilis) {
+    const year = entry.jahr || "ohne Jahr";
+    if (!entriesByYear.has(year)) entriesByYear.set(year, entry);
+  }
+  for (const entry of entriesByYear.values()) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "badge year-link";
+    button.textContent = entry.jahr || "ohne Jahr";
+    button.title = `${entry.name} im Jahr ${entry.jahr || "ohne Jahr"} bearbeiten`;
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openModal(entry.id);
+    });
+    container.appendChild(button);
+  }
 }
 
 function escapeHtml(str) {
@@ -1911,10 +2015,37 @@ form.addEventListener("submit", async (e) => {
     fotos: currentPhotos,
   };
 
+  const existing = chilis.find((c) => c.id === id);
+  const oldKey = varietyKey(existing?.name);
+  const newKey = varietyKey(data.name);
+  const linked = chilis.filter((c) => {
+    const key = varietyKey(c.name);
+    return c.id !== id && key && (key === oldKey || key === newKey);
+  });
+  const sharedValues = Object.fromEntries(SHARED_VARIETY_FIELDS.map((field) => [field, data[field]]));
+  const linkedUpdates = linked.map((c) => ({ ...c, ...sharedValues }));
+
+  // Den aktuellen Datensatz separat speichern. Bei einem Array-Upsert ergänzt
+  // PostgREST die Spalten aller Objekte auf dieselbe Form. Weil bestehende
+  // Einträge `created_at` enthalten, wurde dieses Feld bei einer neuen Chili
+  // dadurch als NULL gesendet, statt den Datenbank-Standard zu verwenden.
   const ok = await upsertChiliRemote(data);
   if (!ok) return;
 
+  // Für die verknüpften Jahre nur die tatsächlich gemeinsamen Felder ändern.
+  // Dadurch bleiben `created_at` und sämtliche Saison-Daten unangetastet.
+  const linkedOk = await updateLinkedChilisRemote(
+    linked.map((c) => c.id),
+    sharedValues
+  );
+  if (!linkedOk) return;
+
   await saveReferenceEntryIfRequested();
+
+  for (const updated of linkedUpdates) {
+    const index = chilis.findIndex((c) => c.id === updated.id);
+    if (index >= 0) chilis[index] = updated;
+  }
 
   const existingIndex = chilis.findIndex((c) => c.id === id);
   if (existingIndex >= 0) {
@@ -2174,7 +2305,7 @@ importFile.addEventListener("change", async () => {
     await replaceRemoteTable("bestellungen", importedOrders);
     await replaceRemoteTable("chilis", importedChilis);
 
-    chilis = importedChilis;
+    chilis = linkSharedVarietyData(importedChilis);
     orders = importedOrders;
     render();
     renderOrders();
@@ -2346,7 +2477,7 @@ function setupPullToRefresh() {
   }, 8000);
 
   await migrateLocalDataIfNeeded();
-  chilis = await fetchChilis();
+  chilis = linkSharedVarietyData(await fetchChilis());
   orders = await fetchOrders();
   dataLoaded = true;
   clearTimeout(fallbackTimer);
