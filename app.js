@@ -914,9 +914,125 @@ function sortChilis(list) {
   return sorted;
 }
 
+// --- Erweiterte Filter: Scoville-Bereich + Geschmacks-Tags ---
+// Gab es vorher nicht (kein Filter-Code dafür im Bestand, nur das einzelne
+// Scoville-Freitextfeld pro Chili) - deshalb hier komplett neu aufgebaut,
+// nicht "repariert".
+
+const advancedFilterToggle = document.getElementById("advancedFilterToggle");
+const advancedFilterPanel = document.getElementById("advancedFilterPanel");
+const activeFilterChipsEl = document.getElementById("activeFilterChips");
+const scovilleMinFilterEl = document.getElementById("scovilleMinFilter");
+const scovilleMaxFilterEl = document.getElementById("scovilleMaxFilter");
+const scovilleIncludeUnknownEl = document.getElementById("scovilleIncludeUnknown");
+const tasteFilterChipsEl = document.getElementById("tasteFilterChips");
+const resetAdvancedFiltersBtn = document.getElementById("resetAdvancedFiltersBtn");
+
+let selectedTasteFilterTags = [];
+
+// Scoville steht im Bestand als Freitext ("1.500.000-2.200.000", "30000 SHU",
+// leer, ...) - fürs Filtern brauchen wir echte Zahlen daraus.
+function getChiliScovilleRange(c) {
+  const raw = String(c.scoville || "");
+  const nums = raw.match(/\d[\d.,]*/g);
+  if (!nums || nums.length === 0) return null;
+  const parsed = nums.map((n) => parseInt(n.replace(/[.,]/g, ""), 10)).filter((n) => Number.isFinite(n));
+  if (parsed.length === 0) return null;
+  return { min: Math.min(...parsed), max: Math.max(...parsed) };
+}
+
+function renderTasteFilterChips() {
+  tasteFilterChipsEl.innerHTML = "";
+  TASTE_TAGS.forEach((tag) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tag-chip" + (selectedTasteFilterTags.includes(tag) ? " active" : "");
+    btn.textContent = tag;
+    btn.addEventListener("click", () => {
+      selectedTasteFilterTags = selectedTasteFilterTags.includes(tag)
+        ? selectedTasteFilterTags.filter((t) => t !== tag)
+        : [...selectedTasteFilterTags, tag];
+      renderTasteFilterChips();
+      renderActiveFilterChips();
+      render();
+    });
+    tasteFilterChipsEl.appendChild(btn);
+  });
+}
+
+function renderActiveFilterChips() {
+  activeFilterChipsEl.innerHTML = "";
+  const min = scovilleMinFilterEl.value ? parseInt(scovilleMinFilterEl.value, 10) : null;
+  const max = scovilleMaxFilterEl.value ? parseInt(scovilleMaxFilterEl.value, 10) : null;
+
+  const chips = [];
+  if (min != null || max != null) {
+    const label = `Scoville: ${min ?? "0"}–${max ?? "∞"} SHU`;
+    chips.push({
+      label,
+      onRemove: () => {
+        scovilleMinFilterEl.value = "";
+        scovilleMaxFilterEl.value = "";
+      },
+    });
+  }
+  selectedTasteFilterTags.forEach((tag) => {
+    chips.push({
+      label: tag,
+      onRemove: () => {
+        selectedTasteFilterTags = selectedTasteFilterTags.filter((t) => t !== tag);
+        renderTasteFilterChips();
+      },
+    });
+  });
+
+  chips.forEach(({ label, onRemove }) => {
+    const chip = document.createElement("span");
+    chip.className = "active-filter-chip";
+    chip.textContent = label;
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.textContent = "×";
+    removeBtn.setAttribute("aria-label", `Filter „${label}“ entfernen`);
+    removeBtn.addEventListener("click", () => {
+      onRemove();
+      renderActiveFilterChips();
+      render();
+    });
+    chip.appendChild(removeBtn);
+    activeFilterChipsEl.appendChild(chip);
+  });
+}
+
+advancedFilterToggle.addEventListener("click", () => {
+  const isOpen = advancedFilterPanel.hidden;
+  advancedFilterPanel.hidden = !isOpen;
+  advancedFilterToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+[scovilleMinFilterEl, scovilleMaxFilterEl, scovilleIncludeUnknownEl].forEach((el) => {
+  el.addEventListener("input", () => {
+    renderActiveFilterChips();
+    render();
+  });
+});
+
+resetAdvancedFiltersBtn.addEventListener("click", () => {
+  scovilleMinFilterEl.value = "";
+  scovilleMaxFilterEl.value = "";
+  scovilleIncludeUnknownEl.checked = true;
+  selectedTasteFilterTags = [];
+  renderTasteFilterChips();
+  renderActiveFilterChips();
+  render();
+});
+
 function getFilteredChilis() {
   const query = searchInput.value.trim().toLowerCase();
   const statusQuery = statusFilter.value;
+  const scovilleMin = scovilleMinFilterEl.value ? parseInt(scovilleMinFilterEl.value, 10) : null;
+  const scovilleMax = scovilleMaxFilterEl.value ? parseInt(scovilleMaxFilterEl.value, 10) : null;
+  const includeUnknownScoville = scovilleIncludeUnknownEl.checked;
 
   return chilis.filter((c) => {
     const matchesQuery =
@@ -927,7 +1043,28 @@ function getFilteredChilis() {
       (c.nr || "").toLowerCase().includes(query);
     const matchesStatus = !statusQuery || c.status === statusQuery;
     const matchesYear = !activeYear || c.jahr === activeYear;
-    return matchesQuery && matchesStatus && matchesYear;
+
+    let matchesScoville = true;
+    if (scovilleMin != null || scovilleMax != null) {
+      const range = getChiliScovilleRange(c);
+      if (!range) {
+        matchesScoville = includeUnknownScoville;
+      } else {
+        const lo = scovilleMin ?? -Infinity;
+        const hi = scovilleMax ?? Infinity;
+        // Bereichsüberlappung: die Sorten-Spanne muss den Filter-Bereich
+        // irgendwo berühren, nicht komplett darin liegen - sonst würden
+        // z.B. Sorten mit "30.000-50.000" bei einem Filter "40.000-60.000"
+        // fälschlich rausfallen, obwohl sie sich überschneiden.
+        matchesScoville = range.min <= hi && range.max >= lo;
+      }
+    }
+
+    const matchesTasteTags =
+      selectedTasteFilterTags.length === 0 ||
+      (c.geschmack_tags || []).some((t) => selectedTasteFilterTags.includes(t));
+
+    return matchesQuery && matchesStatus && matchesYear && matchesScoville && matchesTasteTags;
   });
 }
 
@@ -2070,6 +2207,7 @@ function setupPullToRefresh() {
 
 (async function main() {
   populateStatusFilter();
+  renderTasteFilterChips();
   populateYearSelect();
   renderYearTabs();
   renderOrderYearTabs();

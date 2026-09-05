@@ -96,6 +96,31 @@
   </div>
 
   <main id="sammlungMain">
+    <div class="filter-panel-toggle-wrap">
+      <button type="button" id="advancedFilterToggle" class="btn btn-secondary" aria-expanded="false">🔍 Weitere Filter</button>
+      <div id="activeFilterChips" class="active-filter-chips"></div>
+    </div>
+
+    <div id="advancedFilterPanel" class="advanced-filter-panel" hidden>
+      <div class="filter-group">
+        <span class="filter-group-label">Scoville-Bereich (SHU)</span>
+        <div class="scoville-range-inputs">
+          <input type="number" id="scovilleMinFilter" placeholder="von" min="0" step="1000">
+          <span>–</span>
+          <input type="number" id="scovilleMaxFilter" placeholder="bis" min="0" step="1000">
+        </div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="scovilleIncludeUnknown" checked>
+          Auch Sorten ohne bekannten Scoville-Wert anzeigen
+        </label>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Geschmacks-Tags (mind. einer muss passen)</span>
+        <div id="tasteFilterChips" class="tag-chips"></div>
+      </div>
+      <button type="button" id="resetAdvancedFiltersBtn" class="btn btn-secondary">Filter zurücksetzen</button>
+    </div>
+
     <div id="emptyState" class="empty-state" hidden>
       <span class="empty-icon">🌶️</span>
       <p>Noch keine Chilis in der Sammlung.<br>Leg mit dem <strong>+</strong>-Button los.</p>
