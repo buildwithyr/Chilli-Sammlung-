@@ -13,7 +13,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-2",
@@ -29,7 +30,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-4",
@@ -45,7 +47,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-5",
@@ -61,7 +64,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-6",
@@ -77,7 +81,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-8",
@@ -93,7 +98,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-10",
@@ -109,7 +115,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-11",
@@ -125,7 +132,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-12",
@@ -141,7 +149,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-14",
@@ -157,7 +166,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-16",
@@ -173,7 +183,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-18",
@@ -189,7 +200,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-20",
@@ -205,7 +217,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-21",
@@ -221,7 +234,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-22",
@@ -237,7 +251,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-23",
@@ -253,7 +268,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-24",
@@ -269,7 +285,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-25",
@@ -285,7 +302,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-28",
@@ -301,7 +319,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-29",
@@ -317,7 +336,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-30",
@@ -333,7 +353,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-32",
@@ -349,7 +370,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-34",
@@ -365,7 +387,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-35",
@@ -381,7 +404,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-36",
@@ -397,7 +421,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-39",
@@ -413,7 +438,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-40",
@@ -429,7 +455,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-41",
@@ -445,7 +472,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-45",
@@ -461,7 +489,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-46",
@@ -477,7 +506,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-47",
@@ -493,7 +523,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-48",
@@ -509,7 +540,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-51",
@@ -525,7 +557,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-52",
@@ -541,7 +574,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-55",
@@ -557,7 +591,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-57",
@@ -573,7 +608,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-61",
@@ -589,7 +625,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-63",
@@ -605,7 +642,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-64",
@@ -621,7 +659,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-71",
@@ -637,7 +676,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-72",
@@ -653,7 +693,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-73",
@@ -669,7 +710,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-78",
@@ -685,7 +727,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-80",
@@ -701,7 +744,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-84",
@@ -717,7 +761,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-85",
@@ -733,7 +778,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-88",
@@ -749,7 +795,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-89",
@@ -765,7 +812,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-90",
@@ -781,7 +829,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-94",
@@ -797,7 +846,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-95",
@@ -813,7 +863,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-96",
@@ -829,7 +880,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-97",
@@ -845,7 +897,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-98",
@@ -861,7 +914,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-99",
@@ -877,7 +931,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-100",
@@ -893,7 +948,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-101",
@@ -909,7 +965,8 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   },
   {
     "id": "seed-102",
@@ -925,6 +982,7 @@ const SEED_CHILIS = [
     "erntenotizen": "",
     "geschmack": "",
     "notizen": "",
-    "fotos": []
+    "fotos": [],
+    "jahr": "2026"
   }
 ];

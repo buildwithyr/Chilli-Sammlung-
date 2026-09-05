@@ -34,6 +34,8 @@
     </div>
   </header>
 
+  <nav id="yearTabs" class="year-tabs" aria-label="Jahr wählen"></nav>
+
   <main>
     <div id="emptyState" class="empty-state" hidden>
       <span class="empty-icon">🌶️</span>
@@ -75,6 +77,9 @@
           </label>
           <label>Name
             <input type="text" id="fieldName" required placeholder="z.B. Carolina Reaper">
+          </label>
+          <label>Jahr
+            <select id="fieldJahr"></select>
           </label>
           <label>Sorte / Art
             <input type="text" id="fieldSorte" placeholder="z.B. Capsicum chinense">

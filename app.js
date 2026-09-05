@@ -1,5 +1,9 @@
 const STORAGE_KEY = "chiliSammlung";
 const VIEW_KEY = "chiliViewMode";
+const YEAR_KEY = "chiliActiveYear";
+
+const YEAR_OPTIONS = ["2024", "2025", "2026", "2027"];
+const DEFAULT_YEAR = "2026";
 
 const STATUS_OPTIONS = [
   "Aussaat",
@@ -26,7 +30,9 @@ function loadChilis() {
       // Erster Start: mit der Chili-2026-Liste vorbefüllen.
       return typeof SEED_CHILIS !== "undefined" ? [...SEED_CHILIS] : [];
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Migration: Chilis aus einer älteren Version hatten noch kein Jahr.
+    return parsed.map((c) => (c.jahr ? c : { ...c, jahr: DEFAULT_YEAR }));
   } catch (e) {
     console.error("Konnte gespeicherte Daten nicht lesen", e);
     return [];
@@ -49,8 +55,10 @@ const searchInput = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
 const viewGridBtn = document.getElementById("viewGridBtn");
 const viewListBtn = document.getElementById("viewListBtn");
+const yearTabs = document.getElementById("yearTabs");
 
 let viewMode = localStorage.getItem(VIEW_KEY) === "list" ? "list" : "grid";
+let activeYear = localStorage.getItem(YEAR_KEY) || "";
 
 function setViewMode(mode) {
   viewMode = mode;
@@ -63,12 +71,49 @@ function setViewMode(mode) {
 viewGridBtn.addEventListener("click", () => setViewMode("grid"));
 viewListBtn.addEventListener("click", () => setViewMode("list"));
 
+function setActiveYear(year) {
+  activeYear = year;
+  localStorage.setItem(YEAR_KEY, year);
+  renderYearTabs();
+  render();
+}
+
+function renderYearTabs() {
+  yearTabs.innerHTML = "";
+
+  const allTab = document.createElement("button");
+  allTab.type = "button";
+  allTab.className = "year-tab" + (activeYear === "" ? " active" : "");
+  allTab.textContent = "Alle Jahre";
+  allTab.addEventListener("click", () => setActiveYear(""));
+  yearTabs.appendChild(allTab);
+
+  for (const year of YEAR_OPTIONS) {
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "year-tab" + (activeYear === year ? " active" : "");
+    tab.textContent = year;
+    tab.addEventListener("click", () => setActiveYear(year));
+    yearTabs.appendChild(tab);
+  }
+}
+
 function populateStatusFilter() {
   for (const status of STATUS_OPTIONS) {
     const opt = document.createElement("option");
     opt.value = status;
     opt.textContent = status;
     statusFilter.appendChild(opt);
+  }
+}
+
+function populateYearSelect() {
+  const select = document.getElementById("fieldJahr");
+  for (const year of YEAR_OPTIONS) {
+    const opt = document.createElement("option");
+    opt.value = year;
+    opt.textContent = year;
+    select.appendChild(opt);
   }
 }
 
@@ -91,11 +136,16 @@ function render() {
       (c.sorte || "").toLowerCase().includes(query) ||
       (c.nr || "").toLowerCase().includes(query);
     const matchesStatus = !statusQuery || c.status === statusQuery;
-    return matchesQuery && matchesStatus;
+    const matchesYear = !activeYear || c.jahr === activeYear;
+    return matchesQuery && matchesStatus && matchesYear;
   });
 
   grid.innerHTML = "";
-  emptyState.hidden = chilis.length > 0;
+  emptyState.hidden = filtered.length > 0;
+  emptyState.querySelector("p").innerHTML =
+    chilis.length === 0
+      ? 'Noch keine Chilis in der Sammlung.<br>Leg mit dem <strong>+</strong>-Button los.'
+      : 'Keine Chilis für diese Auswahl.<br>Anderes Jahr oder anderen Filter probieren.';
   grid.className = viewMode === "list" ? "chili-list" : "chili-grid";
 
   for (const c of filtered) {
@@ -140,6 +190,7 @@ function buildCard(c) {
     <div class="card-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
       <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
+      ${activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
   card.appendChild(body);
@@ -156,6 +207,7 @@ function buildRow(c) {
     <div class="row-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
       <span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>
+      ${activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
   `;
   return row;
@@ -183,6 +235,7 @@ function openModal(id) {
   document.getElementById("chiliId").value = chili ? chili.id : "";
   document.getElementById("fieldNr").value = chili?.nr || "";
   document.getElementById("fieldName").value = chili?.name || "";
+  document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
   document.getElementById("fieldSorte").value = chili?.sorte || "";
   document.getElementById("fieldHerkunft").value = chili?.herkunft || "";
   document.getElementById("fieldSg").value = chili?.sg || "";
@@ -265,6 +318,7 @@ form.addEventListener("submit", (e) => {
     id,
     nr: document.getElementById("fieldNr").value.trim(),
     name: document.getElementById("fieldName").value.trim(),
+    jahr: document.getElementById("fieldJahr").value,
     sorte: document.getElementById("fieldSorte").value.trim(),
     herkunft: document.getElementById("fieldHerkunft").value.trim(),
     sg: document.getElementById("fieldSg").value.trim(),
@@ -345,6 +399,8 @@ importFile.addEventListener("change", async () => {
 // --- Init ---
 
 populateStatusFilter();
+populateYearSelect();
+renderYearTabs();
 viewGridBtn.classList.toggle("active", viewMode === "grid");
 viewListBtn.classList.toggle("active", viewMode === "list");
 render();

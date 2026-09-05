@@ -14,6 +14,9 @@ für Handy und Desktop.
 - Suche und Status-Filter oben, um die Sammlung zu durchsuchen.
 - Umschalter oben rechts (▦ / ☰): Kacheln mit Fotos oder kompakte Liste nur
   mit Namen zum schnellen Scrollen. Die Wahl wird gemerkt.
+- Jahres-Reiter unter dem Kopfbereich (Alle Jahre / 2024 / 2025 / 2026 / 2027):
+  filtert die Sammlung nach Anbau-Jahr, damit auch vergangene Saisons
+  festgehalten werden können.
 
 Auf dem Handy kann die App über „Zum Home-Bildschirm hinzufügen" (iOS) bzw.
 „App installieren" (Android) mit eigenem Chili-Icon abgelegt werden.
@@ -25,7 +28,7 @@ nach und nach über die Karten nach.
 
 ## Felder pro Chili
 
-- Katalog-Nr., Name, Sorte/Art, Herkunft
+- Katalog-Nr., Name, Jahr (2024–2027), Sorte/Art, Herkunft
 - Schärfegrad (eigene Sg-Skala 1–10(+) aus dem Chili-Buch, optional
   zusätzlich ein Scoville-Wert)
 - Status (Aussaat → Ernte läuft → Saison beendet)
