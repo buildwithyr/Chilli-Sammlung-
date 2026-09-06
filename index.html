@@ -63,6 +63,7 @@
             <button type="button" id="menuExportBtn" class="menu-item">Daten exportieren (JSON)</button>
             <button type="button" id="menuImportBtn" class="menu-item">Daten importieren</button>
             <input type="file" id="importFile" accept="application/json" hidden>
+            <button type="button" id="menuExcelImportBtn" class="menu-item">Excelliste importieren</button>
             <div class="menu-divider" aria-hidden="true"></div>
             <button type="button" id="menuInfoBtn" class="menu-item">Info</button>
           </div>
@@ -278,6 +279,34 @@
       </p>
 
       <p class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</p>
+    </div>
+  </div>
+
+  <div id="excelImportModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="excelImportCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title">Excelliste importieren</h2>
+      </div>
+      <p class="qr-labels-hint">
+        Spalten in der Excel-Datei: <strong>Nr</strong>, <strong>Name</strong>, <strong>Sg</strong> und
+        <strong>Jahr</strong> (für jede Zeile ausgefüllt, z.B. per Ausfüllgriff nach unten gezogen).
+        Weitere Spalten (Herkunft, Sorte, Art, Scoville, Status) sind optional.
+      </p>
+      <button type="button" id="excelTemplateBtn" class="btn btn-secondary">Vorlage herunterladen</button>
+      <button type="button" id="excelChooseFileBtn" class="btn btn-secondary">Datei auswählen</button>
+      <input type="file" id="excelImportFile" accept=".xlsx,.xls" hidden>
+      <div id="excelImportPreview" class="excel-import-preview" hidden>
+        <p id="excelImportSummary"></p>
+        <ul id="excelImportErrors" class="excel-import-errors" hidden></ul>
+        <div class="excel-import-table-wrap">
+          <table id="excelImportTable" class="excel-import-table"></table>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="excelImportConfirmBtn" class="btn btn-primary" disabled>Importieren</button>
+        <button type="button" id="excelImportCancelBtn" class="btn btn-secondary">Abbrechen</button>
+      </div>
     </div>
   </div>
 
@@ -537,6 +566,7 @@
   <script src="vendor/tesseract.min.js"></script>
   <script src="vendor/qrcode.min.js"></script>
   <script src="vendor/jsqr.js"></script>
+  <script src="vendor/xlsx.core.min.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

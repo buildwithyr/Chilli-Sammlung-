@@ -254,11 +254,21 @@ function linkSharedVarietyData(list) {
   return list.map((chili) => {
     const source = newestByVariety.get(varietyKey(chili.name));
     if (!source) return chili;
-    return {
-      ...chili,
-      ...Object.fromEntries(SHARED_VARIETY_FIELDS.map((field) => [field, source[field]])),
-    };
+    return { ...chili, ...sharedVarietyOverrides(source) };
   });
+}
+
+// Nur tatsaechlich ausgefuellte Felder weitergeben - sonst wuerde z.B. ein
+// Import mit nur Nr/Name/Sg schon recherchierte Herkunft/Scoville-Angaben
+// anderer Jahre loeschen, sobald der importierte Jahrgang der neueste ist.
+function sharedVarietyOverrides(source) {
+  const overrides = {};
+  for (const field of SHARED_VARIETY_FIELDS) {
+    const value = source[field];
+    const hasValue = Array.isArray(value) ? value.length > 0 : !!value;
+    if (hasValue) overrides[field] = value;
+  }
+  return overrides;
 }
 
 async function deleteChiliRemote(id) {
@@ -2134,7 +2144,7 @@ form.addEventListener("submit", async (e) => {
     const key = varietyKey(c.name);
     return c.id !== id && key && (key === oldKey || key === newKey);
   });
-  const sharedValues = Object.fromEntries(SHARED_VARIETY_FIELDS.map((field) => [field, data[field]]));
+  const sharedValues = sharedVarietyOverrides(data);
   const linkedUpdates = linked.map((c) => ({ ...c, ...sharedValues }));
 
   // Den aktuellen Datensatz separat speichern. Bei einem Array-Upsert ergänzt
@@ -2425,6 +2435,239 @@ importFile.addEventListener("change", async () => {
     alert("Import fehlgeschlagen: " + err.message);
   }
   importFile.value = "";
+});
+
+// --- Excelliste importieren ---
+// Ergaenzt die Sammlung um Zeilen aus einer Excel-Datei (Spalten Nr/Name/Sg
+// plus Jahr), statt wie der JSON-Import alles zu ersetzen. Jede Zeile wird
+// ueber Nr+Jahr einer Chili zugeordnet - existiert die schon, werden nur die
+// Tabellen-Felder aktualisiert, Saison-Daten (Fotos, Status, Notizen ...)
+// bleiben erhalten.
+
+const EXCEL_COLUMN_ALIASES = {
+  nr: ["nr", "nr.", "katalog-nr", "katalog-nr.", "katalognr"],
+  name: ["name"],
+  sg: ["sg", "schärfegrad", "scharfegrad"],
+  jahr: ["jahr", "anbaujahr"],
+  herkunft: ["herkunft"],
+  sorte: ["sorte"],
+  art: ["art"],
+  scoville: ["scoville", "shu"],
+  status: ["status"],
+};
+
+let pendingExcelRecords = [];
+
+const menuExcelImportBtn = document.getElementById("menuExcelImportBtn");
+const excelImportModal = document.getElementById("excelImportModal");
+const excelImportCloseBtn = document.getElementById("excelImportCloseBtn");
+const excelTemplateBtn = document.getElementById("excelTemplateBtn");
+const excelChooseFileBtn = document.getElementById("excelChooseFileBtn");
+const excelImportFile = document.getElementById("excelImportFile");
+const excelImportPreview = document.getElementById("excelImportPreview");
+const excelImportSummary = document.getElementById("excelImportSummary");
+const excelImportErrors = document.getElementById("excelImportErrors");
+const excelImportTable = document.getElementById("excelImportTable");
+const excelImportConfirmBtn = document.getElementById("excelImportConfirmBtn");
+const excelImportCancelBtn = document.getElementById("excelImportCancelBtn");
+
+function openExcelImportModal() {
+  closeMenu();
+  pendingExcelRecords = [];
+  excelImportFile.value = "";
+  excelImportPreview.hidden = true;
+  excelImportConfirmBtn.disabled = true;
+  excelImportModal.hidden = false;
+}
+
+function closeExcelImportModal() {
+  excelImportModal.hidden = true;
+}
+
+function downloadExcelTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["Nr", "Name", "Sg", "Jahr"],
+    [1, "Mustafa", 2, 2025],
+    [2, "Carolina Reaper", "10+", 2025],
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws, "Chili");
+  XLSX.writeFile(wb, "Chili-Import-Vorlage.xlsx");
+}
+
+function normalizeExcelHeader(value) {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function buildExcelColumnMap(headerRow) {
+  const map = {};
+  headerRow.forEach((cell, index) => {
+    const norm = normalizeExcelHeader(cell);
+    for (const [field, aliases] of Object.entries(EXCEL_COLUMN_ALIASES)) {
+      if (!(field in map) && aliases.includes(norm)) map[field] = index;
+    }
+  });
+  return map;
+}
+
+function parseExcelWorkbook(workbook) {
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", blankrows: false });
+  if (rows.length < 2) {
+    return { records: [], errors: ["Die Datei enthält keine Datenzeilen."] };
+  }
+
+  const colMap = buildExcelColumnMap(rows[0]);
+  const errors = [];
+  if (colMap.name === undefined) errors.push('Spalte "Name" nicht gefunden.');
+  if (colMap.jahr === undefined) errors.push('Spalte "Jahr" nicht gefunden.');
+  if (errors.length > 0) return { records: [], errors };
+
+  const records = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const get = (field) =>
+      colMap[field] !== undefined ? String(row[colMap[field]] ?? "").trim() : "";
+    const name = get("name");
+    const jahr = get("jahr");
+    if (!name || !jahr) {
+      errors.push(`Zeile ${i + 1}: Name oder Jahr fehlt, übersprungen.`);
+      continue;
+    }
+    records.push({
+      nr: get("nr"),
+      name,
+      jahr,
+      sg: get("sg"),
+      herkunft: get("herkunft"),
+      sorte: get("sorte"),
+      art: get("art"),
+      scoville: get("scoville"),
+      status: get("status"),
+    });
+  }
+  return { records, errors };
+}
+
+function renderExcelImportPreview(records, errors) {
+  excelImportPreview.hidden = false;
+
+  const years = new Map();
+  for (const r of records) years.set(r.jahr, (years.get(r.jahr) || 0) + 1);
+  const yearSummary = [...years.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([jahr, count]) => `${jahr} (${count})`)
+    .join(", ");
+  excelImportSummary.textContent =
+    records.length > 0
+      ? `${records.length} Zeile${records.length === 1 ? "" : "n"} erkannt für Jahr${years.size === 1 ? "" : "e"}: ${yearSummary}`
+      : "Keine gültigen Zeilen gefunden.";
+
+  excelImportErrors.innerHTML = "";
+  excelImportErrors.hidden = errors.length === 0;
+  for (const err of errors) {
+    const li = document.createElement("li");
+    li.textContent = err;
+    excelImportErrors.appendChild(li);
+  }
+
+  const previewRows = records.slice(0, 10);
+  excelImportTable.innerHTML = `
+    <thead>
+      <tr><th>Nr</th><th>Name</th><th>Sg</th><th>Jahr</th></tr>
+    </thead>
+    <tbody>
+      ${previewRows
+        .map(
+          (r) =>
+            `<tr><td>${escapeHtml(r.nr)}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.sg)}</td><td>${escapeHtml(r.jahr)}</td></tr>`
+        )
+        .join("")}
+      ${records.length > previewRows.length ? `<tr><td colspan="4">… und ${records.length - previewRows.length} weitere</td></tr>` : ""}
+    </tbody>
+  `;
+
+  excelImportConfirmBtn.disabled = records.length === 0;
+}
+
+function buildChiliFromExcelRow(row, existing) {
+  return {
+    id: row.nr ? `${row.jahr}-${row.nr}` : existing?.id || uid(),
+    nr: row.nr || existing?.nr || "",
+    name: row.name,
+    jahr: row.jahr,
+    sorte: row.sorte || existing?.sorte || "",
+    herkunft: row.herkunft || existing?.herkunft || "",
+    art: row.art || existing?.art || "",
+    sg: row.sg || existing?.sg || "",
+    scoville: row.scoville || existing?.scoville || "",
+    status: row.status || existing?.status || "Aussaat",
+    pflanzdatum: existing?.pflanzdatum || null,
+    erntedatum: existing?.erntedatum || null,
+    erntenotizen: existing?.erntenotizen || "",
+    geschmack: existing?.geschmack || "",
+    geschmack_tags: existing?.geschmack_tags || [],
+    notizen: existing?.notizen || "",
+    fotos: existing?.fotos || [],
+  };
+}
+
+menuExcelImportBtn.addEventListener("click", openExcelImportModal);
+excelImportCloseBtn.addEventListener("click", closeExcelImportModal);
+excelImportCancelBtn.addEventListener("click", closeExcelImportModal);
+excelImportModal.addEventListener("click", (e) => {
+  if (e.target === excelImportModal) closeExcelImportModal();
+});
+excelTemplateBtn.addEventListener("click", downloadExcelTemplate);
+excelChooseFileBtn.addEventListener("click", () => excelImportFile.click());
+
+excelImportFile.addEventListener("change", async () => {
+  const file = excelImportFile.files[0];
+  if (!file) return;
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(new Uint8Array(buffer), { type: "array" });
+    const { records, errors } = parseExcelWorkbook(workbook);
+    pendingExcelRecords = records;
+    renderExcelImportPreview(records, errors);
+  } catch (err) {
+    pendingExcelRecords = [];
+    renderExcelImportPreview([], ["Datei konnte nicht gelesen werden: " + err.message]);
+  }
+});
+
+excelImportConfirmBtn.addEventListener("click", async () => {
+  if (pendingExcelRecords.length === 0) return;
+  excelImportConfirmBtn.disabled = true;
+
+  const existingById = new Map(chilis.map((c) => [c.id, c]));
+  const newRecords = pendingExcelRecords.map((row) =>
+    buildChiliFromExcelRow(row, row.nr ? existingById.get(`${row.jahr}-${row.nr}`) : null)
+  );
+
+  const { error } = await sb.from("chilis").upsert(newRecords);
+  if (error) {
+    alert("Import fehlgeschlagen: " + error.message);
+    excelImportConfirmBtn.disabled = false;
+    return;
+  }
+
+  for (const rec of newRecords) {
+    const index = chilis.findIndex((c) => c.id === rec.id);
+    if (index >= 0) chilis[index] = rec;
+    else chilis.push(rec);
+  }
+  chilis = linkSharedVarietyData(chilis);
+
+  for (const rec of newRecords) {
+    if (!YEAR_OPTIONS.includes(rec.jahr)) YEAR_OPTIONS.push(rec.jahr);
+  }
+  YEAR_OPTIONS.sort();
+  renderYearTabs();
+  render();
+
+  closeExcelImportModal();
+  alert(`${newRecords.length} Chili${newRecords.length === 1 ? "" : "s"} importiert.`);
 });
 
 // --- Statistik ---
