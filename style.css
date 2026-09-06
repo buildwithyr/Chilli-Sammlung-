@@ -1351,6 +1351,33 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   margin-top: 4px;
 }
 
+/* Schärfegrad in Karten/Zeilen: kleine 10-Segment-Leiste statt Text, damit
+   man den Unterschied zwischen den Sorten auf einen Blick sieht. Den
+   genauen Wert zeigt weiterhin das Bearbeiten-Fenster. */
+.sg-heat-bar {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.sg-heat-seg {
+  width: 5px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--color-badge);
+  border: 1px solid var(--color-border);
+}
+
+.sg-heat-seg.filled {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.sg-heat-bar-plus .sg-heat-seg.filled {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
 .tag-chips {
   display: flex;
   flex-wrap: wrap;

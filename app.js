@@ -957,10 +957,17 @@ function sgValue(sg) {
   return normalizeSg(sg).num;
 }
 
-function sgBadge(sg) {
+// In der Uebersicht (Karten/Zeilen) auf einen Blick erkennbar statt reinem
+// Text, der bei jeder Sorte gleich aussah - der genaue Wert steht weiterhin
+// im Bearbeiten-Fenster ("Schärfegrad X").
+function sgHeatBar(sg) {
   const norm = normalizeSg(sg);
-  if (!norm.display) return "–";
-  return `Schärfegrad ${norm.display}`;
+  const segments = Array.from({ length: 10 }, (_, i) => {
+    const filled = norm.plus || i < norm.num;
+    return `<span class="sg-heat-seg${filled ? " filled" : ""}"></span>`;
+  }).join("");
+  const title = norm.display ? `Schärfegrad ${norm.display}` : "Schärfegrad unbekannt";
+  return `<span class="sg-heat-bar${norm.plus ? " sg-heat-bar-plus" : ""}" title="${title}">${segments}</span>`;
 }
 
 function sortChilis(list) {
@@ -1253,7 +1260,7 @@ function buildCard(c) {
     <h3>${escapeHtml(c.name)}</h3>
     <span class="card-meta">${escapeHtml(c.herkunft || "Herkunft unbekannt")}</span>
     <div class="card-badges">
-      <span class="badge">${sgBadge(c.sg)}</span>
+      ${sgHeatBar(c.sg)}
       ${c._linkedChilis && c._years.length > 1 ? `<span class="badge badge-status">${c._years.length} Anbaujahre</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
       ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
@@ -1282,7 +1289,7 @@ function buildRow(c) {
     <span class="row-nr">${c.nr ? `Nr. ${escapeHtml(c.nr)}` : ""}</span>
     <span class="row-name">${escapeHtml(c.name)}</span>
     <div class="row-badges">
-      <span class="badge">${sgBadge(c.sg)}</span>
+      ${sgHeatBar(c.sg)}
       ${c._linkedChilis && c._years.length > 1 ? `<span class="badge badge-status">${c._years.length} Anbaujahre</span>` : `<span class="badge badge-status">${escapeHtml(c.status || "Aussaat")}</span>`}
       ${!c._linkedChilis && activeYear === "" && c.jahr ? `<span class="badge">${escapeHtml(c.jahr)}</span>` : ""}
     </div>
