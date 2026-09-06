@@ -948,8 +948,12 @@ function populateYearSelect() {
   fillOptions(document.getElementById("fieldJahr"), YEAR_OPTIONS);
 }
 
-function nextCatalogNr() {
-  const highest = chilis.reduce((max, c) => Math.max(max, parseInt(c.nr, 10) || 0), 0);
+// Die Katalog-Nr. startet in jedem Jahr wieder bei 1 (wie im Papier-Zettel),
+// zählt also nur innerhalb des jeweiligen Jahres hoch statt über alle Jahre.
+function nextCatalogNr(year) {
+  const highest = chilis
+    .filter((c) => c.jahr === year)
+    .reduce((max, c) => Math.max(max, parseInt(c.nr, 10) || 0), 0);
   return String(highest + 1);
 }
 
@@ -1641,9 +1645,10 @@ function openModal(id) {
   // Neue Chili bekommt sofort eine feste ID, damit Fotos schon während des
   // Ausfüllens in den richtigen Storage-Ordner hochgeladen werden können.
   document.getElementById("chiliId").value = chili ? chili.id : uid();
-  document.getElementById("fieldNr").value = chili?.nr || (chili === null ? nextCatalogNr() : "");
+  const targetYear = chili?.jahr || activeYear || DEFAULT_YEAR;
+  document.getElementById("fieldNr").value = chili?.nr || (chili === null ? nextCatalogNr(targetYear) : "");
   document.getElementById("fieldName").value = chili?.name || "";
-  document.getElementById("fieldJahr").value = chili?.jahr || activeYear || DEFAULT_YEAR;
+  document.getElementById("fieldJahr").value = targetYear;
   document.getElementById("fieldSorte").value = chili?.sorte || "";
   document.getElementById("fieldHerkunft").value = chili?.herkunft || "";
   document.getElementById("fieldArt").value = chili?.art || "";

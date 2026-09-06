@@ -228,6 +228,10 @@ body {
 .menu-wrap {
   position: relative;
   flex-shrink: 0;
+  /* Bricht der Kopfbereich um und der Menü-Button landet allein in einer
+     neuen Zeile, würde er ohne das hier wegen "justify-content:
+     space-between" am linken statt am rechten Rand sitzen. */
+  margin-left: auto;
 }
 
 .menu-dropdown {
@@ -1345,13 +1349,13 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
    genauen Wert zeigt weiterhin das Bearbeiten-Fenster. */
 .sg-heat-bar {
   display: inline-flex;
-  gap: 2px;
+  gap: 3px;
   align-items: center;
 }
 
 .sg-heat-seg {
-  width: 5px;
-  height: 11px;
+  width: 8px;
+  height: 18px;
   border-radius: 2px;
   background: var(--color-badge);
   border: 1px solid var(--color-border);
