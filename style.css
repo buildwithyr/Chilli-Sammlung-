@@ -1,51 +1,72 @@
+/* ============================================================
+   Opa Reiters Chili Sammlung - Theme "Ember"
+   Drop-in-Ersatz für style.css. Alle Klassennamen und Selektoren
+   aus der bestehenden App bleiben unverändert, nur die Optik ist
+   neu. Voraussetzung: die zwei Font-Links im <head> der
+   index.html (Archivo + JetBrains Mono).
+   ============================================================ */
+
 :root {
-  --color-bg: #fdf4ec;
-  --color-surface: #ffffff;
-  --color-text: #2b1a12;
-  --color-muted: #8a6f5f;
-  --color-border: #ecd9c9;
-  --color-primary: #d0451a;
-  --color-primary-dark: #a8360f;
-  --color-accent: #4b7f3f;
-  --color-danger: #b3261e;
-  --color-badge: #f4e3d3;
-  --header-grad-start: #d0451a;
-  --header-grad-end: #ef8a2c;
-  --radius: 14px;
+  /* Ember = die dunkle Grundstimmung der App */
+  --color-bg: #14100e;
+  --color-surface: #1c1714;
+  --color-surface-2: #221b17;
+  --color-text: #f7ece3;
+  --color-muted: #9d8577;
+  --color-border: #33261f;
+  --color-primary: #ff6a2b;
+  --color-primary-dark: #ff4d1a;
+  --color-accent: #8fc47a;
+  --color-warn: #e0b64a;
+  --color-danger: #ff5f4d;
+  --color-badge: #2a221d;
+
+  --font-ui: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-lg: 22px;
 }
 
-/* Dunkelmodus: greift automatisch nach Systemeinstellung, wenn der Umschalter
-   im Header noch keine explizite Wahl gespeichert hat (kein [data-theme]);
-   :root[data-theme="dark"] erzwingt Dunkel unabhängig vom System, sobald
-   jemand das per Klick gewählt hat. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-bg: #1a120d;
-    --color-surface: #261c16;
-    --color-text: #f3e6da;
-    --color-muted: #c2a692;
-    --color-border: #3d2c22;
-    --color-primary: #e2622a;
-    --color-primary-dark: #ff7a3d;
-    --color-accent: #7fb86a;
-    --color-badge: #392920;
-    --header-grad-start: #7a2410;
-    --header-grad-end: #b5540f;
+/* Hellmodus: gleiche Typografie und Formen, warmes Papier statt Glut.
+   Greift, wenn im Menü explizit "Hellmodus" gewählt wurde - oder wenn
+   das System hell ist und noch keine Wahl gespeichert ist. */
+:root[data-theme="light"],
+html:not([data-theme]) {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --color-bg: #f7f2ea;
+    --color-surface: #ffffff;
+    --color-surface-2: #fbf5ee;
+    --color-text: #221a15;
+    --color-muted: #7d6a5c;
+    --color-border: #e6d9c9;
+    --color-primary: #d9451a;
+    --color-primary-dark: #b4360f;
+    --color-accent: #487f39;
+    --color-warn: #a8760c;
+    --color-danger: #b3261e;
+    --color-badge: #f1e6d9;
   }
 }
 
-:root[data-theme="dark"] {
-  --color-bg: #1a120d;
-  --color-surface: #261c16;
-  --color-text: #f3e6da;
-  --color-muted: #c2a692;
-  --color-border: #3d2c22;
-  --color-primary: #e2622a;
-  --color-primary-dark: #ff7a3d;
-  --color-accent: #7fb86a;
-  --color-badge: #392920;
-  --header-grad-start: #7a2410;
-  --header-grad-end: #b5540f;
+:root[data-theme="light"] {
+  --color-bg: #f7f2ea;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbf5ee;
+  --color-text: #221a15;
+  --color-muted: #7d6a5c;
+  --color-border: #e6d9c9;
+  --color-primary: #d9451a;
+  --color-primary-dark: #b4360f;
+  --color-accent: #487f39;
+  --color-warn: #a8760c;
+  --color-danger: #b3261e;
+  --color-badge: #f1e6d9;
 }
 
 * { box-sizing: border-box; }
@@ -54,30 +75,25 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* --- Fixierte Kopfleiste: Header + Haupt-Reiter + Jahres-Leiste als EINE
-   zusammenhängende, abgerundete Glas-Einheit über dem Chili-Foto. Das
-   Foto ist nur noch hier sichtbar (nicht mehr als Seitenhintergrund) -
-   der Rest der Seite bekommt eine ruhige, einfarbige Fläche (--color-bg).
-   Ein einziger position:sticky-Container statt drei einzelner sorgt auch
-   dafür, dass keine Höhen mehr per JS aufsummiert werden müssen. */
+/* ============================================================
+   Kopfbereich: ein grosses Foto, darüber ein Verlauf, der nach
+   unten sauber in den Seitenhintergrund übergeht. Kein Milchglas
+   mehr - Text liegt auf voller Deckkraft und bleibt lesbar.
+   ============================================================ */
 
 .top-bar {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-radius: 0 0 26px 26px;
-  box-shadow: 0 10px 24px -10px rgba(20,8,4,0.45);
-  color: #fff;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  color: #f7ece3;
 }
 
-/* Foto + Glas liegen in einem eigenen, abgerundeten und geclippten
-   Hintergrund-Wrapper - NICHT direkt auf .top-bar mit overflow:hidden,
-   sonst würden die Sammlung/Bestellungen- und Jahres-Dropdowns (die über
-   den Rand von .top-bar hinausragen) mit abgeschnitten. */
 .top-bar-bg {
   position: absolute;
   inset: 0;
@@ -89,20 +105,24 @@ body {
 .top-bar-photo {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(30,12,5,0.3), rgba(30,12,5,0.55)),
-    url("assets/hero.jpg") center 28% / cover no-repeat;
+  background: url("assets/hero.jpg") center 30% / cover no-repeat;
 }
 
-/* Durchsichtiges Glas über dem Foto - das eigentliche "Frosted Glass" der
-   Einheit; Header/Reiter/Jahres-Leiste selbst bleiben transparent und
-   liegen als Inhalt einfach darüber. */
+/* Aus dem früheren Milchglas wird ein Verlauf: oben lässt er das Foto
+   durch, unten läuft er in #14100e aus, damit Suchfeld und Reiter auf
+   ruhigem Grund sitzen. */
 .top-bar-glass {
   position: absolute;
   inset: 0;
-  background: rgba(25,10,5,0.22);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  background: linear-gradient(
+    180deg,
+    rgba(20, 16, 14, 0.35) 0%,
+    rgba(20, 16, 14, 0.62) 42%,
+    rgba(20, 16, 14, 0.94) 78%,
+    var(--color-bg) 100%
+  );
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .top-bar > .app-header,
@@ -111,26 +131,24 @@ body {
   position: relative;
 }
 
-/* Header immer über den Reitern darunter, damit das Menü-Dropdown (das über
-   den Header hinaus in die main-tabs-Zeile ragt) nicht von ihnen verdeckt
-   und deren Klicks nicht durch das Dropdown hindurch abgefangen werden. */
 .top-bar > .app-header { z-index: 4; }
 .top-bar > .main-tabs { z-index: 3; }
 .top-bar > .year-tabs-bar { z-index: 2; }
 
 /* --- Header --- */
 
-.app-header {
-  color: #fff;
-}
+.app-header { color: #f7ece3; }
 
 .header-overlay {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  padding: calc(22px + env(safe-area-inset-top)) 24px 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: calc(26px + env(safe-area-inset-top)) 24px 18px;
 }
 
 .brand {
@@ -139,22 +157,34 @@ body {
   gap: 12px;
 }
 
-.brand-icon {
-  font-size: 2rem;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
-}
+/* Das Chili-Emoji im Titel entfällt - die Marke ist die Schrift. */
+.brand-icon { display: none; }
 
 .app-header h1 {
   margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-family: var(--font-ui);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Zweite Titelzeile in Glut-Orange (siehe index.html: <span class="brand-accent">) */
+.app-header h1 .brand-accent {
+  color: var(--color-primary);
 }
 
 .brand-sub {
-  margin: 2px 0 0;
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.85);
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247, 236, 227, 0.72);
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -163,34 +193,36 @@ body {
   flex-wrap: wrap;
   flex: 1;
   justify-content: flex-end;
+  align-items: center;
 }
 
-.header-actions[hidden] {
-  display: none;
-}
+.header-actions[hidden] { display: none; }
 
 .icon-btn {
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.16);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(247, 236, 227, 0.18);
+  background: rgba(28, 23, 20, 0.72);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #f7ece3;
+  border-radius: var(--radius-sm);
   font-size: 1.05rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 .icon-btn:hover {
-  background: rgba(255,255,255,0.28);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #14100e;
 }
 .icon-btn.active {
-  background: #fff;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #14100e;
 }
 
 .menu-wrap {
@@ -205,42 +237,40 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 190px;
-  padding: 6px;
+  min-width: 210px;
+  padding: 8px;
   background: var(--color-surface);
   color: var(--color-text);
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.8);
   z-index: 30;
 }
 
-.menu-dropdown[hidden] {
-  display: none;
-}
+.menu-dropdown[hidden] { display: none; }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border: none;
   background: transparent;
   color: var(--color-text);
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-family: var(--font-ui);
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   text-align: left;
 }
 
-.menu-item:hover {
-  background: var(--color-badge);
-}
+.menu-item:hover { background: var(--color-badge); }
 
 .menu-divider {
   height: 1px;
   background: var(--color-border);
-  margin: 4px 2px;
+  margin: 5px 2px;
 }
 
 input, select, textarea, button {
@@ -248,19 +278,28 @@ input, select, textarea, button {
   font-size: 0.95rem;
 }
 
-input[type="search"], select, input[type="text"], input[type="date"], textarea {
-  padding: 9px 12px;
-  border-radius: 10px;
+input[type="search"], select, input[type="text"], input[type="date"],
+input[type="number"], textarea {
+  padding: 11px 13px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   color: var(--color-text);
+}
+
+input::placeholder, textarea::placeholder { color: var(--color-muted); }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
 }
 
 .search-with-scan {
   display: flex;
   gap: 6px;
   flex: 1;
-  min-width: 160px;
+  min-width: 170px;
 }
 
 .search-with-scan input[type="search"] {
@@ -268,31 +307,44 @@ input[type="search"], select, input[type="text"], input[type="date"], textarea {
   min-width: 0;
 }
 
+/* #scanQrBtn zeigt Text ("Scan") statt eines Symbols - braucht deshalb
+   Breite statt der quadratischen Icon-Button-Form. */
+#scanQrBtn {
+  width: auto;
+  padding: 0 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .header-actions input[type="search"],
 .header-actions select {
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.16);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
+  border: 1px solid rgba(247, 236, 227, 0.18);
+  background: rgba(28, 23, 20, 0.72);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #f7ece3;
 }
-.header-actions input[type="search"]::placeholder { color: rgba(255,255,255,0.75); }
-.header-actions select option { color: var(--color-text); }
+.header-actions input[type="search"]::placeholder { color: rgba(247, 236, 227, 0.55); }
+.header-actions select option { color: var(--color-text); background: var(--color-surface); }
 
 .view-toggle {
   display: flex;
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 10px;
+  border: 1px solid rgba(247, 236, 227, 0.18);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .view-btn {
   border: none;
-  background: rgba(255,255,255,0.16);
-  color: #fff;
-  padding: 9px 12px;
+  background: rgba(28, 23, 20, 0.72);
+  color: #f7ece3;
+  padding: 11px 13px;
   cursor: pointer;
   font-size: 1rem;
   line-height: 1;
@@ -300,8 +352,8 @@ input[type="search"], select, input[type="text"], input[type="date"], textarea {
 }
 
 .view-btn.active {
-  background: #fff;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: #14100e;
 }
 
 textarea { resize: vertical; }
@@ -309,31 +361,41 @@ textarea { resize: vertical; }
 /* --- Buttons --- */
 
 .btn {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   cursor: pointer;
-  font-weight: 600;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: #14100e;
 }
 .btn-primary:hover { background: var(--color-primary-dark); }
 
 .btn-secondary {
   background: var(--color-badge);
+  border-color: var(--color-border);
   color: var(--color-text);
 }
+.btn-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 .btn-danger {
   background: transparent;
   color: var(--color-danger);
   border: 1px solid var(--color-danger);
 }
+.btn-danger:hover { background: var(--color-danger); color: #14100e; }
 
-/* Floating "Neue Chili" button: full pill on desktop, round FAB on mobile */
+.btn:disabled { opacity: 0.4; cursor: default; }
+
+/* --- Neue Chili: runder Glut-Knopf --- */
 
 .fab {
   position: fixed;
@@ -342,57 +404,61 @@ textarea { resize: vertical; }
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 22px;
+  padding: 15px 24px;
   border: none;
   border-radius: 999px;
   background: var(--color-primary);
-  color: #fff;
-  font-weight: 700;
+  color: #14100e;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(208,69,26,0.4);
+  box-shadow: 0 12px 30px -8px rgba(255, 106, 43, 0.65);
   z-index: 5;
 }
 .fab:hover { background: var(--color-primary-dark); }
 .fab[hidden] { display: none; }
-.fab-icon { font-size: 1.2rem; line-height: 1; }
+.fab-icon { font-size: 1.3rem; line-height: 1; font-weight: 700; }
 
-.main-tabs {
-  display: flex;
-  gap: 6px;
-}
+/* --- Haupt-Reiter --- */
+
+.main-tabs { display: flex; }
 
 .main-tabs-inner {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 6px 24px 14px;
+  padding: 4px 24px 12px;
   width: 100%;
 }
 
 .main-tab {
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.14);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
+  border: 1px solid rgba(247, 236, 227, 0.16);
+  background: rgba(28, 23, 20, 0.72);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: rgba(247, 236, 227, 0.75);
   padding: 10px 20px;
   border-radius: 999px;
+  font-family: var(--font-ui);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .main-tab.active {
-  background: #fff;
-  border-color: #fff;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #14100e;
 }
 
-.year-tabs-bar[hidden] {
-  display: none;
-}
+.year-tabs-bar[hidden] { display: none; }
 
 .year-tabs-inner {
   display: flex;
@@ -401,53 +467,56 @@ textarea { resize: vertical; }
   gap: 10px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 6px 24px 18px;
+  padding: 2px 24px 20px;
 }
 
 .year-tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .year-tab {
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.16);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
-  padding: 7px 16px;
+  border: 1px solid rgba(247, 236, 227, 0.16);
+  background: rgba(28, 23, 20, 0.6);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: rgba(247, 236, 227, 0.75);
+  padding: 7px 15px;
   border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .year-tab.active {
-  background: #fff;
-  border-color: #fff;
-  color: var(--color-primary);
+  background: #f7ece3;
+  border-color: #f7ece3;
+  color: #14100e;
 }
 
-/* Kompakte Dropdown-Buttons für Haupt-Reiter/Jahres-Leiste - nur am Handy
-   sichtbar (siehe Mobile-Media-Query weiter unten), am Desktop bleiben die
-   normalen Pillen-Reihen. */
-.tabs-toggle {
-  display: none;
-}
+.tabs-toggle { display: none; }
 
 main {
-  padding: 24px;
-  padding-bottom: 96px;
+  padding: 26px 24px;
+  padding-bottom: 110px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/* ============================================================
+   Sammlung: Kacheln
+   ============================================================ */
+
 .chili-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 16px;
 }
 
 .chili-card {
@@ -456,19 +525,18 @@ main {
   border-radius: var(--radius);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.5);
 }
 .chili-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 18px 34px -18px rgba(0, 0, 0, 0.8);
 }
 
-.card-photo-wrap {
-  position: relative;
-}
+.card-photo-wrap { position: relative; }
 
 .card-photo {
   width: 100%;
@@ -480,41 +548,44 @@ main {
 
 .card-nr {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
+  top: 9px;
+  left: 9px;
+  background: rgba(20, 16, 14, 0.78);
+  color: #f7ece3;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 7px;
 }
 
 .chili-card.selected {
-  outline: 3px solid var(--color-primary);
-  outline-offset: -3px;
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-color: var(--color-primary);
 }
 
 .card-select-checkbox {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
+  top: 9px;
+  right: 9px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(20, 16, 14, 0.78);
   border: 2px solid var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .card-select-checkbox.checked {
   background: var(--color-primary);
-  color: #fff;
+  color: #14100e;
 }
 
 .row-select-checkbox {
@@ -526,46 +597,63 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-primary);
 }
 
 .row-select-checkbox.checked {
   background: var(--color-primary);
-  color: #fff;
+  color: #14100e;
 }
 
-.chili-row.selected {
-  background: var(--color-badge);
-}
+.chili-row.selected { background: var(--color-badge); }
 
+/* Kein Kamera-Emoji mehr: gestreifte Fläche mit Beschriftung. */
 .card-photo-placeholder {
   width: 100%;
   aspect-ratio: 4 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.2rem;
-  background:
-    repeating-linear-gradient(135deg, var(--color-badge), var(--color-badge) 10px, transparent 10px, transparent 20px),
-    var(--color-bg);
+  font-size: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-surface-2),
+    var(--color-surface-2) 7px,
+    var(--color-surface) 7px,
+    var(--color-surface) 14px
+  );
+}
+.card-photo-placeholder::after {
+  content: "KEIN FOTO";
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--color-muted);
 }
 
 .card-body {
-  padding: 12px 14px 14px;
+  padding: 12px 13px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .card-body h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
 }
 
 .card-meta {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
   color: var(--color-muted);
 }
 
@@ -573,30 +661,59 @@ main {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-top: 2px;
+  align-items: center;
+  margin-top: 3px;
 }
 
+/* Schärfe-/Scoville-Angaben: Ziffern in Mono, Glut-Orange. */
 .badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 3px 9px;
+  border-radius: 8px;
   background: var(--color-badge);
-  font-size: 0.75rem;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
   width: fit-content;
+  white-space: nowrap;
 }
 
+/* Status: kein Chip, sondern eine Zeile mit Punkt - liest sich schneller. */
 .badge-status {
-  background: rgba(75,127,63,0.15);
+  background: transparent;
+  border: none;
+  padding: 3px 0;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--color-accent);
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
 .year-link {
   appearance: none;
+  background: var(--color-badge);
   border: 1px solid var(--color-border);
-  color: var(--color-text);
+  color: var(--color-muted);
   cursor: pointer;
-  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
 }
 
 .year-link:hover,
@@ -604,6 +721,8 @@ main {
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
+
+/* --- Listen-Ansicht / Bestellungen --- */
 
 .chili-list {
   display: flex;
@@ -618,17 +737,18 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
+  padding: 13px 16px;
   cursor: pointer;
   border-bottom: 1px solid var(--color-border);
 }
 .chili-row:last-child { border-bottom: none; }
-.chili-row:hover { background: var(--color-bg); }
+.chili-row:hover { background: var(--color-surface-2); }
 
 .row-nr {
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   color: var(--color-muted);
-  width: 34px;
+  width: 38px;
   flex-shrink: 0;
 }
 
@@ -643,16 +763,19 @@ main {
 
 .row-badges {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
+
+/* --- Filter --- */
 
 .filter-panel-toggle-wrap {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .active-filter-chips {
@@ -666,21 +789,22 @@ main {
   align-items: center;
   gap: 6px;
   background: var(--color-primary);
-  color: #fff;
+  color: #14100e;
   border-radius: 999px;
-  padding: 5px 8px 5px 12px;
-  font-size: 0.78rem;
-  font-weight: 600;
+  padding: 5px 8px 5px 13px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .active-filter-chip button {
   border: none;
-  background: rgba(255,255,255,0.25);
-  color: #fff;
+  background: rgba(20, 16, 14, 0.25);
+  color: #14100e;
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -692,26 +816,27 @@ main {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 18px;
+  margin-bottom: 18px;
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 26px;
   align-items: flex-start;
 }
-.advanced-filter-panel[hidden] {
-  display: none;
-}
+.advanced-filter-panel[hidden] { display: none; }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
 }
 
 .filter-group-label {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-muted);
 }
 
@@ -722,27 +847,41 @@ main {
 }
 
 .scoville-range-inputs input[type="number"] {
-  width: 110px;
+  width: 112px;
+  font-family: var(--font-mono);
 }
 
-#resetAdvancedFiltersBtn {
-  align-self: flex-end;
-}
+#resetAdvancedFiltersBtn { align-self: flex-end; }
 
 .empty-state {
   text-align: center;
-  padding: 48px 20px;
+  padding: 64px 24px;
   color: var(--color-muted);
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+  box-shadow: none;
 }
 
+.empty-state p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 34ch;
+  margin: 0 auto;
+}
+
+.empty-state strong { color: var(--color-primary); }
+
+/* Emoji im Leer-Zustand raus, dafür eine gezeichnete Linie. */
 .empty-icon {
-  font-size: 3rem;
   display: block;
-  margin-bottom: 12px;
-  opacity: 0.6;
+  font-size: 0;
+  width: 44px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  opacity: 1;
+  margin: 0 auto 22px;
 }
 
 .app-footer {
@@ -750,27 +889,32 @@ main {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  padding: 16px 24px calc(28px + env(safe-area-inset-bottom));
-  margin-top: 24px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 20px 24px calc(30px + env(safe-area-inset-bottom));
+  margin-top: 28px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: 1px solid var(--color-border);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .app-footer { background: rgba(38,28,22,0.85); }
-}
-:root[data-theme="dark"] .app-footer { background: rgba(38,28,22,0.85); }
 
 .footer-hint {
   color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  max-width: 60ch;
 }
+
+/* ============================================================
+   Modale Fenster
+   ============================================================ */
 
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(20,10,5,0.55);
+  background: rgba(10, 7, 6, 0.72);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -779,19 +923,19 @@ main {
   z-index: 20;
 }
 
-.modal[hidden] {
-  display: none;
-}
+.modal[hidden] { display: none; }
 
 .modal-content {
   background: var(--color-surface);
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 0 24px 24px;
-  max-width: 640px;
+  max-width: 660px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
 }
 
 .modal-header {
@@ -801,31 +945,34 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 0;
-  margin: 0 -24px 16px;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding: 18px 24px;
+  margin: 0 -24px 18px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .modal-back-btn {
   flex-shrink: 0;
-  border: none;
+  border: 1px solid var(--color-border);
   background: var(--color-badge);
   color: var(--color-text);
+  font-family: var(--font-ui);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  padding: 8px 14px;
+  padding: 8px 15px;
   border-radius: 999px;
-  margin-left: -4px;
+  white-space: nowrap;
 }
+.modal-back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 .modal-title {
   margin: 0;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -833,21 +980,15 @@ main {
   white-space: nowrap;
 }
 
-.form-section {
-  margin-bottom: 16px;
-}
+.form-section { margin-bottom: 18px; }
 
-/* Foto-Galerie: mehrere Fotos einer Pflanze horizontal durchwischen/-
-   scrollen statt nur das erste zu sehen. scroll-snap übernimmt die eigent-
-   liche Wisch-Geste nativ (Touch und Trackpad), Pfeil-Buttons sind das
-   Desktop/Maus-Äquivalent. */
 .photo-preview-wrap {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--color-badge);
+  background: var(--color-surface-2);
 }
 
 .photo-gallery {
@@ -859,12 +1000,8 @@ main {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.photo-gallery::-webkit-scrollbar {
-  display: none;
-}
-.photo-gallery[hidden] {
-  display: none;
-}
+.photo-gallery::-webkit-scrollbar { display: none; }
+.photo-gallery[hidden] { display: none; }
 
 .photo-gallery-slide {
   flex: 0 0 100%;
@@ -880,39 +1017,49 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0;
   color: var(--color-muted);
-  font-weight: 600;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-surface-2),
+    var(--color-surface-2) 8px,
+    var(--color-surface) 8px,
+    var(--color-surface) 16px
+  );
 }
-.photo-placeholder[hidden] {
-  display: none;
+.photo-placeholder::after {
+  content: "NOCH KEIN FOTO";
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
 }
+.photo-placeholder[hidden] { display: none; }
 
 .photo-gallery-counter {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
+  background: rgba(20, 16, 14, 0.78);
+  color: #f7ece3;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
   pointer-events: none;
 }
-.photo-gallery-counter[hidden] {
-  display: none;
-}
+.photo-gallery-counter[hidden] { display: none; }
 
 .photo-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 50%;
-  background: rgba(0,0,0,0.4);
-  color: #fff;
+  background: rgba(20, 16, 14, 0.6);
+  color: #f7ece3;
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -920,75 +1067,67 @@ main {
   align-items: center;
   justify-content: center;
 }
-.photo-nav-btn:hover {
-  background: rgba(0,0,0,0.6);
-}
-.photo-nav-btn[hidden] {
-  display: none;
-}
+.photo-nav-btn:hover { background: var(--color-primary); color: #14100e; }
+.photo-nav-btn[hidden] { display: none; }
 .photo-nav-prev { left: 10px; }
 .photo-nav-next { right: 10px; }
 
 .photo-add-btn {
   display: inline-block;
   margin-top: 10px;
-  padding: 9px 16px;
-  border-radius: 10px;
+  margin-right: 8px;
+  padding: 11px 17px;
+  border-radius: var(--radius-sm);
   background: var(--color-badge);
+  border: 1px solid var(--color-border);
   color: var(--color-text);
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 0.84rem;
   cursor: pointer;
   text-align: center;
 }
-.photo-add-btn:hover {
-  filter: brightness(0.97);
-}
+.photo-add-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
-/* --- OCR: Samentütchen fotografieren + Texterkennung --- */
+/* --- OCR --- */
 
 .ocr-status {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background: var(--color-badge);
+  margin-top: 12px;
+  padding: 12px 15px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
   font-size: 0.85rem;
   color: var(--color-text);
 }
-.ocr-status[hidden] {
-  display: none;
-}
+.ocr-status[hidden] { display: none; }
 
 .ocr-spinner {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid rgba(0,0,0,0.15);
+  border: 2px solid var(--color-border);
   border-top-color: var(--color-primary);
   animation: ocr-spin 0.8s linear infinite;
   flex-shrink: 0;
 }
 
-@keyframes ocr-spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes ocr-spin { to { transform: rotate(360deg); } }
 
 .ocr-result {
-  margin-top: 10px;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  background: var(--color-badge);
+  margin-top: 12px;
+  padding: 14px 15px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
 }
-.ocr-result[hidden] {
-  display: none;
-}
+.ocr-result[hidden] { display: none; }
 
 .ocr-result-hint {
-  margin: 0 0 8px;
-  font-size: 0.82rem;
+  margin: 0 0 10px;
+  font-size: 0.8rem;
   color: var(--color-muted);
 }
 
@@ -1005,31 +1144,30 @@ main {
   justify-content: space-between;
   gap: 10px;
   background: var(--color-surface);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 9px 11px;
   font-size: 0.85rem;
 }
 
-.ocr-suggestion-row span {
-  overflow-wrap: anywhere;
-}
+.ocr-suggestion-row span { overflow-wrap: anywhere; }
 
 .ocr-suggestion-row button {
   flex-shrink: 0;
   border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  border-radius: 9px;
+  padding: 7px 13px;
+  font-size: 0.78rem;
+  font-weight: 700;
   background: var(--color-primary);
-  color: #fff;
+  color: #14100e;
   cursor: pointer;
 }
 
 .photo-thumbs {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 10px;
   flex-wrap: wrap;
 }
 
@@ -1043,7 +1181,7 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -1061,53 +1199,73 @@ main {
   border-radius: 50%;
   border: none;
   background: var(--color-danger);
-  color: #fff;
+  color: #14100e;
   font-size: 0.7rem;
+  font-weight: 700;
   cursor: pointer;
   line-height: 1;
 }
 
+/* --- Formular --- */
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .form-grid label, .full-width {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 0.85rem;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-muted);
   margin-bottom: 12px;
 }
 
-.form-grid .reference-suggestion,
-.form-grid .reference-save-back {
-  grid-column: 1 / -1;
+/* Eingaben selbst bleiben normal gesetzt, nur die Feldnamen sind Mono. */
+.form-grid label input,
+.form-grid label select,
+.form-grid label textarea,
+.full-width input,
+.full-width select,
+.full-width textarea {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-text);
 }
+
+.form-grid .reference-suggestion,
+.form-grid .reference-save-back { grid-column: 1 / -1; }
 
 .reference-suggestion {
-  background: var(--color-badge);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  margin-bottom: 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: 14px 15px;
+  margin-bottom: 14px;
 }
-.reference-suggestion[hidden] {
-  display: none;
-}
+.reference-suggestion[hidden] { display: none; }
 
 .reference-suggestion-text {
-  margin: 0 0 6px;
-  font-size: 0.85rem;
+  margin: 0 0 8px;
+  font-size: 0.88rem;
   color: var(--color-text);
 }
 
 .reference-suggestion-details {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   padding-left: 18px;
   font-size: 0.82rem;
+  line-height: 1.6;
   color: var(--color-muted);
 }
 
@@ -1119,63 +1277,78 @@ main {
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  font-family: var(--font-ui);
   font-size: 0.85rem;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--color-muted);
   margin-bottom: 12px;
   cursor: pointer;
 }
-.checkbox-label[hidden] {
-  display: none;
-}
+.checkbox-label[hidden] { display: none; }
+
+input[type="checkbox"] { accent-color: var(--color-primary); }
+
+/* ============================================================
+   Schärfegrad: aus zehn Emoji wird ein Glut-Balken. Die Skala
+   bleibt exakt dieselbe (Buttons 1-10 + 10+), nur die Optik ist
+   ein Balken - kein JS-Eingriff nötig.
+   ============================================================ */
 
 .sg-scale {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   flex-wrap: wrap;
+  align-items: stretch;
 }
 
 .sg-scale-btn {
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
+  background: var(--color-surface-2);
+  border-radius: 5px;
+  width: 26px;
+  height: 30px;
   padding: 0;
-  font-size: 1rem;
+  font-size: 0;
   line-height: 1;
   cursor: pointer;
-  opacity: 0.35;
-  filter: grayscale(1);
-  transition: opacity 0.1s ease, filter 0.1s ease;
+  opacity: 1;
+  filter: none;
+  transition: background 0.1s ease, border-color 0.1s ease;
 }
 
-.sg-scale-btn:hover {
-  opacity: 0.7;
-}
+.sg-scale-btn:hover { border-color: var(--color-primary); }
 
 .sg-scale-btn.filled {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   opacity: 1;
   filter: none;
 }
 
 .sg-scale-plus {
   width: auto;
-  padding: 0 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--color-text);
   filter: none;
 }
 .sg-scale-plus.filled {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: #14100e;
 }
 
 .sg-scale-label {
-  font-size: 0.8rem;
-  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--color-primary);
+  margin-top: 4px;
 }
 
 .tag-chips {
@@ -1186,59 +1359,54 @@ main {
 
 .tag-chip {
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   color: var(--color-text);
-  padding: 6px 14px;
+  padding: 7px 15px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  font-size: 0.84rem;
   font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
   cursor: pointer;
 }
+.tag-chip:hover { border-color: var(--color-primary); }
 
 .tag-chip.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: #14100e;
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-/* --- QR-Code fürs Topf-Etikett (nur Desktop) --- */
-/* Am Handy fotografiert/gepflegt man die Sammlung meist direkt, gedruckt
-   wird typischerweise vom Rechner aus - deshalb bleibt der Button unterhalb
-   von 900px ausgeblendet statt den ohnehin knappen mobilen Modal-Header
-   zusätzlich zu belegen. */
+/* --- QR --- */
+
 .qr-print-trigger {
   display: none;
   flex-shrink: 0;
 }
-.modal-header .qr-print-trigger {
-  margin-left: auto;
-}
+.modal-header .qr-print-trigger { margin-left: auto; }
 @media (min-width: 900px) {
-  .qr-print-trigger {
-    display: inline-flex;
-    align-items: center;
-  }
+  .qr-print-trigger { display: inline-flex; align-items: center; }
 }
 
-/* Kann aus dem Bearbeiten-Fenster heraus geöffnet werden (einzelne Chili)
-   und muss dann über diesem liegen, nicht dahinter verschwinden. */
-#qrLabelsModal {
-  z-index: 30;
-}
+#qrLabelsModal { z-index: 30; }
 
 .qr-scan-video-wrap {
   background: #000;
-  border-radius: 12px;
+  border-radius: var(--radius);
   overflow: hidden;
   aspect-ratio: 1 / 1;
   max-width: 420px;
   margin: 0 auto;
+  border: 1px solid var(--color-border);
 }
 
 #qrScanVideo {
@@ -1250,58 +1418,56 @@ main {
 
 .qr-scan-message {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 14px;
   color: var(--color-muted);
 }
 
-.qr-scan-message.qr-scan-error {
-  color: var(--color-danger, #c0392b);
-}
+.qr-scan-message.qr-scan-error { color: var(--color-danger); }
 
 .qr-labels-hint {
   color: var(--color-muted);
   font-size: 0.85rem;
-  margin: -8px 0 16px;
+  line-height: 1.5;
+  margin: -6px 0 18px;
 }
 
-/* Mehrere Etiketten nebeneinander/untereinander, damit ein Blatt Papier
-   auch bei mehreren markierten Chilis sinnvoll ausgenutzt wird statt pro
-   QR-Code eine eigene A4-Seite zu verschwenden. */
 .qr-print-area {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
+/* Etiketten werden gedruckt - deshalb bewusst immer helles Papier. */
 .qr-label {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   background: #fff;
-  border: 1px solid var(--color-border);
+  border: 1px solid #d8cdb9;
   padding: 14px;
   border-radius: 8px;
   width: 180px;
   break-inside: avoid;
 }
 
-.qr-label .qr-code-canvas svg {
-  display: block;
-}
+.qr-label .qr-code-canvas svg { display: block; }
 
 .qr-label .qr-print-name {
+  font-family: var(--font-ui);
   font-weight: 800;
   font-size: 1rem;
-  color: #1a1a1a;
+  letter-spacing: -0.015em;
+  color: #14100e;
   text-align: center;
 }
 
 .qr-label .qr-print-nr {
-  font-size: 0.8rem;
-  color: #555;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #6b5346;
 }
 
 .qr-preview-actions {
@@ -1309,18 +1475,8 @@ main {
   gap: 10px;
 }
 
-/* Beim Drucken: alles ausblenden außer den Etiketten selbst, damit nicht
-   die ganze App-Seite mitgedruckt wird. Wichtig: "display: none" statt nur
-   "visibility: hidden" verwenden, damit der ausgeblendete Rest der Seite
-   keinen Platz mehr beansprucht - sonst reserviert der Drucker dafür leere
-   Seiten und "position: fixed/absolute" verhält sich beim Seitenumbruch in
-   Browsern unzuverlässig (Etiketten wurden auf mehrere Seiten verteilt statt
-   normal umzubrechen). Mit normalem Fluss (position: static) paginiert der
-   Browser wie bei jedem anderen gedruckten Dokument zuverlässig. */
 @media print {
-  body.qr-print-mode > *:not(#qrLabelsModal) {
-    display: none !important;
-  }
+  body.qr-print-mode > *:not(#qrLabelsModal) { display: none !important; }
   body.qr-print-mode #qrLabelsModal {
     position: static;
     display: block;
@@ -1329,9 +1485,7 @@ main {
   }
   body.qr-print-mode #qrLabelsModal .modal-header,
   body.qr-print-mode #qrLabelsModal .qr-labels-hint,
-  body.qr-print-mode #qrLabelsModal .qr-preview-actions {
-    display: none;
-  }
+  body.qr-print-mode #qrLabelsModal .qr-preview-actions { display: none; }
   body.qr-print-mode #qrLabelsModal .modal-content {
     position: static;
     max-width: none;
@@ -1339,6 +1493,9 @@ main {
     overflow: visible;
     margin: 0;
     padding: 0;
+    background: #fff;
+    border: none;
+    box-shadow: none;
   }
   body.qr-print-mode .qr-print-area {
     display: flex !important;
@@ -1348,7 +1505,7 @@ main {
   }
 }
 
-/* --- Mehrfachauswahl / Sammel-Bearbeiten --- */
+/* --- Mehrfachauswahl --- */
 
 .bulk-bar {
   position: fixed;
@@ -1362,12 +1519,18 @@ main {
   padding: 14px 24px calc(14px + env(safe-area-inset-bottom));
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 -14px 34px -14px rgba(0, 0, 0, 0.8);
   z-index: 15;
 }
 
-.bulk-bar[hidden] {
-  display: none;
+.bulk-bar[hidden] { display: none; }
+
+#bulkCount, #orderBulkCount {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  white-space: nowrap;
 }
 
 .bulk-bar-actions {
@@ -1378,23 +1541,21 @@ main {
 .bulk-modal-hint {
   color: var(--color-muted);
   font-size: 0.85rem;
+  line-height: 1.5;
   margin-top: 0;
 }
 
 .bulk-field {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 0;
+  gap: 11px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--color-border);
   font-size: 0.9rem;
 }
 .bulk-field:last-of-type { border-bottom: none; }
 
-.bulk-field span {
-  flex: 1;
-  color: var(--color-text);
-}
+.bulk-field span { flex: 1; color: var(--color-text); }
 
 .bulk-field input[type="checkbox"] {
   width: 18px;
@@ -1409,227 +1570,9 @@ main {
 }
 
 .bulk-field input:disabled,
-.bulk-field select:disabled {
-  opacity: 0.4;
-}
+.bulk-field select:disabled { opacity: 0.4; }
 
-/* --- Desktop: roomier layout --- */
-
-@media (min-width: 900px) {
-  main { padding: 32px 40px; }
-  .header-overlay { padding: 24px 40px; }
-  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-}
-
-/* --- Mobile --- */
-
-@media (max-width: 640px) {
-  .header-overlay {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: stretch;
-    padding: calc(16px + env(safe-area-inset-top)) 16px 16px;
-  }
-  /* Die Wrapper von Suche/Status/Sortierung lösen sich optisch auf, damit
-     ihre Kinder zusammen mit dem Menü-Button in denselben Zeilen umbrechen
-     - sonst bekäme jede Gruppe ihre eigene volle Zeile und der fixierte
-     Kopfbereich würde unnötig hoch. */
-  .header-actions {
-    display: contents;
-  }
-  .search-with-scan {
-    flex-basis: 100%;
-    order: 1;
-  }
-  .header-actions select {
-    flex: 1;
-    min-width: 0;
-    order: 2;
-  }
-  .view-toggle { order: 3; }
-  .menu-wrap { order: 4; }
-
-  main { padding: 16px; padding-bottom: 100px; }
-
-  /* Haupt-Reiter (Sammlung/Bestellungen) und Jahres-Auswahl werden am Handy
-     zu kompakten Dropdown-Buttons statt breiter Pillen-Reihen - spart
-     deutlich Höhe im fixierten Kopfbereich. */
-  .tabs-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    border: 1px solid rgba(255,255,255,0.35);
-    background: rgba(255,255,255,0.16);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    color: #fff;
-    padding: 9px 14px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  .toggle-caret {
-    font-size: 0.7rem;
-    opacity: 0.85;
-    transition: transform 0.15s ease;
-  }
-  .tabs-toggle[aria-expanded="true"] .toggle-caret {
-    transform: rotate(180deg);
-  }
-
-  /* Haupt-Reiter und Jahres-Auswahl teilen sich eine Zeile (beide Toggles
-     sind kompakt genug) statt zwei eigene Balken zu belegen - braucht immer
-     noch weniger Höhe im fixierten Kopfbereich. Per CSS Grid statt DOM-
-     Umbau, damit der Haupt-Reiter-Toggle immer erreichbar bleibt (auch auf
-     der Statistik-Seite, wo beide Jahres-Leisten ausgeblendet sind). */
-  #topBar {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 8px;
-  }
-  #topBar > .app-header {
-    grid-column: 1 / -1;
-  }
-  #topBar > .main-tabs {
-    grid-column: 1;
-  }
-  #topBar > .year-tabs-bar {
-    grid-column: 2;
-  }
-
-  .main-tabs {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 10px 0 10px 16px;
-  }
-  .main-tabs-inner {
-    display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 16px;
-    right: 16px;
-    margin: 0;
-    width: auto;
-    max-width: none;
-    flex-direction: column;
-    gap: 4px;
-    background: var(--color-surface);
-    border-radius: 12px;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.28);
-    padding: 6px;
-    z-index: 25;
-  }
-  .main-tabs.open .main-tabs-inner {
-    display: flex;
-  }
-  .main-tabs-inner .main-tab {
-    background: transparent;
-    border: none;
-    color: var(--color-text);
-    border-radius: 8px;
-    text-align: left;
-    width: 100%;
-    padding: 10px 12px;
-  }
-  .main-tabs-inner .main-tab.active {
-    background: var(--color-badge);
-    color: var(--color-primary);
-  }
-
-  .year-tabs-inner {
-    position: relative;
-    padding: 10px 16px 10px 0;
-    gap: 8px;
-  }
-  .year-tabs-toggle {
-    flex: 1;
-    min-width: 0;
-  }
-  .year-tabs {
-    display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    right: 16px;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    max-height: 55vh;
-    overflow-y: auto;
-    background: var(--color-surface);
-    border-radius: 12px;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.28);
-    padding: 6px;
-    z-index: 25;
-  }
-  .year-tabs-inner.open .year-tabs {
-    display: flex;
-  }
-  .year-tab {
-    flex-shrink: 0;
-    background: transparent;
-    border: none;
-    color: var(--color-text);
-    text-align: left;
-    width: 100%;
-    border-radius: 8px;
-  }
-  .year-tab.active {
-    background: var(--color-badge);
-    border: none;
-    color: var(--color-primary);
-  }
-  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-
-  /* Round FAB, label hidden, thumb-friendly corner */
-  .fab {
-    padding: 0;
-    width: 58px;
-    height: 58px;
-    justify-content: center;
-  }
-  .fab-label { display: none; }
-  .fab-icon { font-size: 1.6rem; }
-
-  .modal {
-    padding: 0;
-    align-items: flex-end;
-  }
-  .modal-content {
-    max-width: none;
-    width: 100%;
-    border-radius: 20px 20px 0 0;
-    max-height: 92vh;
-    overflow-y: auto;
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
-  }
-  .modal-header {
-    border-radius: 20px 20px 0 0;
-  }
-
-  .form-grid { grid-template-columns: 1fr; }
-
-  .chili-row { padding: 10px 12px; }
-  .row-badges .badge-status { display: none; }
-
-  .bulk-field { flex-wrap: wrap; }
-  .bulk-field input[type="date"],
-  .bulk-field select {
-    max-width: none;
-    flex-basis: 100%;
-    margin-left: 28px;
-  }
-  .bulk-bar {
-    flex-wrap: wrap;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-  }
-  .bulk-bar-actions { flex-wrap: wrap; }
-  .bulk-bar-actions .btn { padding: 8px 12px; font-size: 0.85rem; }
-}
-
-/* --- Pull-to-refresh (für "Zum Home-Bildschirm hinzufügen", ohne Browser-UI) --- */
+/* --- Pull-to-refresh --- */
 
 .pull-indicator {
   position: fixed;
@@ -1640,20 +1583,28 @@ main {
   margin-left: -22px;
   border-radius: 50%;
   background: var(--color-surface);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 0;
   transform: translateY(-120%);
   opacity: 0;
   z-index: 50;
   pointer-events: none;
 }
-
-.pull-indicator.pulling {
-  transition: none;
+/* Emoji durch einen Ring ersetzt, der sich beim Laden dreht. */
+.pull-indicator::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
 }
+
+.pull-indicator.pulling { transition: none; }
 
 .pull-indicator.snap-back {
   transition: transform 0.25s ease, opacity 0.25s ease;
@@ -1661,9 +1612,7 @@ main {
   opacity: 0;
 }
 
-.pull-indicator.ready {
-  color: var(--color-primary);
-}
+.pull-indicator.ready::after { border-color: var(--color-primary); }
 
 .pull-indicator.refreshing {
   transform: translateY(70px);
@@ -1677,65 +1626,91 @@ main {
   to { transform: translateY(70px) rotate(360deg); }
 }
 
-/* --- Footer-Copyright / Info-Modal --- */
+/* --- Footer / Info --- */
 
 .footer-copyright {
+  font-family: var(--font-mono);
   color: var(--color-muted);
-  font-size: 0.75rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
   margin-left: auto;
 }
 
 #infoModal p {
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 0.92rem;
+  max-width: 62ch;
+}
+#infoModal p strong {
+  display: inline-block;
+  margin-bottom: 2px;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+  color: var(--color-primary);
 }
 #infoModal .footer-copyright {
   margin-left: 0;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
-/* --- Statistik --- */
+/* ============================================================
+   Statistik
+   ============================================================ */
 
 .stat-tiles {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
   margin-bottom: 24px;
 }
 
 .stat-tile {
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 20px 16px;
-  text-align: center;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  padding: 22px 18px;
+  text-align: left;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .stat-tile-value {
-  font-size: 1.6rem;
+  font-family: var(--font-ui);
+  font-size: 2.1rem;
   font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
   color: var(--color-primary);
   overflow-wrap: break-word;
 }
 
 .stat-tile-label {
-  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-muted);
-  font-weight: 600;
 }
 
 .stats-chart-card {
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  padding: 22px;
+  box-shadow: none;
 }
 
 .stats-chart-title {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
+  font-family: var(--font-ui);
   font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
 }
 
 .stats-chart-wrap {
@@ -1743,7 +1718,218 @@ main {
   width: 100%;
 }
 
+/* ============================================================
+   Desktop
+   ============================================================ */
+
+@media (min-width: 900px) {
+  main { padding: 34px 40px 110px; }
+  .header-overlay { padding: calc(30px + env(safe-area-inset-top)) 40px 20px; }
+  .app-header h1 { font-size: 2.1rem; }
+  .main-tabs-inner { padding: 4px 40px 12px; }
+  .year-tabs-inner { padding: 2px 40px 22px; }
+  .app-footer { padding: 22px 40px 34px; }
+  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); }
+}
+
+/* ============================================================
+   Handy
+   ============================================================ */
+
 @media (max-width: 640px) {
+  .header-overlay {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    padding: calc(18px + env(safe-area-inset-top)) 16px 14px;
+  }
+  .app-header h1 { font-size: 1.5rem; }
+  .brand-sub { white-space: normal; }
+
+  .header-actions { display: contents; }
+  .search-with-scan {
+    flex-basis: 100%;
+    order: 1;
+  }
+  .header-actions select {
+    flex: 1;
+    min-width: 0;
+    order: 2;
+  }
+  .view-toggle { order: 3; }
+  .menu-wrap { order: 4; }
+
+  main { padding: 16px; padding-bottom: 110px; }
+
+  .tabs-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border: 1px solid rgba(247, 236, 227, 0.16);
+    background: rgba(28, 23, 20, 0.72);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: #f7ece3;
+    padding: 10px 15px;
+    border-radius: 999px;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .toggle-caret {
+    font-size: 0.68rem;
+    opacity: 0.8;
+    transition: transform 0.15s ease;
+  }
+  .tabs-toggle[aria-expanded="true"] .toggle-caret { transform: rotate(180deg); }
+
+  #topBar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+  }
+  #topBar > .app-header { grid-column: 1 / -1; }
+  #topBar > .main-tabs { grid-column: 1; }
+  #topBar > .year-tabs-bar { grid-column: 2; }
+
+  .main-tabs {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 8px 0 14px 16px;
+  }
+  .main-tabs-inner {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 16px;
+    right: 16px;
+    margin: 0;
+    width: auto;
+    max-width: none;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.85);
+    padding: 8px;
+    z-index: 25;
+  }
+  .main-tabs.open .main-tabs-inner { display: flex; }
+  .main-tabs-inner .main-tab {
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    border-radius: 10px;
+    text-align: left;
+    width: 100%;
+    padding: 11px 12px;
+  }
+  .main-tabs-inner .main-tab.active {
+    background: var(--color-badge);
+    color: var(--color-primary);
+  }
+
+  .year-tabs-inner {
+    position: relative;
+    padding: 8px 16px 14px 0;
+    gap: 8px;
+  }
+  .year-tabs-toggle {
+    flex: 1;
+    min-width: 0;
+  }
+  .year-tabs {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 16px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-height: 55vh;
+    overflow-y: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.85);
+    padding: 8px;
+    z-index: 25;
+  }
+  .year-tabs-inner.open .year-tabs { display: flex; }
+  .year-tab {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    text-align: left;
+    width: 100%;
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-size: 0.85rem;
+  }
+  .year-tab.active {
+    background: var(--color-badge);
+    border: none;
+    color: var(--color-primary);
+  }
+
+  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 12px; }
+  .card-body h3 { font-size: 0.92rem; }
+
+  .fab {
+    padding: 0;
+    width: 60px;
+    height: 60px;
+    justify-content: center;
+  }
+  .fab-label { display: none; }
+  .fab-icon { font-size: 1.8rem; }
+
+  .modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-content {
+    max-width: none;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+  .modal-header { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+
+  .form-grid { grid-template-columns: 1fr; }
+
+  .chili-row { padding: 12px; }
+  .row-badges .badge-status { display: none; }
+
+  .bulk-field { flex-wrap: wrap; }
+  .bulk-field input[type="date"],
+  .bulk-field select {
+    max-width: none;
+    flex-basis: 100%;
+    margin-left: 29px;
+  }
+  .bulk-bar {
+    flex-wrap: wrap;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  }
+  .bulk-bar-actions { flex-wrap: wrap; }
+  .bulk-bar-actions .btn { padding: 9px 13px; font-size: 0.82rem; }
+
   .stat-tiles { grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat-tile { padding: 14px; flex-direction: row; align-items: center; justify-content: space-between; text-align: left; }
+  .stat-tile {
+    padding: 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .stat-tile-value { font-size: 1.6rem; }
 }

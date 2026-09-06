@@ -361,6 +361,7 @@ async function migrateLocalDataIfNeeded() {
 
 const grid = document.getElementById("chiliGrid");
 const emptyState = document.getElementById("emptyState");
+const brandStatsEl = document.getElementById("brandStats");
 const searchInput = document.getElementById("searchInput");
 const statusFilter = document.getElementById("statusFilter");
 const sortSelect = document.getElementById("sortSelect");
@@ -606,8 +607,8 @@ function setAppTab(tab) {
   tabSammlungBtn.classList.toggle("active", showSammlung);
   tabBestellungenBtn.classList.toggle("active", showBestellungen);
   menuBtn.classList.toggle("active", showStatistik);
-  if (showSammlung) mainTabsToggleLabel.textContent = "🌶️ Sammlung";
-  if (showBestellungen) mainTabsToggleLabel.textContent = "📋 Bestellungen";
+  if (showSammlung) mainTabsToggleLabel.textContent = "Sammlung";
+  if (showBestellungen) mainTabsToggleLabel.textContent = "Bestellungen";
   closeMainTabsDropdown();
 
   sammlungHeaderActions.hidden = !showSammlung;
@@ -833,7 +834,7 @@ function buildOrderRow(o) {
   const nr = findChiliNrForOrderName(o.name);
   row.innerHTML = `
     ${orderSelectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
-    <span class="row-nr">${nr ? `#${escapeHtml(nr)}` : ""}</span>
+    <span class="row-nr">${nr ? `Nr. ${escapeHtml(nr)}` : ""}</span>
     <span class="row-name">${escapeHtml(o.name)}</span>
     <div class="row-badges">
       ${o.menge ? `<span class="badge">${escapeHtml(o.menge)}</span>` : ""}
@@ -949,8 +950,7 @@ function sgValue(sg) {
 function sgBadge(sg) {
   const norm = normalizeSg(sg);
   if (!norm.display) return "–";
-  const peppers = Math.max(1, Math.min(5, Math.ceil(norm.num / 2)));
-  return "🌶️".repeat(peppers) + ` Schärfegrad ${norm.display}`;
+  return `Schärfegrad ${norm.display}`;
 }
 
 function sortChilis(list) {
@@ -1156,7 +1156,23 @@ function groupChilisByVariety(list) {
   });
 }
 
+function renderBrandStats() {
+  const total = chilis.length;
+  if (total === 0) {
+    brandStatsEl.textContent = "Alle Pflanzen, ein Blick";
+    return;
+  }
+  const varieties = new Set(chilis.map((c) => varietyKey(c.name)).filter(Boolean)).size;
+  const years = new Set(chilis.map((c) => c.jahr).filter(Boolean)).size;
+  const plural = (n, singular, pluralWord) => (n === 1 ? singular : pluralWord);
+  brandStatsEl.textContent =
+    `${total} ${plural(total, "Pflanze", "Pflanzen")} · ` +
+    `${varieties} ${plural(varieties, "Sorte", "Sorten")} · ` +
+    `${years} ${plural(years, "Jahr", "Jahre")}`;
+}
+
 function render() {
+  renderBrandStats();
   const filtered = getFilteredChilis();
   // In "Alle Jahre" wird jede Sorte nur einmal gezeigt. Waehrend der
   // Mehrfachauswahl bleiben die einzelnen Pflanzen sichtbar und waehlbar.
@@ -1210,7 +1226,7 @@ function buildCard(c) {
   if (c.nr) {
     const nrBadge = document.createElement("span");
     nrBadge.className = "card-nr";
-    nrBadge.textContent = `#${c.nr}`;
+    nrBadge.textContent = `Nr. ${c.nr}`;
     photoWrap.appendChild(nrBadge);
   }
   if (selectionMode) {
@@ -1253,7 +1269,7 @@ function buildRow(c) {
   });
   row.innerHTML = `
     ${selectionMode ? `<span class="row-select-checkbox${isSelected ? " checked" : ""}">${isSelected ? "✓" : ""}</span>` : ""}
-    <span class="row-nr">${c.nr ? `#${escapeHtml(c.nr)}` : ""}</span>
+    <span class="row-nr">${c.nr ? `Nr. ${escapeHtml(c.nr)}` : ""}</span>
     <span class="row-name">${escapeHtml(c.name)}</span>
     <div class="row-badges">
       <span class="badge">${sgBadge(c.sg)}</span>
@@ -1945,7 +1961,7 @@ photoInput.addEventListener("change", async () => {
   }
 
   photoInput.disabled = false;
-  photoAddLabel.textContent = "📷 Foto(s) hinzufügen";
+  photoAddLabel.textContent = "Foto(s) hinzufügen";
   photoInput.value = "";
   renderPhotoPreview();
 });

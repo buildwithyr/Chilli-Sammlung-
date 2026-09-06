@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#c1440e">
+<meta name="theme-color" content="#14100e">
 <title>Opa Reiters Chili Sammlung</title>
 <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/icons/icon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,16 +26,15 @@
     <header class="app-header">
       <div class="header-overlay">
         <div class="brand">
-          <span class="brand-icon">🌶️</span>
           <div>
-            <h1>Opa Reiters Chili Sammlung</h1>
-            <p class="brand-sub">Alle Pflanzen, ein Blick</p>
+            <h1>Opa Reiters <span class="brand-accent">Chili Sammlung</span></h1>
+            <p class="brand-sub" id="brandStats">Alle Pflanzen, ein Blick</p>
           </div>
         </div>
         <div class="header-actions" id="sammlungHeaderActions">
           <div class="search-with-scan">
             <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
-            <button type="button" id="scanQrBtn" class="icon-btn" aria-label="QR-Code am Topf scannen" title="QR-Code am Topf scannen">📷</button>
+            <button type="button" id="scanQrBtn" class="icon-btn" aria-label="QR-Code am Topf scannen" title="QR-Code am Topf scannen">Scan</button>
           </div>
           <select id="statusFilter">
             <option value="">Alle Status</option>
@@ -56,14 +58,14 @@
         <div class="menu-wrap">
           <button type="button" id="menuBtn" class="icon-btn" aria-label="Menü öffnen" aria-haspopup="true" aria-expanded="false" title="Menü">⋮</button>
           <div id="menuDropdown" class="menu-dropdown" hidden>
-            <button type="button" id="menuThemeBtn" class="menu-item">🌓 <span id="menuThemeLabel">Dunkelmodus</span></button>
-            <button type="button" id="menuStatsBtn" class="menu-item">📊 Statistik</button>
+            <button type="button" id="menuThemeBtn" class="menu-item"><span id="menuThemeLabel">Dunkelmodus</span></button>
+            <button type="button" id="menuStatsBtn" class="menu-item">Statistik</button>
             <div class="menu-divider" aria-hidden="true"></div>
-            <button type="button" id="menuExportBtn" class="menu-item">📤 Daten exportieren (JSON)</button>
-            <button type="button" id="menuImportBtn" class="menu-item">📥 Daten importieren</button>
+            <button type="button" id="menuExportBtn" class="menu-item">Daten exportieren (JSON)</button>
+            <button type="button" id="menuImportBtn" class="menu-item">Daten importieren</button>
             <input type="file" id="importFile" accept="application/json" hidden>
             <div class="menu-divider" aria-hidden="true"></div>
-            <button type="button" id="menuInfoBtn" class="menu-item">ℹ️ Info</button>
+            <button type="button" id="menuInfoBtn" class="menu-item">Info</button>
           </div>
         </div>
       </div>
@@ -71,11 +73,11 @@
 
     <nav class="main-tabs" aria-label="Bereich wählen">
       <button type="button" id="mainTabsToggle" class="tabs-toggle" aria-expanded="false">
-        <span id="mainTabsToggleLabel">🌶️ Sammlung</span><span class="toggle-caret">▾</span>
+        <span id="mainTabsToggleLabel">Sammlung</span><span class="toggle-caret">▾</span>
       </button>
       <div class="main-tabs-inner" id="mainTabsInner">
-        <button type="button" id="tabSammlungBtn" class="main-tab active">🌶️ Sammlung</button>
-        <button type="button" id="tabBestellungenBtn" class="main-tab">📋 Bestellungen</button>
+        <button type="button" id="tabSammlungBtn" class="main-tab active">Sammlung</button>
+        <button type="button" id="tabBestellungenBtn" class="main-tab">Bestellungen</button>
       </div>
     </nav>
 
@@ -100,7 +102,7 @@
 
   <main id="sammlungMain">
     <div class="filter-panel-toggle-wrap">
-      <button type="button" id="advancedFilterToggle" class="btn btn-secondary" aria-expanded="false">🔍 Weitere Filter</button>
+      <button type="button" id="advancedFilterToggle" class="btn btn-secondary" aria-expanded="false">Weitere Filter</button>
       <div id="activeFilterChips" class="active-filter-chips"></div>
     </div>
 
@@ -176,7 +178,7 @@
       <button type="button" id="bulkClearBtn" class="btn btn-secondary">Markierungen löschen</button>
       <button type="button" id="bulkSelectAllBtn" class="btn btn-secondary">Alle auswählen</button>
       <button type="button" id="bulkExportCsvBtn" class="btn btn-secondary" disabled>CSV exportieren</button>
-      <button type="button" id="bulkQrBtn" class="btn btn-secondary qr-print-trigger" disabled>🏷️ QR-Etiketten</button>
+      <button type="button" id="bulkQrBtn" class="btn btn-secondary qr-print-trigger" disabled>QR-Etiketten</button>
       <button type="button" id="bulkEditBtn" class="btn btn-primary" disabled>Bearbeiten</button>
       <button type="button" id="bulkDoneBtn" class="btn btn-secondary">Fertig</button>
     </div>
@@ -315,7 +317,7 @@
       <div class="modal-header">
         <button type="button" class="modal-back-btn" id="modalCloseBtn">‹ Zurück</button>
         <h2 class="modal-title" id="chiliModalTitle">Chili bearbeiten</h2>
-        <button type="button" id="qrPrintBtn" class="btn btn-secondary qr-print-trigger" title="QR-Code zum Ausdrucken erzeugen (z.B. für ein Topf-Etikett)">🏷️ QR-Code</button>
+        <button type="button" id="qrPrintBtn" class="btn btn-secondary qr-print-trigger" title="QR-Code zum Ausdrucken erzeugen (z.B. für ein Topf-Etikett)">QR-Code</button>
       </div>
 
       <form id="chiliForm">
@@ -329,11 +331,11 @@
             <button type="button" id="photoPrevBtn" class="photo-nav-btn photo-nav-prev" aria-label="Vorheriges Foto" hidden>‹</button>
             <button type="button" id="photoNextBtn" class="photo-nav-btn photo-nav-next" aria-label="Nächstes Foto" hidden>›</button>
           </div>
-          <label class="photo-add-btn" for="photoInput" id="photoAddLabel">📷 Foto(s) hinzufügen</label>
+          <label class="photo-add-btn" for="photoInput" id="photoAddLabel">Foto(s) hinzufügen</label>
           <input type="file" id="photoInput" accept="image/*" multiple hidden>
           <div id="photoThumbs" class="photo-thumbs"></div>
 
-          <label class="photo-add-btn" for="ocrPhotoInput" id="ocrAddLabel">🏷️ Samentütchen fotografieren (Texterkennung)</label>
+          <label class="photo-add-btn" for="ocrPhotoInput" id="ocrAddLabel">Samentütchen fotografieren (Texterkennung)</label>
           <input type="file" id="ocrPhotoInput" accept="image/*" capture="environment" hidden>
 
           <div id="ocrStatus" class="ocr-status" hidden>
@@ -372,7 +374,7 @@
 
           <div id="referenceSuggestion" class="reference-suggestion" hidden>
             <p class="reference-suggestion-text">
-              🔎 In der Referenzdatenbank gefunden: <strong id="referenceSuggestionName"></strong>
+              In der Referenzdatenbank gefunden: <strong id="referenceSuggestionName"></strong>
             </p>
             <ul id="referenceSuggestionDetails" class="reference-suggestion-details"></ul>
             <div class="reference-suggestion-actions">
