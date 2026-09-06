@@ -1751,6 +1751,93 @@ window.addEventListener("afterprint", () => {
   document.body.classList.remove("qr-print-mode");
 });
 
+// --- QR-Code-Scanner (Kamera in der Suchleiste) ---
+// Liest den QR-Code direkt vom Topf-Etikett über die Handy-/Webcam ein und
+// springt bei einem Treffer sofort zu dieser Chili - ohne Umweg über eine
+// externe Kamera-App.
+
+const scanQrBtn = document.getElementById("scanQrBtn");
+const qrScanModal = document.getElementById("qrScanModal");
+const qrScanCloseBtn = document.getElementById("qrScanCloseBtn");
+const qrScanVideo = document.getElementById("qrScanVideo");
+const qrScanMessage = document.getElementById("qrScanMessage");
+const qrScanCanvas = document.createElement("canvas");
+const qrScanCtx = qrScanCanvas.getContext("2d", { willReadFrequently: true });
+
+let qrScanStream = null;
+let qrScanRafId = null;
+
+function setQrScanMessage(text, isError) {
+  qrScanMessage.textContent = text || "";
+  qrScanMessage.hidden = !text;
+  qrScanMessage.classList.toggle("qr-scan-error", !!isError);
+}
+
+function extractChiliIdFromScan(text) {
+  try {
+    const url = new URL(text);
+    return url.searchParams.get("chili");
+  } catch {
+    return null;
+  }
+}
+
+function scanQrFrame() {
+  if (!qrScanStream) return;
+  if (qrScanVideo.readyState === qrScanVideo.HAVE_ENOUGH_DATA) {
+    qrScanCanvas.width = qrScanVideo.videoWidth;
+    qrScanCanvas.height = qrScanVideo.videoHeight;
+    qrScanCtx.drawImage(qrScanVideo, 0, 0, qrScanCanvas.width, qrScanCanvas.height);
+    const imageData = qrScanCtx.getImageData(0, 0, qrScanCanvas.width, qrScanCanvas.height);
+    const result = jsQR(imageData.data, imageData.width, imageData.height);
+    if (result) {
+      const chiliId = extractChiliIdFromScan(result.data);
+      const chili = chiliId ? chilis.find((c) => c.id === chiliId) : null;
+      if (chili) {
+        closeQrScanModal();
+        setAppTab("sammlung");
+        openModal(chili.id);
+        return;
+      }
+      setQrScanMessage("QR-Code erkannt, aber keine passende Chili dazu gefunden.", true);
+    }
+  }
+  qrScanRafId = requestAnimationFrame(scanQrFrame);
+}
+
+async function openQrScanModal() {
+  qrScanModal.hidden = false;
+  setQrScanMessage("");
+  try {
+    qrScanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false,
+    });
+    qrScanVideo.srcObject = qrScanStream;
+    await qrScanVideo.play();
+    qrScanRafId = requestAnimationFrame(scanQrFrame);
+  } catch (err) {
+    setQrScanMessage("Kamera konnte nicht geöffnet werden: " + err.message, true);
+  }
+}
+
+function closeQrScanModal() {
+  qrScanModal.hidden = true;
+  if (qrScanRafId) cancelAnimationFrame(qrScanRafId);
+  qrScanRafId = null;
+  if (qrScanStream) {
+    qrScanStream.getTracks().forEach((track) => track.stop());
+    qrScanStream = null;
+  }
+  qrScanVideo.srcObject = null;
+}
+
+scanQrBtn.addEventListener("click", openQrScanModal);
+qrScanCloseBtn.addEventListener("click", closeQrScanModal);
+qrScanModal.addEventListener("click", (e) => {
+  if (e.target === qrScanModal) closeQrScanModal();
+});
+
 function renderPhotoPreview() {
   photoGallery.innerHTML = "";
 

@@ -30,7 +30,10 @@
           </div>
         </div>
         <div class="header-actions" id="sammlungHeaderActions">
-          <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
+          <div class="search-with-scan">
+            <input type="search" id="searchInput" placeholder="Suche nach Name, Herkunft ...">
+            <button type="button" id="scanQrBtn" class="icon-btn" aria-label="QR-Code am Topf scannen" title="QR-Code am Topf scannen">📷</button>
+          </div>
           <select id="statusFilter">
             <option value="">Alle Status</option>
           </select>
@@ -277,6 +280,20 @@
     </div>
   </div>
 
+  <div id="qrScanModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="qrScanCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title">QR-Code scannen</h2>
+      </div>
+      <p class="qr-labels-hint">Kamera auf den QR-Code am Topf halten.</p>
+      <div class="qr-scan-video-wrap">
+        <video id="qrScanVideo" playsinline muted></video>
+      </div>
+      <p id="qrScanMessage" class="qr-scan-message" hidden></p>
+    </div>
+  </div>
+
   <div id="qrLabelsModal" class="modal" hidden>
     <div class="modal-content">
       <div class="modal-header">
@@ -518,6 +535,7 @@
   <script src="vendor/chart.umd.min.js"></script>
   <script src="vendor/tesseract.min.js"></script>
   <script src="vendor/qrcode.min.js"></script>
+  <script src="vendor/jsqr.js"></script>
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
