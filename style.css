@@ -851,6 +851,18 @@ main {
   font-family: var(--font-mono);
 }
 
+.sg-filter-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-muted);
+}
+
+.sg-filter-input input {
+  width: 112px;
+  font-family: var(--font-mono);
+}
+
 #resetAdvancedFiltersBtn { align-self: flex-end; }
 
 .empty-state {

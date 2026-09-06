@@ -1005,6 +1005,8 @@ const activeFilterChipsEl = document.getElementById("activeFilterChips");
 const scovilleMinFilterEl = document.getElementById("scovilleMinFilter");
 const scovilleMaxFilterEl = document.getElementById("scovilleMaxFilter");
 const scovilleIncludeUnknownEl = document.getElementById("scovilleIncludeUnknown");
+const sgMinFilterEl = document.getElementById("sgMinFilter");
+const sgIncludeUnknownEl = document.getElementById("sgIncludeUnknown");
 const tasteFilterChipsEl = document.getElementById("tasteFilterChips");
 const resetAdvancedFiltersBtn = document.getElementById("resetAdvancedFiltersBtn");
 
@@ -1056,6 +1058,15 @@ function renderActiveFilterChips() {
       },
     });
   }
+  const sgThreshold = normalizeSg(sgMinFilterEl.value);
+  if (sgThreshold.display) {
+    chips.push({
+      label: `Schärfegrad ab ${sgThreshold.display}`,
+      onRemove: () => {
+        sgMinFilterEl.value = "";
+      },
+    });
+  }
   selectedTasteFilterTags.forEach((tag) => {
     chips.push({
       label: tag,
@@ -1090,7 +1101,7 @@ advancedFilterToggle.addEventListener("click", () => {
   advancedFilterToggle.setAttribute("aria-expanded", String(isOpen));
 });
 
-[scovilleMinFilterEl, scovilleMaxFilterEl, scovilleIncludeUnknownEl].forEach((el) => {
+[scovilleMinFilterEl, scovilleMaxFilterEl, scovilleIncludeUnknownEl, sgMinFilterEl, sgIncludeUnknownEl].forEach((el) => {
   el.addEventListener("input", () => {
     renderActiveFilterChips();
     render();
@@ -1101,6 +1112,8 @@ resetAdvancedFiltersBtn.addEventListener("click", () => {
   scovilleMinFilterEl.value = "";
   scovilleMaxFilterEl.value = "";
   scovilleIncludeUnknownEl.checked = true;
+  sgMinFilterEl.value = "";
+  sgIncludeUnknownEl.checked = true;
   selectedTasteFilterTags = [];
   renderTasteFilterChips();
   renderActiveFilterChips();
@@ -1113,6 +1126,8 @@ function getFilteredChilis() {
   const scovilleMin = scovilleMinFilterEl.value ? parseInt(scovilleMinFilterEl.value, 10) : null;
   const scovilleMax = scovilleMaxFilterEl.value ? parseInt(scovilleMaxFilterEl.value, 10) : null;
   const includeUnknownScoville = scovilleIncludeUnknownEl.checked;
+  const sgThreshold = normalizeSg(sgMinFilterEl.value);
+  const includeUnknownSg = sgIncludeUnknownEl.checked;
 
   return chilis.filter((c) => {
     const matchesQuery =
@@ -1140,11 +1155,17 @@ function getFilteredChilis() {
       }
     }
 
+    let matchesSg = true;
+    if (sgThreshold.display) {
+      const chiliSg = normalizeSg(c.sg);
+      matchesSg = chiliSg.display ? chiliSg.num >= sgThreshold.num : includeUnknownSg;
+    }
+
     const matchesTasteTags =
       selectedTasteFilterTags.length === 0 ||
       (c.geschmack_tags || []).some((t) => selectedTasteFilterTags.includes(t));
 
-    return matchesQuery && matchesStatus && matchesYear && matchesScoville && matchesTasteTags;
+    return matchesQuery && matchesStatus && matchesYear && matchesScoville && matchesSg && matchesTasteTags;
   });
 }
 
