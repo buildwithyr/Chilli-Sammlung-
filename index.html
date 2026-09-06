@@ -108,23 +108,21 @@
 
     <div id="advancedFilterPanel" class="advanced-filter-panel" hidden>
       <div class="filter-group">
-        <span class="filter-group-label">Scoville-Bereich (SHU)</span>
-        <div class="scoville-range-inputs">
-          <input type="number" id="scovilleMinFilter" placeholder="von" min="0" step="1000">
-          <span>–</span>
-          <input type="number" id="scovilleMaxFilter" placeholder="bis" min="0" step="1000">
-        </div>
-        <label class="checkbox-label">
-          <input type="checkbox" id="scovilleIncludeUnknown" checked>
-          Auch Sorten ohne bekannten Scoville-Wert anzeigen
-        </label>
-      </div>
-      <div class="filter-group">
         <span class="filter-group-label">Schärfegrad</span>
-        <div class="sg-filter-input">
-          <span>ab</span>
-          <input type="text" id="sgMinFilter" placeholder="z.B. 5 oder 10+">
+        <div id="sgFilterScale" class="sg-scale" role="group" aria-label="Mindest-Schärfegrad wählen">
+          <button type="button" class="sg-scale-btn" data-value="1">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="2">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="3">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="4">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="5">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="6">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="7">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="8">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="9">🌶️</button>
+          <button type="button" class="sg-scale-btn" data-value="10">🌶️</button>
+          <button type="button" class="sg-scale-btn sg-scale-plus" data-value="10+" title="10+ (extrem, außerhalb der Skala)">10+</button>
         </div>
+        <span id="sgFilterLabel" class="sg-scale-label">Kein Mindestwert gewählt</span>
         <label class="checkbox-label">
           <input type="checkbox" id="sgIncludeUnknown" checked>
           Auch Sorten ohne bekannten Schärfegrad anzeigen

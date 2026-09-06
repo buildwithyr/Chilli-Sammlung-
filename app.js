@@ -994,34 +994,43 @@ function sortChilis(list) {
   return sorted;
 }
 
-// --- Erweiterte Filter: Scoville-Bereich + Geschmacks-Tags ---
-// Gab es vorher nicht (kein Filter-Code dafür im Bestand, nur das einzelne
-// Scoville-Freitextfeld pro Chili) - deshalb hier komplett neu aufgebaut,
-// nicht "repariert".
+// --- Erweiterte Filter: Schärfegrad-Leiste + Geschmacks-Tags ---
+// Gab es vorher nicht (kein Filter-Code dafür im Bestand) - deshalb hier
+// komplett neu aufgebaut, nicht "repariert".
 
 const advancedFilterToggle = document.getElementById("advancedFilterToggle");
 const advancedFilterPanel = document.getElementById("advancedFilterPanel");
 const activeFilterChipsEl = document.getElementById("activeFilterChips");
-const scovilleMinFilterEl = document.getElementById("scovilleMinFilter");
-const scovilleMaxFilterEl = document.getElementById("scovilleMaxFilter");
-const scovilleIncludeUnknownEl = document.getElementById("scovilleIncludeUnknown");
-const sgMinFilterEl = document.getElementById("sgMinFilter");
+const sgFilterScale = document.getElementById("sgFilterScale");
+const sgFilterLabel = document.getElementById("sgFilterLabel");
 const sgIncludeUnknownEl = document.getElementById("sgIncludeUnknown");
 const tasteFilterChipsEl = document.getElementById("tasteFilterChips");
 const resetAdvancedFiltersBtn = document.getElementById("resetAdvancedFiltersBtn");
 
 let selectedTasteFilterTags = [];
+let sgFilterValue = "";
 
-// Scoville steht im Bestand als Freitext ("1.500.000-2.200.000", "30000 SHU",
-// leer, ...) - fürs Filtern brauchen wir echte Zahlen daraus.
-function getChiliScovilleRange(c) {
-  const raw = String(c.scoville || "");
-  const nums = raw.match(/\d[\d.,]*/g);
-  if (!nums || nums.length === 0) return null;
-  const parsed = nums.map((n) => parseInt(n.replace(/[.,]/g, ""), 10)).filter((n) => Number.isFinite(n));
-  if (parsed.length === 0) return null;
-  return { min: Math.min(...parsed), max: Math.max(...parsed) };
+function setSgFilterScale(value) {
+  sgFilterValue = value;
+  const norm = normalizeSg(value);
+  sgFilterLabel.textContent = norm.display ? `Ab Schärfegrad ${norm.display}` : "Kein Mindestwert gewählt";
+  sgFilterScale.querySelectorAll(".sg-scale-btn").forEach((btn) => {
+    if (btn.dataset.value === "10+") {
+      btn.classList.toggle("filled", norm.plus);
+    } else {
+      btn.classList.toggle("filled", !norm.plus && parseInt(btn.dataset.value, 10) <= norm.num);
+    }
+  });
+  renderActiveFilterChips();
+  render();
 }
+
+sgFilterScale.addEventListener("click", (e) => {
+  const btn = e.target.closest(".sg-scale-btn");
+  if (!btn) return;
+  const clickedVal = btn.dataset.value;
+  setSgFilterScale(clickedVal === sgFilterValue ? "" : clickedVal);
+});
 
 function renderTasteFilterChips() {
   tasteFilterChipsEl.innerHTML = "";
@@ -1044,27 +1053,13 @@ function renderTasteFilterChips() {
 
 function renderActiveFilterChips() {
   activeFilterChipsEl.innerHTML = "";
-  const min = scovilleMinFilterEl.value ? parseInt(scovilleMinFilterEl.value, 10) : null;
-  const max = scovilleMaxFilterEl.value ? parseInt(scovilleMaxFilterEl.value, 10) : null;
 
   const chips = [];
-  if (min != null || max != null) {
-    const label = `Scoville: ${min ?? "0"}–${max ?? "∞"} SHU`;
-    chips.push({
-      label,
-      onRemove: () => {
-        scovilleMinFilterEl.value = "";
-        scovilleMaxFilterEl.value = "";
-      },
-    });
-  }
-  const sgThreshold = normalizeSg(sgMinFilterEl.value);
+  const sgThreshold = normalizeSg(sgFilterValue);
   if (sgThreshold.display) {
     chips.push({
       label: `Schärfegrad ab ${sgThreshold.display}`,
-      onRemove: () => {
-        sgMinFilterEl.value = "";
-      },
+      onRemove: () => setSgFilterScale(""),
     });
   }
   selectedTasteFilterTags.forEach((tag) => {
@@ -1101,32 +1096,22 @@ advancedFilterToggle.addEventListener("click", () => {
   advancedFilterToggle.setAttribute("aria-expanded", String(isOpen));
 });
 
-[scovilleMinFilterEl, scovilleMaxFilterEl, scovilleIncludeUnknownEl, sgMinFilterEl, sgIncludeUnknownEl].forEach((el) => {
-  el.addEventListener("input", () => {
-    renderActiveFilterChips();
-    render();
-  });
+sgIncludeUnknownEl.addEventListener("input", () => {
+  renderActiveFilterChips();
+  render();
 });
 
 resetAdvancedFiltersBtn.addEventListener("click", () => {
-  scovilleMinFilterEl.value = "";
-  scovilleMaxFilterEl.value = "";
-  scovilleIncludeUnknownEl.checked = true;
-  sgMinFilterEl.value = "";
   sgIncludeUnknownEl.checked = true;
   selectedTasteFilterTags = [];
   renderTasteFilterChips();
-  renderActiveFilterChips();
-  render();
+  setSgFilterScale("");
 });
 
 function getFilteredChilis() {
   const query = searchInput.value.trim().toLowerCase();
   const statusQuery = statusFilter.value;
-  const scovilleMin = scovilleMinFilterEl.value ? parseInt(scovilleMinFilterEl.value, 10) : null;
-  const scovilleMax = scovilleMaxFilterEl.value ? parseInt(scovilleMaxFilterEl.value, 10) : null;
-  const includeUnknownScoville = scovilleIncludeUnknownEl.checked;
-  const sgThreshold = normalizeSg(sgMinFilterEl.value);
+  const sgThreshold = normalizeSg(sgFilterValue);
   const includeUnknownSg = sgIncludeUnknownEl.checked;
 
   return chilis.filter((c) => {
@@ -1139,22 +1124,6 @@ function getFilteredChilis() {
     const matchesStatus = !statusQuery || c.status === statusQuery;
     const matchesYear = !activeYear || c.jahr === activeYear;
 
-    let matchesScoville = true;
-    if (scovilleMin != null || scovilleMax != null) {
-      const range = getChiliScovilleRange(c);
-      if (!range) {
-        matchesScoville = includeUnknownScoville;
-      } else {
-        const lo = scovilleMin ?? -Infinity;
-        const hi = scovilleMax ?? Infinity;
-        // Bereichsüberlappung: die Sorten-Spanne muss den Filter-Bereich
-        // irgendwo berühren, nicht komplett darin liegen - sonst würden
-        // z.B. Sorten mit "30.000-50.000" bei einem Filter "40.000-60.000"
-        // fälschlich rausfallen, obwohl sie sich überschneiden.
-        matchesScoville = range.min <= hi && range.max >= lo;
-      }
-    }
-
     let matchesSg = true;
     if (sgThreshold.display) {
       const chiliSg = normalizeSg(c.sg);
@@ -1165,7 +1134,7 @@ function getFilteredChilis() {
       selectedTasteFilterTags.length === 0 ||
       (c.geschmack_tags || []).some((t) => selectedTasteFilterTags.includes(t));
 
-    return matchesQuery && matchesStatus && matchesYear && matchesScoville && matchesSg && matchesTasteTags;
+    return matchesQuery && matchesStatus && matchesYear && matchesSg && matchesTasteTags;
   });
 }
 
