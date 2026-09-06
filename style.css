@@ -1344,31 +1344,25 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   margin-top: 4px;
 }
 
-/* Schärfegrad in Karten/Zeilen: kleine 10-Segment-Leiste statt Text, damit
-   man den Unterschied zwischen den Sorten auf einen Blick sieht. Den
-   genauen Wert zeigt weiterhin das Bearbeiten-Fenster. */
+/* Schärfegrad in Karten/Zeilen: Chili-Emojis statt Text, damit man den
+   Unterschied zwischen den Sorten auf einen Blick sieht - eine dünne
+   Segment-Leiste war zu klein, um z.B. 2 von 3 Strichen zu unterscheiden.
+   Jedes Emoji steht für 2 Punkte (max. 5 Stück). Den genauen Wert zeigt
+   weiterhin das Bearbeiten-Fenster. */
 .sg-heat-bar {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: -4px;
 }
 
-.sg-heat-seg {
-  width: 8px;
-  height: 18px;
-  border-radius: 2px;
-  background: var(--color-badge);
-  border: 1px solid var(--color-border);
+.sg-heat-bar-plus {
+  filter: saturate(1.6) brightness(0.9);
 }
 
-.sg-heat-seg.filled {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.sg-heat-bar-plus .sg-heat-seg.filled {
-  background: var(--color-danger);
-  border-color: var(--color-danger);
+.sg-heat-unknown {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  letter-spacing: normal;
 }
 
 .tag-chips {

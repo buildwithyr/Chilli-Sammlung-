@@ -966,12 +966,13 @@ function sgValue(sg) {
 // im Bearbeiten-Fenster ("Schärfegrad X").
 function sgHeatBar(sg) {
   const norm = normalizeSg(sg);
-  const segments = Array.from({ length: 10 }, (_, i) => {
-    const filled = norm.plus || i < norm.num;
-    return `<span class="sg-heat-seg${filled ? " filled" : ""}"></span>`;
-  }).join("");
   const title = norm.display ? `Schärfegrad ${norm.display}` : "Schärfegrad unbekannt";
-  return `<span class="sg-heat-bar${norm.plus ? " sg-heat-bar-plus" : ""}" title="${title}">${segments}</span>`;
+  if (!norm.display) {
+    return `<span class="sg-heat-bar sg-heat-unknown" title="${title}">–</span>`;
+  }
+  // Volle 1-10-Skala: ein Chili-Emoji pro Punkt.
+  const peppers = Math.max(1, Math.min(10, norm.num));
+  return `<span class="sg-heat-bar${norm.plus ? " sg-heat-bar-plus" : ""}" title="${title}">${"🌶️".repeat(peppers)}</span>`;
 }
 
 function sortChilis(list) {
