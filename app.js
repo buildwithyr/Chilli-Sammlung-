@@ -2766,7 +2766,6 @@ function setupPullToRefresh() {
 // --- Init ---
 
 (async function main() {
-  await ensureAuthenticated();
   populateStatusFilter();
   renderTasteFilterChips();
   populateYearSelect();

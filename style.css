@@ -71,32 +71,6 @@ html:not([data-theme]) {
 
 * { box-sizing: border-box; }
 
-.auth-gate {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: var(--color-bg);
-}
-
-.auth-gate[hidden] { display: none; }
-
-.auth-card {
-  width: min(100%, 420px);
-  display: grid;
-  gap: 16px;
-  padding: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-}
-
-.auth-card h1, .auth-card p { margin: 0; }
-.auth-icon { font-size: 44px; }
-.auth-message { min-height: 1.4em; color: var(--color-muted); }
-
 body {
   margin: 0;
   background: var(--color-bg);

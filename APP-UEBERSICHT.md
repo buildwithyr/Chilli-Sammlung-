@@ -25,7 +25,6 @@ Die App läuft ohne Build-Schritt als statische GitHub-Pages-Anwendung.
 | `core.js` | Jahresoptionen, IDs, HTML-Escaping, Downloads und Kennzahlen |
 | `data-service.js` | Supabase-Client sowie CRUD für Chilis und Bestellungen |
 | `lazy-load.js` | Bedarfsgesteuertes Laden von Chart.js, Tesseract und XLSX |
-| `auth.js` | Passwortloser E-Mail-Login vor dem Laden der privaten Daten |
 
 ## Hauptfunktionen
 
@@ -59,7 +58,6 @@ Weitere Tabellen:
 
 - `public.bestellungen` – Jahr, Sorte, Menge, Händler, Datum, Preis und Notizen
 - `public.chili_reference` – bekannte Sortendaten und Quellen
-- `public.app_owners` – erlaubte Supabase-Auth-Benutzer nach erfolgreicher Sicherheitsmigration
 - Storage-Bucket `chili-fotos` – komprimierte Pflanzenbilder
 
 ## Bibliotheken
@@ -76,18 +74,16 @@ Weitere Tabellen:
 ## Datenfluss
 
 1. `index.html` lädt Konfiguration und Basismodule.
-2. `auth.js` prüft die Supabase-Sitzung bzw. sendet einen Magic Link.
-3. `data-service.js` lädt Chilis und Bestellungen.
-4. `app.js` verknüpft gleiche Sorten über Jahre und rendert die aktive Ansicht.
-5. Änderungen werden zuerst in Supabase gespeichert und danach lokal dargestellt.
+2. `data-service.js` lädt Chilis und Bestellungen ohne Anmeldung.
+3. `app.js` verknüpft gleiche Sorten über Jahre und rendert die aktive Ansicht.
+4. Änderungen werden zuerst in Supabase gespeichert und danach lokal dargestellt.
 
 ## Migrationen und Ausrollen
 
 - `20260907090000_add_growing_metrics.sql` ergänzt Aussaat, Keimung und Erntegewicht.
-- `20260907090100_secure_single_user_access.sql` ersetzt die derzeit öffentlichen
-  Vollzugriffs-Policies durch eine Besitzer-Allowlist.
-- Reihenfolge und Sicherheitsvoraussetzungen stehen im `README.md`.
-- Die Sicherheitsmigration wurde absichtlich noch nicht auf Produktion angewendet.
+- Die App bleibt bewusst ohne Anmeldung und mit öffentlichem Supabase-Zugriff.
+- Die Entscheidung ist vertretbar, solange keine personenbezogenen oder vertraulichen
+  Daten gespeichert werden und ein aktuelles Backup vorhanden ist.
 
 ## Bekannte Grenzen
 
@@ -95,6 +91,8 @@ Weitere Tabellen:
   schrittweise weiter in thematische Module zerlegt werden.
 - Das Manifest macht die App installierbar, ein vollständiger Offline-Service-Worker fehlt noch.
 - Der Foto-Bucket ist für bestehende öffentliche Bild-URLs weiterhin öffentlich lesbar.
+- Daten können aufgrund des bewusst öffentlichen Zugriffs auch von Dritten verändert
+  werden. Vor größeren Änderungen und regelmäßig im Betrieb ein JSON-Backup erstellen.
 - Der Tabellenersatz beim JSON-Import ist nicht transaktional; deshalb wird unmittelbar
   davor automatisch ein lokales JSON-Backup erzeugt.
 

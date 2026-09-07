@@ -22,8 +22,10 @@ Aufgabe notwendig sind.
 - Niemals Secret- oder Service-Role-Keys in Browsercode oder Git schreiben.
 - Jede Schemaänderung als nachvollziehbare SQL-Datei unter `supabase/migrations/` ablegen.
 - Produktionsmigrationen nicht allein wegen einer Codeänderung automatisch ausführen.
-- Für Tabellen im exponierten Schema RLS aktivieren und Policies mit tatsächlicher
-  Besitzerprüfung verwenden; `using (true)` bzw. öffentliche Schreibrechte sind verboten.
+- Das aktuelle öffentliche Zugriffsmodell ist eine bewusste Produktentscheidung.
+  Keine Anmeldung oder Besitzerverwaltung ohne ausdrücklichen Auftrag ergänzen.
+- Werden später personenbezogene oder vertrauliche Daten gespeichert, muss das
+  Zugriffsmodell vor der Umsetzung neu bewertet werden.
 - Löschende oder ersetzende Importe brauchen vorab ein wiederherstellbares Backup.
 - Neue Zahlenfelder müssen auf plausible, nicht negative Werte geprüft werden.
 - Bestehende Exporte und ältere Datensätze nach Möglichkeit abwärtskompatibel halten.

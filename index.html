@@ -14,18 +14,6 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="authGate" class="auth-gate" hidden>
-    <form id="authForm" class="auth-card">
-      <span class="auth-icon">🌶️</span>
-      <h1>Chili-Sammlung</h1>
-      <p>Bitte melde dich mit deiner hinterlegten E-Mail-Adresse an.</p>
-      <label>E-Mail
-        <input id="authEmail" type="email" autocomplete="email" required>
-      </label>
-      <button class="btn btn-primary" type="submit">Anmeldelink senden</button>
-      <p id="authMessage" class="auth-message" aria-live="polite"></p>
-    </form>
-  </div>
   <div id="pullIndicator" class="pull-indicator" aria-hidden="true">🌶️</div>
 
   <div id="topBar" class="top-bar">
@@ -225,7 +213,7 @@
 
   <footer class="app-footer">
     <span class="footer-hint">Tipp: im ⋮-Menü regelmäßig „Daten exportieren (JSON)" sichern – als Backup unabhängig von Supabase.</span>
-    <span class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</span>
+    <span class="footer-copyright">© 2026 Opa Reiters Chili Sammlung. Alle Rechte vorbehalten.</span>
   </footer>
 
   <!-- Info-Modal -->
@@ -307,7 +295,7 @@
         umgeschaltet werden, die App merkt sich die Wahl.
       </p>
 
-      <p class="footer-copyright">© 2026 Yannick Reiter. Alle Rechte vorbehalten.</p>
+      <p class="footer-copyright">© 2026 Opa Reiters Chili Sammlung. Alle Rechte vorbehalten.</p>
     </div>
   </div>
 
@@ -606,7 +594,6 @@
   <script src="src/core.js"></script>
   <script src="src/lazy-load.js"></script>
   <script src="src/data-service.js"></script>
-  <script src="src/auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
