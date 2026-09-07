@@ -1721,7 +1721,7 @@ function buildQrLabel(chili) {
 
   const canvasWrap = document.createElement("div");
   canvasWrap.className = "qr-code-canvas";
-  canvasWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2 });
+  canvasWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
   label.appendChild(canvasWrap);
 
   const nameEl = document.createElement("div");
