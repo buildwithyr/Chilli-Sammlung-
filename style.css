@@ -1513,7 +1513,16 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   break-inside: avoid;
 }
 
-.qr-label .qr-code-canvas svg { display: block; }
+.qr-label .qr-code-canvas {
+  width: 150px;
+  height: 150px;
+}
+
+.qr-label .qr-code-canvas svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 .qr-label .qr-print-name {
   font-family: var(--font-ui);
@@ -1528,6 +1537,14 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: #6b5346;
+}
+
+.qr-label .qr-print-sg {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #b3401f;
 }
 
 .qr-preview-actions {

@@ -1721,7 +1721,7 @@ function buildQrLabel(chili) {
 
   const canvasWrap = document.createElement("div");
   canvasWrap.className = "qr-code-canvas";
-  canvasWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2 });
+  canvasWrap.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
   label.appendChild(canvasWrap);
 
   const nameEl = document.createElement("div");
@@ -1734,6 +1734,14 @@ function buildQrLabel(chili) {
     nrEl.className = "qr-print-nr";
     nrEl.textContent = `Katalog-Nr. ${chili.nr}`;
     label.appendChild(nrEl);
+  }
+
+  const sgNorm = normalizeSg(chili.sg);
+  if (sgNorm.display) {
+    const sgEl = document.createElement("div");
+    sgEl.className = "qr-print-sg";
+    sgEl.textContent = `SG ${sgNorm.display}`;
+    label.appendChild(sgEl);
   }
 
   return label;
