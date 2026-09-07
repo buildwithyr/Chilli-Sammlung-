@@ -1539,6 +1539,14 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   color: #6b5346;
 }
 
+.qr-label .qr-print-sg {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #b3401f;
+}
+
 .qr-preview-actions {
   display: flex;
   gap: 10px;

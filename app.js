@@ -1736,6 +1736,14 @@ function buildQrLabel(chili) {
     label.appendChild(nrEl);
   }
 
+  const sgNorm = normalizeSg(chili.sg);
+  if (sgNorm.display) {
+    const sgEl = document.createElement("div");
+    sgEl.className = "qr-print-sg";
+    sgEl.textContent = `SG ${sgNorm.display}`;
+    label.appendChild(sgEl);
+  }
+
   return label;
 }
 
