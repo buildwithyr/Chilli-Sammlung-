@@ -10,10 +10,6 @@ const SORT_KEY = "chiliSortMode";
 const APP_TAB_KEY = "chiliAppTab";
 const ORDER_YEAR_KEY = "chiliOrderActiveYear";
 
-const YEAR_OPTIONS = ["2022", "2023", "2024", "2025", "2026", "2027"];
-const DEFAULT_YEAR = "2026";
-const ORDER_YEAR_OPTIONS = ["2020", "2022", "2023", "2024", "2025", "2026", "2027"];
-
 const STATUS_OPTIONS = [
   "Aussaat",
   "Keimling",
@@ -24,9 +20,6 @@ const STATUS_OPTIONS = [
   "Ernte läuft",
   "Saison beendet",
 ];
-
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const FOTOS_BUCKET = "chili-fotos";
 
 // --- Hell-/Dunkelmodus ---
 // Ohne gespeicherte Wahl folgt die App der Systemeinstellung (siehe CSS
@@ -65,10 +58,6 @@ initTheme();
 let chilis = [];
 let orders = [];
 let currentPhotos = [];
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
 
 // --- Bildkompression vor dem Upload ---
 // Handyfotos sind oft mehrere MB groß und durch EXIF-Metadaten gedreht.
@@ -184,37 +173,6 @@ async function compressImage(file) {
   return blob;
 }
 
-async function fetchChilis() {
-  const { data, error } = await sb.from("chilis").select("*").order("nr", { ascending: true });
-  if (error) {
-    console.error("Konnte Chilis nicht laden", error);
-    return [];
-  }
-  return data;
-}
-
-async function fetchOrders() {
-  const { data, error } = await sb.from("bestellungen").select("*");
-  if (error) {
-    console.error("Konnte Bestellungen nicht laden", error);
-    return [];
-  }
-  return data;
-}
-
-async function upsertChiliRemote(data) {
-  const { error } = await sb.from("chilis").upsert(data);
-  if (error) alert("Speichern fehlgeschlagen: " + error.message);
-  return !error;
-}
-
-async function updateLinkedChilisRemote(ids, data) {
-  if (ids.length === 0) return true;
-  const { error } = await sb.from("chilis").update(data).in("id", ids);
-  if (error) alert("Verknüpfte Sorten konnten nicht gespeichert werden: " + error.message);
-  return !error;
-}
-
 // Angaben zur Sorte gelten unabhaengig vom Anbaujahr. Werden sie bei einem
 // Eintrag geaendert, schreiben wir sie deshalb auch in alle gleichnamigen
 // Eintraege der anderen Jahre. Die Saison-Felder (Status, Daten, Notizen und
@@ -269,24 +227,6 @@ function sharedVarietyOverrides(source) {
     if (hasValue) overrides[field] = value;
   }
   return overrides;
-}
-
-async function deleteChiliRemote(id) {
-  const { error } = await sb.from("chilis").delete().eq("id", id);
-  if (error) alert("Löschen fehlgeschlagen: " + error.message);
-  return !error;
-}
-
-async function upsertOrderRemote(data) {
-  const { error } = await sb.from("bestellungen").upsert(data);
-  if (error) alert("Speichern fehlgeschlagen: " + error.message);
-  return !error;
-}
-
-async function deleteOrderRemote(id) {
-  const { error } = await sb.from("bestellungen").delete().eq("id", id);
-  if (error) alert("Löschen fehlgeschlagen: " + error.message);
-  return !error;
 }
 
 // --- Einmalige Migration: altes localStorage -> Supabase ---
@@ -1314,12 +1254,6 @@ function appendYearLinks(container, chili) {
   }
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str ?? "";
-  return div.innerHTML;
-}
-
 // --- Modal / Form ---
 
 const modal = document.getElementById("chiliModal");
@@ -1659,6 +1593,9 @@ function openModal(id) {
   document.getElementById("fieldPflanzdatum").value = chili?.pflanzdatum || "";
   document.getElementById("fieldErntedatum").value = chili?.erntedatum || "";
   document.getElementById("fieldErntenotizen").value = chili?.erntenotizen || "";
+  document.getElementById("fieldAusgesaet").value = chili?.ausgesaet || "";
+  document.getElementById("fieldGekeimt").value = chili?.gekeimt || "";
+  document.getElementById("fieldErnteGewicht").value = chili?.ernte_gewicht_g || "";
   document.getElementById("fieldGeschmack").value = chili?.geschmack || "";
   document.getElementById("fieldNotizen").value = chili?.notizen || "";
 
@@ -2088,6 +2025,7 @@ ocrPhotoInput.addEventListener("change", async () => {
   ocrStatusText.textContent = "Texterkennung läuft ...";
 
   try {
+    await loadFeature("ocr");
     if (typeof Tesseract === "undefined") {
       throw new Error("Tesseract.js konnte nicht geladen werden (keine Internetverbindung?).");
     }
@@ -2142,6 +2080,9 @@ form.addEventListener("submit", async (e) => {
     pflanzdatum: document.getElementById("fieldPflanzdatum").value || null,
     erntedatum: document.getElementById("fieldErntedatum").value || null,
     erntenotizen: document.getElementById("fieldErntenotizen").value.trim(),
+    ausgesaet: nonNegativeNumber(document.getElementById("fieldAusgesaet").value),
+    gekeimt: nonNegativeNumber(document.getElementById("fieldGekeimt").value),
+    ernte_gewicht_g: nonNegativeNumber(document.getElementById("fieldErnteGewicht").value),
     geschmack: document.getElementById("fieldGeschmack").value.trim(),
     geschmack_tags: selectedTasteTags,
     notizen: document.getElementById("fieldNotizen").value.trim(),
@@ -2305,6 +2246,9 @@ const CSV_COLUMNS = [
   ["pflanzdatum", "Pflanzdatum"],
   ["erntedatum", "Erntedatum"],
   ["erntenotizen", "Wie läuft die Ernte"],
+  ["ausgesaet", "Samen ausgesät"],
+  ["gekeimt", "Samen gekeimt"],
+  ["ernte_gewicht_g", "Erntegewicht (g)"],
   ["geschmack", "Geschmack/Aroma"],
   ["geschmack_tags", "Geschmacks-Tags"],
   ["notizen", "Notizen"],
@@ -2335,12 +2279,7 @@ bulkExportCsvBtn.addEventListener("click", () => {
 
   const csv = chilisToCsv(selected);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `chili-auswahl-${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `chili-auswahl-${new Date().toISOString().slice(0, 10)}.csv`);
 });
 
 // --- CSV-Export der Bestellungs-Auswahl ---
@@ -2367,12 +2306,7 @@ orderBulkExportCsvBtn.addEventListener("click", () => {
 
   const csv = ordersToCsv(selected);
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `bestellungen-auswahl-${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `bestellungen-auswahl-${new Date().toISOString().slice(0, 10)}.csv`);
 });
 
 // --- Export / Import ---
@@ -2380,12 +2314,7 @@ orderBulkExportCsvBtn.addEventListener("click", () => {
 document.getElementById("menuExportBtn").addEventListener("click", () => {
   const payload = { chilis, bestellungen: orders };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `chili-sammlung-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `chili-sammlung-${new Date().toISOString().slice(0, 10)}.json`);
   closeMenu();
 });
 
@@ -2416,7 +2345,12 @@ importFile.addEventListener("change", async () => {
     const importedOrders = Array.isArray(imported) ? [] : imported.bestellungen || [];
     if (!Array.isArray(importedChilis)) throw new Error("Ungültiges Format");
 
-    if ((chilis.length > 0 || orders.length > 0) && !confirm("Vorhandene Daten durch Import ersetzen?")) return;
+    if ((chilis.length > 0 || orders.length > 0) && !confirm("Vorhandene Daten durch Import ersetzen? Vorher wird automatisch ein Backup heruntergeladen.")) return;
+
+    downloadBlob(
+      new Blob([JSON.stringify({ chilis, bestellungen: orders }, null, 2)], { type: "application/json" }),
+      `chili-backup-vor-import-${new Date().toISOString().slice(0, 10)}.json`
+    );
 
     // Ganz alte Exporte (vor Supabase) hatten Fotos noch als Base64 -
     // die müssen erst in den Storage-Bucket hochgeladen werden.
@@ -2495,7 +2429,8 @@ function closeExcelImportModal() {
   excelImportModal.hidden = true;
 }
 
-function downloadExcelTemplate() {
+async function downloadExcelTemplate() {
+  await loadFeature("excel");
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([
     ["Nr", "Name", "Sg", "Jahr"],
@@ -2616,6 +2551,9 @@ function buildChiliFromExcelRow(row, existing) {
     pflanzdatum: existing?.pflanzdatum || null,
     erntedatum: existing?.erntedatum || null,
     erntenotizen: existing?.erntenotizen || "",
+    ausgesaet: existing?.ausgesaet || 0,
+    gekeimt: existing?.gekeimt || 0,
+    ernte_gewicht_g: existing?.ernte_gewicht_g || 0,
     geschmack: existing?.geschmack || "",
     geschmack_tags: existing?.geschmack_tags || [],
     notizen: existing?.notizen || "",
@@ -2636,6 +2574,7 @@ excelImportFile.addEventListener("change", async () => {
   const file = excelImportFile.files[0];
   if (!file) return;
   try {
+    await loadFeature("excel");
     const buffer = await file.arrayBuffer();
     const workbook = XLSX.read(new Uint8Array(buffer), { type: "array" });
     const { records, errors } = parseExcelWorkbook(workbook);
@@ -2689,8 +2628,10 @@ excelImportConfirmBtn.addEventListener("click", async () => {
 
 let sortenChartInstance = null;
 
-function renderStats() {
+async function renderStats() {
+  await loadFeature("chart");
   const total = chilis.length;
+  const metrics = calculateGrowingMetrics(chilis);
   const counts = new Map();
   for (const c of chilis) {
     const key = (c.sorte && c.sorte.trim()) || c.name || "Unbekannt";
@@ -2702,6 +2643,12 @@ function renderStats() {
   document.getElementById("statVarieties").textContent = counts.size;
   document.getElementById("statTop").textContent =
     entries.length > 0 ? `${entries[0][0]} (${entries[0][1]})` : "–";
+  document.getElementById("statGermination").textContent =
+    metrics.germinationRate == null ? "–" : `${metrics.germinationRate} %`;
+  document.getElementById("statHarvestWeight").textContent =
+    metrics.harvestGrams >= 1000
+      ? `${(metrics.harvestGrams / 1000).toLocaleString("de-AT", { maximumFractionDigits: 2 })} kg`
+      : `${metrics.harvestGrams.toLocaleString("de-AT")} g`;
 
   const styles = getComputedStyle(document.documentElement);
   const textColor = styles.getPropertyValue("--color-text").trim() || "#333333";
@@ -2819,6 +2766,7 @@ function setupPullToRefresh() {
 // --- Init ---
 
 (async function main() {
+  await ensureAuthenticated();
   populateStatusFilter();
   renderTasteFilterChips();
   populateYearSelect();

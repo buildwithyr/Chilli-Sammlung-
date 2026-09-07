@@ -14,6 +14,18 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="authGate" class="auth-gate" hidden>
+    <form id="authForm" class="auth-card">
+      <span class="auth-icon">🌶️</span>
+      <h1>Chili-Sammlung</h1>
+      <p>Bitte melde dich mit deiner hinterlegten E-Mail-Adresse an.</p>
+      <label>E-Mail
+        <input id="authEmail" type="email" autocomplete="email" required>
+      </label>
+      <button class="btn btn-primary" type="submit">Anmeldelink senden</button>
+      <p id="authMessage" class="auth-message" aria-live="polite"></p>
+    </form>
+  </div>
   <div id="pullIndicator" class="pull-indicator" aria-hidden="true">🌶️</div>
 
   <div id="topBar" class="top-bar">
@@ -163,6 +175,14 @@
       <div class="stat-tile">
         <span class="stat-tile-value" id="statTop">–</span>
         <span class="stat-tile-label">Meistgezogen</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-tile-value" id="statGermination">–</span>
+        <span class="stat-tile-label">Keimquote</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-tile-value" id="statHarvestWeight">–</span>
+        <span class="stat-tile-label">Erntegewicht gesamt</span>
       </div>
     </div>
     <div class="stats-chart-card">
@@ -462,6 +482,15 @@
           <label>Erntedatum
             <input type="date" id="fieldErntedatum">
           </label>
+          <label>Samen ausgesät
+            <input type="number" id="fieldAusgesaet" min="0" step="1" inputmode="numeric" placeholder="z.B. 10">
+          </label>
+          <label>Davon gekeimt
+            <input type="number" id="fieldGekeimt" min="0" step="1" inputmode="numeric" placeholder="z.B. 7">
+          </label>
+          <label>Erntegewicht gesamt (g)
+            <input type="number" id="fieldErnteGewicht" min="0" step="0.1" inputmode="decimal" placeholder="z.B. 850">
+          </label>
         </div>
 
         <label class="full-width">Wie läuft die Ernte?
@@ -571,12 +600,13 @@
 
   <script src="data/seed-chilis.js"></script>
   <script src="vendor/supabase.js"></script>
-  <script src="vendor/chart.umd.min.js"></script>
-  <script src="vendor/tesseract.min.js"></script>
   <script src="vendor/qrcode.min.js"></script>
   <script src="vendor/jsqr.js"></script>
-  <script src="vendor/xlsx.core.min.js"></script>
   <script src="config.js"></script>
+  <script src="src/core.js"></script>
+  <script src="src/lazy-load.js"></script>
+  <script src="src/data-service.js"></script>
+  <script src="src/auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
