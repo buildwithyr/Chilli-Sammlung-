@@ -1809,6 +1809,11 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
   .chili-grid { grid-template-columns: repeat(auto-fill, minmax(235px, 1fr)); }
 }
 
+@media (min-width: 1400px) {
+  main { max-width: 1600px; }
+  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+
 /* ============================================================
    Handy
    ============================================================ */
