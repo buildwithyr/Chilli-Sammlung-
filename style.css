@@ -1811,7 +1811,7 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
 
 @media (min-width: 1400px) {
   main { max-width: 1600px; }
-  .chili-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .chili-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
 /* ============================================================
