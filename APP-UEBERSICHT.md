@@ -1,6 +1,6 @@
 # App-Übersicht
 
-Stand: 7. September 2026
+Stand: 8. September 2026
 
 ## Zweck
 
@@ -80,6 +80,13 @@ Weitere Tabellen:
 
 ## Migrationen und Ausrollen
 
+- Seit 8. September 2026 im produktiven Einsatz: Papa wurde eingewiesen und lädt
+  reale Sortenfotos hoch, alle Daten liegen dauerhaft in Supabase.
+- Foto-Uploads bekommen je Datei einen zufälligen Dateinamen unter
+  `chili-fotos/<chiliId>/<uid>.jpg` (siehe `uploadChiliPhoto` und der
+  Upload-Handler in `app.js`). Dadurch überschreibt kein neuer Upload ein
+  bestehendes Foto, und jedes Foto bleibt fest am jeweiligen Chili-Eintrag
+  (und damit an dessen Sorte) hängen.
 - `20260907090000_add_growing_metrics.sql` ergänzt Aussaat, Keimung und Erntegewicht.
 - Die App bleibt bewusst ohne Anmeldung und mit öffentlichem Supabase-Zugriff.
 - Die Entscheidung ist vertretbar, solange keine personenbezogenen oder vertraulichen
