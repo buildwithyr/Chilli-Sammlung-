@@ -1474,6 +1474,27 @@ function formatScovilleRange(min, max) {
   return `${(min ?? max).toLocaleString("de")} SHU`;
 }
 
+// Prueft, ob der Referenz-Treffer noch etwas bietet, das im Formular fehlt
+// oder abweicht - sonst wurde der Vorschlag schon uebernommen und soll nicht
+// erneut angezeigt werden.
+function referenceSuggestionHasNewInfo(match) {
+  const norm = (s) => (s || "").trim().toLowerCase();
+
+  const herkunft = document.getElementById("fieldHerkunft").value;
+  if (match.herkunft && norm(match.herkunft) !== norm(herkunft)) return true;
+
+  const art = document.getElementById("fieldArt").value;
+  if (match.art && norm(match.art) !== norm(art)) return true;
+
+  const scovilleText = formatScovilleRange(match.scovilleMin, match.scovilleMax);
+  const scoville = document.getElementById("fieldScoville").value;
+  if (scovilleText && norm(scovilleText) !== norm(scoville)) return true;
+
+  if (match.geschmackTags && match.geschmackTags.some((tag) => !selectedTasteTags.includes(tag))) return true;
+
+  return false;
+}
+
 function updateReferenceSuggestion() {
   const name = document.getElementById("fieldName").value.trim();
   currentReferenceMatch = findReferenceMatch(name);
@@ -1501,6 +1522,13 @@ function updateReferenceSuggestion() {
     // Quelle gefunden"), aber keine brauchbaren Werte - Nutzer soll trotzdem
     // die Möglichkeit haben, selbst Recherchiertes/Gewusstes zu ergänzen.
     referenceSaveBackWrap.hidden = !name;
+    return;
+  }
+
+  if (!referenceSuggestionHasNewInfo(currentReferenceMatch)) {
+    // Schon übernommen: Formular stimmt bereits mit dem Referenz-Eintrag
+    // überein, es gibt nichts Neues zu melden.
+    referenceSuggestion.hidden = true;
     return;
   }
 
