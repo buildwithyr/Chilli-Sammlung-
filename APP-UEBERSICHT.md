@@ -41,6 +41,7 @@ Die App läuft ohne Build-Schritt als statische GitHub-Pages-Anwendung.
 - Sortenreferenzdatenbank mit Vorschlägen
 - Statistik einschließlich Keimquote und gesamtem Erntegewicht
 - TV-/Galerie-Modus mit gefilterter Fotoauswahl, Diashow, Vollbild und Tast-/Wischsteuerung
+- Festes dunkles Ember-Design und aufgeräumtes Hauptmenü mit eigener Datenverwaltung
 
 ## Chili-Datenmodell
 

@@ -57,14 +57,18 @@
         <div class="menu-wrap">
           <button type="button" id="menuBtn" class="icon-btn" aria-label="Menü öffnen" aria-haspopup="true" aria-expanded="false" title="Menü">⋮</button>
           <div id="menuDropdown" class="menu-dropdown" hidden>
-            <button type="button" id="menuThemeBtn" class="menu-item"><span id="menuThemeLabel">Dunkelmodus</span></button>
             <button type="button" id="menuStatsBtn" class="menu-item">Statistik</button>
             <button type="button" id="menuGalleryBtn" class="menu-item">TV-/Galerie-Modus</button>
             <div class="menu-divider" aria-hidden="true"></div>
-            <button type="button" id="menuExportBtn" class="menu-item">Daten exportieren (JSON)</button>
-            <button type="button" id="menuImportBtn" class="menu-item">Daten importieren</button>
-            <input type="file" id="importFile" accept="application/json" hidden>
-            <button type="button" id="menuExcelImportBtn" class="menu-item">Excelliste importieren</button>
+            <button type="button" id="dataMenuBtn" class="menu-item menu-submenu-trigger" aria-expanded="false" aria-controls="dataSubmenu">
+              <span>Datenverwaltung</span><span class="menu-caret" aria-hidden="true">▾</span>
+            </button>
+            <div id="dataSubmenu" class="menu-submenu" hidden>
+              <button type="button" id="menuExportBtn" class="menu-item">Daten exportieren (JSON)</button>
+              <button type="button" id="menuImportBtn" class="menu-item">Daten importieren (JSON)</button>
+              <input type="file" id="importFile" accept="application/json" hidden>
+              <button type="button" id="menuExcelImportBtn" class="menu-item">Excelliste importieren</button>
+            </div>
             <div class="menu-divider" aria-hidden="true"></div>
             <button type="button" id="menuInfoBtn" class="menu-item">Info</button>
           </div>
