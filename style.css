@@ -7,6 +7,7 @@
    ============================================================ */
 
 :root {
+  color-scheme: dark;
   /* Ember = die dunkle Grundstimmung der App */
   --color-bg: #14100e;
   --color-surface: #1c1714;
@@ -27,46 +28,6 @@
   --radius: 16px;
   --radius-sm: 12px;
   --radius-lg: 22px;
-}
-
-/* Hellmodus: gleiche Typografie und Formen, warmes Papier statt Glut.
-   Greift, wenn im Menü explizit "Hellmodus" gewählt wurde - oder wenn
-   das System hell ist und noch keine Wahl gespeichert ist. */
-:root[data-theme="light"],
-html:not([data-theme]) {
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --color-bg: #f7f2ea;
-    --color-surface: #ffffff;
-    --color-surface-2: #fbf5ee;
-    --color-text: #221a15;
-    --color-muted: #7d6a5c;
-    --color-border: #e6d9c9;
-    --color-primary: #d9451a;
-    --color-primary-dark: #b4360f;
-    --color-accent: #487f39;
-    --color-warn: #a8760c;
-    --color-danger: #b3261e;
-    --color-badge: #f1e6d9;
-  }
-}
-
-:root[data-theme="light"] {
-  --color-bg: #f7f2ea;
-  --color-surface: #ffffff;
-  --color-surface-2: #fbf5ee;
-  --color-text: #221a15;
-  --color-muted: #7d6a5c;
-  --color-border: #e6d9c9;
-  --color-primary: #d9451a;
-  --color-primary-dark: #b4360f;
-  --color-accent: #487f39;
-  --color-warn: #a8760c;
-  --color-danger: #b3261e;
-  --color-badge: #f1e6d9;
 }
 
 * { box-sizing: border-box; }
@@ -490,6 +451,37 @@ body.tv-gallery-open { overflow: hidden; }
 }
 
 .menu-item:hover { background: var(--color-badge); }
+
+.menu-submenu-trigger { justify-content: space-between; }
+
+.menu-caret {
+  margin-left: auto;
+  color: var(--color-muted);
+  transition: transform 0.18s ease;
+}
+
+.menu-submenu-trigger[aria-expanded="true"] .menu-caret { transform: rotate(180deg); }
+
+.menu-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 4px 3px;
+  padding: 4px;
+  border-left: 2px solid var(--color-primary);
+  background: var(--color-surface-2);
+  border-radius: 4px 10px 10px 4px;
+}
+
+.menu-submenu[hidden] { display: none; }
+
+.menu-submenu .menu-item {
+  padding: 10px;
+  font-size: 0.84rem;
+  color: var(--color-muted);
+}
+
+.menu-submenu .menu-item:hover { color: var(--color-text); }
 
 .menu-divider {
   height: 1px;
