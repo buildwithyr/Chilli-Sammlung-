@@ -21,40 +21,6 @@ const STATUS_OPTIONS = [
   "Saison beendet",
 ];
 
-// --- Hell-/Dunkelmodus ---
-// Ohne gespeicherte Wahl folgt die App der Systemeinstellung (siehe CSS
-// data-theme-Muster); eine explizite Wahl über den Umschalter überschreibt das.
-
-const THEME_KEY = "chiliTheme";
-
-function getEffectiveTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function applyTheme(theme) {
-  if (theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-  } else {
-    document.documentElement.removeAttribute("data-theme");
-  }
-}
-
-function initTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  applyTheme(stored === "light" || stored === "dark" ? stored : null);
-}
-
-function toggleTheme() {
-  const next = getEffectiveTheme() === "dark" ? "light" : "dark";
-  localStorage.setItem(THEME_KEY, next);
-  applyTheme(next);
-  if (appTab === "statistik") renderStats();
-}
-
-initTheme();
-
 let chilis = [];
 let orders = [];
 let currentPhotos = [];
@@ -379,18 +345,16 @@ function attachLongPress(el, onLongPress) {
   );
 }
 
-// --- Menü (⋮): Hell/Dunkel, Statistik, Info - statt einzeln sichtbarer
-// Icons im Header sitzt das gebündelt in einem Dropdown.
+// --- Menü (⋮): Hauptansichten, aufklappbare Datenverwaltung und Info ---
 
 const menuBtn = document.getElementById("menuBtn");
 const menuDropdown = document.getElementById("menuDropdown");
-const menuThemeBtn = document.getElementById("menuThemeBtn");
-const menuThemeLabel = document.getElementById("menuThemeLabel");
 const menuStatsBtn = document.getElementById("menuStatsBtn");
 const menuInfoBtn = document.getElementById("menuInfoBtn");
+const dataMenuBtn = document.getElementById("dataMenuBtn");
+const dataSubmenu = document.getElementById("dataSubmenu");
 
 function openMenu() {
-  menuThemeLabel.textContent = getEffectiveTheme() === "dark" ? "Hellmodus" : "Dunkelmodus";
   menuDropdown.hidden = false;
   menuBtn.setAttribute("aria-expanded", "true");
 }
@@ -398,6 +362,8 @@ function openMenu() {
 function closeMenu() {
   menuDropdown.hidden = true;
   menuBtn.setAttribute("aria-expanded", "false");
+  dataSubmenu.hidden = true;
+  dataMenuBtn.setAttribute("aria-expanded", "false");
 }
 
 menuBtn.addEventListener("click", (e) => {
@@ -407,9 +373,10 @@ menuBtn.addEventListener("click", (e) => {
 document.addEventListener("click", (e) => {
   if (!menuDropdown.hidden && !e.target.closest(".menu-wrap")) closeMenu();
 });
-menuThemeBtn.addEventListener("click", () => {
-  toggleTheme();
-  closeMenu();
+dataMenuBtn.addEventListener("click", () => {
+  const willOpen = dataSubmenu.hidden;
+  dataSubmenu.hidden = !willOpen;
+  dataMenuBtn.setAttribute("aria-expanded", String(willOpen));
 });
 menuStatsBtn.addEventListener("click", () => {
   setAppTab("statistik");
