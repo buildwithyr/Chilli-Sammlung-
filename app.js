@@ -1144,6 +1144,21 @@ function render() {
   }
 }
 
+// TV-Galerie bleibt als eigenes Modul gekapselt. Sie verwendet bewusst die
+// aktuelle Suche, Filter, Sortierung und Jahresauswahl der Sammlung.
+const tvGallery = ChiliTvGallery.create({
+  getSlides() {
+    const filtered = getFilteredChilis();
+    const visible = !activeYear ? groupChilisByVariety(filtered) : filtered;
+    return sortChilis(visible);
+  },
+});
+
+document.getElementById("menuGalleryBtn").addEventListener("click", () => {
+  closeMenu();
+  tvGallery.open();
+});
+
 function buildCard(c) {
   const isSelected = selectedIds.has(c.id);
   const card = document.createElement("div");
