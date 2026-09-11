@@ -59,6 +59,7 @@
           <div id="menuDropdown" class="menu-dropdown" hidden>
             <button type="button" id="menuThemeBtn" class="menu-item"><span id="menuThemeLabel">Dunkelmodus</span></button>
             <button type="button" id="menuStatsBtn" class="menu-item">Statistik</button>
+            <button type="button" id="menuGalleryBtn" class="menu-item">TV-/Galerie-Modus</button>
             <div class="menu-divider" aria-hidden="true"></div>
             <button type="button" id="menuExportBtn" class="menu-item">Daten exportieren (JSON)</button>
             <button type="button" id="menuImportBtn" class="menu-item">Daten importieren</button>
@@ -215,6 +216,50 @@
     <span class="footer-hint">Tipp: im ⋮-Menü regelmäßig „Daten exportieren (JSON)" sichern – als Backup unabhängig von Supabase.</span>
     <span class="footer-copyright">© 2026 Opa Reiters Chili Sammlung. Alle Rechte vorbehalten.</span>
   </footer>
+
+  <!-- Vollbildansicht für Fernseher und Bildschirmspiegelung -->
+  <section id="tvGallery" class="tv-gallery" aria-label="TV-Galerie" aria-hidden="true" hidden>
+    <div id="tvGalleryBackdrop" class="tv-gallery-backdrop" aria-hidden="true"></div>
+    <div class="tv-gallery-shade" aria-hidden="true"></div>
+
+    <header class="tv-gallery-toolbar">
+      <span class="tv-gallery-brand">Opa Reiters Chili Sammlung</span>
+      <div class="tv-gallery-actions">
+        <button type="button" id="tvGalleryPlayBtn" class="tv-gallery-action" aria-label="Diashow pausieren">Pause</button>
+        <button type="button" id="tvGalleryFullscreenBtn" class="tv-gallery-action" aria-label="Vollbild einschalten">Vollbild</button>
+        <button type="button" id="tvGalleryCloseBtn" class="tv-gallery-close" aria-label="TV-Galerie schließen">×</button>
+      </div>
+    </header>
+
+    <div id="tvGalleryEmpty" class="tv-gallery-empty" hidden>
+      <span aria-hidden="true">🌶️</span>
+      <strong>Für diese Auswahl gibt es noch keine Fotos.</strong>
+      <small>Einträge ohne Foto werden im TV-Modus übersprungen.</small>
+    </div>
+
+    <figure id="tvGalleryStage" class="tv-gallery-stage">
+      <img id="tvGalleryImage" class="tv-gallery-image" alt="">
+      <figcaption class="tv-gallery-caption">
+        <div class="tv-gallery-kicker">
+          <span id="tvGalleryNumber"></span>
+          <span id="tvGalleryOrigin"></span>
+          <span id="tvGalleryYear"></span>
+        </div>
+        <h2 id="tvGalleryName"></h2>
+        <p id="tvGalleryVariety" class="tv-gallery-variety"></p>
+        <div class="tv-gallery-facts">
+          <span id="tvGalleryHeat" class="tv-gallery-heat"></span>
+          <span id="tvGalleryScoville"></span>
+          <span id="tvGalleryStatus"></span>
+        </div>
+        <p id="tvGalleryDescription" class="tv-gallery-description"></p>
+      </figcaption>
+    </figure>
+
+    <button type="button" id="tvGalleryPrevBtn" class="tv-gallery-nav tv-gallery-prev" aria-label="Vorherige Chili">‹</button>
+    <button type="button" id="tvGalleryNextBtn" class="tv-gallery-nav tv-gallery-next" aria-label="Nächste Chili">›</button>
+    <div id="tvGalleryCounter" class="tv-gallery-counter" aria-live="polite"></div>
+  </section>
 
   <!-- Info-Modal -->
   <div id="infoModal" class="modal" hidden>
@@ -594,6 +639,7 @@
   <script src="src/core.js"></script>
   <script src="src/lazy-load.js"></script>
   <script src="src/data-service.js"></script>
+  <script src="src/tv-gallery.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

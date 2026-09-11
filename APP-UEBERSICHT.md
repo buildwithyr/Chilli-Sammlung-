@@ -1,6 +1,6 @@
 # App-Übersicht
 
-Stand: 8. September 2026
+Stand: 11. September 2026
 
 ## Zweck
 
@@ -25,6 +25,7 @@ Die App läuft ohne Build-Schritt als statische GitHub-Pages-Anwendung.
 | `core.js` | Jahresoptionen, IDs, HTML-Escaping, Downloads und Kennzahlen |
 | `data-service.js` | Supabase-Client sowie CRUD für Chilis und Bestellungen |
 | `lazy-load.js` | Bedarfsgesteuertes Laden von Chart.js, Tesseract und XLSX |
+| `tv-gallery.js` | Vollbild-Galerie für Querformat, Fernseher und Bildschirmspiegelung |
 
 ## Hauptfunktionen
 
@@ -39,6 +40,7 @@ Die App läuft ohne Build-Schritt als statische GitHub-Pages-Anwendung.
 - JSON-Backup/Import sowie Excel-Import
 - Sortenreferenzdatenbank mit Vorschlägen
 - Statistik einschließlich Keimquote und gesamtem Erntegewicht
+- TV-/Galerie-Modus mit gefilterter Fotoauswahl, Diashow, Vollbild und Tast-/Wischsteuerung
 
 ## Chili-Datenmodell
 
