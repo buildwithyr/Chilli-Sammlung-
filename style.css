@@ -1615,13 +1615,11 @@ input[type="checkbox"] { accent-color: var(--color-primary); }
 /* --- QR --- */
 
 .qr-print-trigger {
-  display: none;
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
 }
 .modal-header .qr-print-trigger { margin-left: auto; }
-@media (min-width: 900px) {
-  .qr-print-trigger { display: inline-flex; align-items: center; }
-}
 
 #qrLabelsModal { z-index: 30; }
 
