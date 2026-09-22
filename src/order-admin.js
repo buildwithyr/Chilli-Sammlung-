@@ -121,8 +121,13 @@
       confirmBtn.textContent = "Bestätigen";
       confirmBtn.addEventListener("click", async () => {
         confirmBtn.disabled = true;
-        await updateAnfrageStatus(a.id, BESTELL_STATUS.BESTAETIGT);
-        await ladeAnfragen();
+        try {
+          await updateAnfrageStatus(a.id, BESTELL_STATUS.BESTAETIGT);
+          await ladeAnfragen();
+        } catch (e) {
+          alert(e.message);
+          confirmBtn.disabled = false;
+        }
       });
 
       const cancelBtn = document.createElement("button");
@@ -131,8 +136,13 @@
       cancelBtn.textContent = "Stornieren";
       cancelBtn.addEventListener("click", async () => {
         cancelBtn.disabled = true;
-        await updateAnfrageStatus(a.id, BESTELL_STATUS.STORNIERT);
-        await ladeAnfragen();
+        try {
+          await updateAnfrageStatus(a.id, BESTELL_STATUS.STORNIERT);
+          await ladeAnfragen();
+        } catch (e) {
+          alert(e.message);
+          cancelBtn.disabled = false;
+        }
       });
 
       actions.append(confirmBtn, cancelBtn);
@@ -161,9 +171,16 @@
       checkbox.type = "checkbox";
       checkbox.checked = chili.freigegeben;
       checkbox.addEventListener("change", async () => {
+        const neuerWert = checkbox.checked;
         checkbox.disabled = true;
-        await setFreigabe(chili.id, checkbox.checked);
-        checkbox.disabled = false;
+        try {
+          await setFreigabe(chili.id, neuerWert);
+        } catch (e) {
+          alert(e.message);
+          checkbox.checked = !neuerWert;
+        } finally {
+          checkbox.disabled = false;
+        }
       });
       row.append(label, checkbox);
       freigabenView.appendChild(row);

@@ -45,11 +45,7 @@ function ladeTestStore() {
 }
 
 function speichereTestStore(store) {
-  try {
-    localStorage.setItem(ORDER_TEST_STORE_KEY, JSON.stringify(store));
-  } catch (e) {
-    // Speichern im Testmodus ist nicht kritisch.
-  }
+  localStorage.setItem(ORDER_TEST_STORE_KEY, JSON.stringify(store));
 }
 
 const ORDER_TEST_CHILIS = [
@@ -98,20 +94,17 @@ async function submitBestellanfrage({ name, kontakt, nachricht, positionen }) {
     speichereTestStore(store);
     return true;
   }
-  const { data: anfrage, error: err1 } = await orderSb
-    .from("bestellanfragen")
-    .insert({ name, kontakt, nachricht: nachricht || null })
-    .select()
-    .single();
-  if (err1) throw new Error(`Bestellanfrage konnte nicht gesendet werden: ${err1.message}`);
-  const rows = positionen.map((p) => ({
-    anfrage_id: anfrage.id,
-    chili_id: p.chiliId,
-    chili_name: p.chiliName,
-    menge: p.menge,
-  }));
-  const { error: err2 } = await orderSb.from("bestellanfragen_positionen").insert(rows);
-  if (err2) throw new Error(`Bestellpositionen konnten nicht gespeichert werden: ${err2.message}`);
+  // Anlegen läuft über die RPC submit_bestellanfrage() (siehe Migration):
+  // Anonyme dürfen laut Zugriffsregeln nicht direkt aus bestellanfragen
+  // lesen, ein Insert mit .select() würde also die neue Zeile nicht
+  // zurückbekommen. Die Funktion legt Anfrage + Positionen zudem atomar an.
+  const { error } = await orderSb.rpc("submit_bestellanfrage", {
+    p_name: name,
+    p_kontakt: kontakt,
+    p_nachricht: nachricht || null,
+    p_positionen: positionen.map((p) => ({ chiliId: p.chiliId, chiliName: p.chiliName, menge: p.menge })),
+  });
+  if (error) throw new Error(`Bestellanfrage konnte nicht gesendet werden: ${error.message}`);
   return true;
 }
 

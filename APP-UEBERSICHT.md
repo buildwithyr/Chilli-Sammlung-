@@ -49,9 +49,11 @@ Login im Testmodus: beliebige E-Mail, Passwort `papa-test`.
 **Geplante, noch nicht ausgeführte Migration:**
 `supabase/migrations/20260922120000_add_customer_orders.sql` legt drei neue,
 eigenständige Tabellen an (`chili_freigaben`, `bestellanfragen`,
-`bestellanfragen_positionen`) inklusive RLS-Policies. Sie ändert keine
-bestehende Tabelle, keine bestehenden Daten und keine bestehende
-Zugriffsregel. Erst nach ausdrücklicher Freigabe auf der Live-Datenbank
+`bestellanfragen_positionen`) inklusive RLS-Policies sowie die Funktion
+`submit_bestellanfrage()`. Besucher legen Anfragen ausschließlich über diese
+Funktion an (atomar, ohne Leserecht auf die Tabellen); Direktzugriff bleibt
+Papa (eingeloggt) vorbehalten. Die Migration ändert keine bestehende
+Tabelle, keine bestehenden Daten und keine bestehende Zugriffsregel. Erst nach ausdrücklicher Freigabe auf der Live-Datenbank
 ausführen; danach `ORDER_TEST_MODE` auf `false` stellen und für Papa sowie
 weitere Admins (z. B. dich) je einen Supabase-Auth-Login anlegen – die
 RLS-Regeln prüfen nur die Rolle `authenticated`, nicht eine bestimmte
