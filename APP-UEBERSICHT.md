@@ -39,7 +39,14 @@ eine neue, von der bestehenden App unabhängige Bestellfunktion:
 | `src/order-core.js` | Reine Hilfsfunktionen (Mengenprüfung, Status-Labels) – getestet in `tests/order-core.test.js` |
 | `src/order-data.js` | Einziger Supabase-Zugriffspunkt dieses Features, inkl. `ORDER_TEST_MODE`-Schalter |
 | `src/order-public.js` / `src/order-admin.js` | UI-Logik der beiden neuen Seiten |
+| `src/order-qr.js` | Menüpunkt "QR-Code für Bestellungen" in `index.html`, zeigt QR-Code zu `bestellen.html` |
 | `order.css` | Styles des Features, nutzt bestehende Variablen aus `style.css` |
+
+Der Bestellanfragen-Tab in `admin.html` zeigt die Anzahl offener Anfragen im
+Tab-Namen an und aktualisiert sich im echten Modus live über Supabase
+Realtime (`watchNeueAnfragen()` in `src/order-data.js`), solange die Seite
+geöffnet ist. Es gibt keine Push- oder E-Mail-Benachrichtigung außerhalb der
+geöffneten Seite.
 
 **Testmodus:** `ORDER_TEST_MODE = true` in `src/order-data.js` sorgt dafür,
 dass beide Seiten ausschließlich mit Testdaten im `localStorage` des

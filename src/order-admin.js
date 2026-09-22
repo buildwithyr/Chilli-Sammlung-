@@ -18,11 +18,23 @@
     testBanner.hidden = false;
   }
 
+  let stopWatching = null;
+
   async function zeigeRichtigeAnsicht() {
     const eingeloggt = await istPapaEingeloggt();
     loginView.hidden = eingeloggt;
     adminView.hidden = !eingeloggt;
-    if (eingeloggt) await ladeAnfragen();
+    if (eingeloggt) {
+      await ladeAnfragen();
+      if (!stopWatching) {
+        stopWatching = watchNeueAnfragen(() => {
+          ladeAnfragen();
+        });
+      }
+    } else if (stopWatching) {
+      stopWatching();
+      stopWatching = null;
+    }
   }
 
   loginForm.addEventListener("submit", async (ev) => {
@@ -67,6 +79,8 @@
       anfragenView.textContent = e.message;
       return;
     }
+    const offenAnzahl = anfragen.filter((a) => a.status === BESTELL_STATUS.ANGEFRAGT).length;
+    tabAnfragenBtn.textContent = offenAnzahl > 0 ? `Bestellanfragen (${offenAnzahl})` : "Bestellanfragen";
     anfragenView.textContent = "";
     if (anfragen.length === 0) {
       const empty = document.createElement("div");

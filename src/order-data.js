@@ -197,6 +197,19 @@ async function papaLogout() {
   await orderSb.auth.signOut();
 }
 
+// Benachrichtigt bei neu eingehenden Bestellanfragen, solange die Seite
+// geöffnet ist (kein Push, kein E-Mail-Versand). Im Testmodus passiert
+// nichts, da es keine echte Datenbank gibt, die sich ändern könnte.
+// Gibt eine Funktion zurück, mit der man wieder abbestellen kann.
+function watchNeueAnfragen(onNeueAnfrage) {
+  if (ORDER_TEST_MODE) return () => {};
+  const channel = orderSb
+    .channel("bestellanfragen-neu")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "bestellanfragen" }, onNeueAnfrage)
+    .subscribe();
+  return () => orderSb.removeChannel(channel);
+}
+
 async function istPapaEingeloggt() {
   if (ORDER_TEST_MODE) {
     return sessionStorage.getItem("orderTestAdminEingeloggt") === "1";
