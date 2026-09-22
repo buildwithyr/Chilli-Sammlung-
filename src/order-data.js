@@ -69,7 +69,9 @@ async function fetchFreigegebeneChilis() {
     .select("id,name,sorte,sg,jahr,fotos")
     .in("id", ids);
   if (err2) throw new Error(`Chilis konnten nicht geladen werden: ${err2.message}`);
-  return chilis;
+  // Dieselbe Sorte kann über mehrere Jahre je eine eigene Zeile haben -
+  // Besuchern nur einmal pro Sorte anzeigen (neuestes Jahr gewinnt).
+  return gruppiereNachSorte(chilis);
 }
 
 async function submitBestellanfrage({ name, kontakt, nachricht, positionen }) {
@@ -153,26 +155,33 @@ async function updateAnfrageStatus(id, status) {
 async function fetchAlleChilisMitFreigabe() {
   if (ORDER_TEST_MODE) {
     const store = ladeTestStore();
-    return ORDER_TEST_CHILIS.map((c) => ({ ...c, freigegeben: Boolean(store.freigaben[c.id]) }));
+    return ORDER_TEST_CHILIS.map((c) => ({ ...c, ids: [c.id], freigegeben: Boolean(store.freigaben[c.id]) }));
   }
   const { data: chilis, error: err1 } = await orderSb.from("chilis").select("id,name,sorte,jahr").order("nr");
   if (err1) throw new Error(`Chilis konnten nicht geladen werden: ${err1.message}`);
   const { data: freigaben, error: err2 } = await orderSb.from("chili_freigaben").select("chili_id,freigegeben");
   if (err2) throw new Error(`Freigaben konnten nicht geladen werden: ${err2.message}`);
   const freigabeMap = Object.fromEntries(freigaben.map((f) => [f.chili_id, f.freigegeben]));
-  return chilis.map((c) => ({ ...c, freigegeben: Boolean(freigabeMap[c.id]) }));
+  // Dieselbe Sorte kann über mehrere Jahre je eine eigene Zeile haben - in
+  // der Freigabe-Liste nur einmal zeigen, Freigabe gilt dann für alle Jahre.
+  return gruppiereNachSorte(chilis).map((c) => ({
+    ...c,
+    freigegeben: c.ids.some((id) => freigabeMap[id]),
+  }));
 }
 
-async function setFreigabe(chiliId, freigegeben) {
+async function setFreigabe(chiliIds, freigegeben) {
+  const ids = Array.isArray(chiliIds) ? chiliIds : [chiliIds];
   if (ORDER_TEST_MODE) {
     const store = ladeTestStore();
-    store.freigaben[chiliId] = freigegeben;
+    for (const id of ids) store.freigaben[id] = freigegeben;
     speichereTestStore(store);
     return true;
   }
+  const jetzt = new Date().toISOString();
   const { error } = await orderSb
     .from("chili_freigaben")
-    .upsert({ chili_id: chiliId, freigegeben, updated_at: new Date().toISOString() });
+    .upsert(ids.map((chili_id) => ({ chili_id, freigegeben, updated_at: jetzt })));
   if (error) throw new Error(`Freigabe konnte nicht gespeichert werden: ${error.message}`);
   return true;
 }

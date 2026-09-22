@@ -217,7 +217,7 @@
         const neuerWert = checkbox.checked;
         checkbox.disabled = true;
         try {
-          await setFreigabe(chili.id, neuerWert);
+          await setFreigabe(chili.ids, neuerWert);
         } catch (e) {
           alert(e.message);
           checkbox.checked = !neuerWert;
