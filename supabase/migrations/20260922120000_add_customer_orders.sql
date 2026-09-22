@@ -1,10 +1,7 @@
 -- Neue, eigenständige Tabellen für die Kunden-Bestellfunktion.
--- WICHTIG: Diese Migration wurde bewusst NICHT automatisch ausgeführt
--- (siehe AGENTS.md: "Produktionsmigrationen nicht allein wegen einer
--- Codeänderung automatisch ausführen"). Sie verändert keine bestehende
--- Tabelle, keinen bestehenden Datensatz und keine bestehende Zugriffsregel.
--- Erst nach ausdrücklicher Freigabe auf der Live-Datenbank ausführen und
--- danach `ORDER_TEST_MODE` in src/order-data.js auf false stellen.
+-- Am 22.09.2026 nach ausdrücklicher Freigabe auf der Live-Datenbank
+-- ausgeführt. Verändert keine bestehende Tabelle, keinen bestehenden
+-- Datensatz und keine bestehende Zugriffsregel.
 
 create table if not exists public.chili_freigaben (
   chili_id text primary key references public.chilis(id) on delete cascade,

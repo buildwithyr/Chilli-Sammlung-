@@ -2,13 +2,11 @@
 // Supabase-Zugriffe für dieses Feature ausschließlich hier, wie in AGENTS.md gefordert.
 //
 // ORDER_TEST_MODE: Solange true, werden ausschließlich Testdaten aus dem
-// localStorage dieses Browsers verwendet – es findet KEIN Zugriff auf die
-// Tabellen `chili_freigaben`, `bestellanfragen`, `bestellanfragen_positionen`
-// oder Supabase Auth statt. Erst wenn die Migration
-// `supabase/migrations/20260922120000_add_customer_orders.sql` bewusst auf
-// der Live-Datenbank ausgeführt und ein Login für Papa angelegt wurde, darf
-// dieser Schalter auf false gestellt werden.
-const ORDER_TEST_MODE = true;
+// localStorage dieses Browsers verwendet. Seit der Migration
+// `supabase/migrations/20260922120000_add_customer_orders.sql` auf der
+// Live-Datenbank ausgeführt wurde (22.09.2026) und ein echter Login
+// angelegt ist, läuft dieses Feature im echten Modus.
+const ORDER_TEST_MODE = false;
 const ORDER_TEST_ADMIN_PASSWORT = "papa-test"; // NUR für den Testmodus, keine echte Sicherheit.
 
 const orderSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
