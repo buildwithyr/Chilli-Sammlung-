@@ -12,6 +12,7 @@
   const tabFreigabenBtn = document.getElementById("tabFreigabenBtn");
   const anfragenView = document.getElementById("anfragenView");
   const freigabenView = document.getElementById("freigabenView");
+  const pushToggleBtn = document.getElementById("pushToggleBtn");
 
   if (ORDER_TEST_MODE) {
     testHint.hidden = false;
@@ -26,6 +27,7 @@
     adminView.hidden = !eingeloggt;
     if (eingeloggt) {
       await ladeAnfragen();
+      await aktualisierePushButton();
       if (!stopWatching) {
         stopWatching = watchNeueAnfragen(() => {
           ladeAnfragen();
@@ -36,6 +38,33 @@
       stopWatching = null;
     }
   }
+
+  async function aktualisierePushButton() {
+    if (!(await pushWirdUnterstuetzt())) {
+      pushToggleBtn.hidden = true;
+      return;
+    }
+    pushToggleBtn.hidden = false;
+    pushToggleBtn.textContent = (await pushIstAktiv())
+      ? "Push-Benachrichtigungen deaktivieren"
+      : "Push-Benachrichtigungen aktivieren";
+  }
+
+  pushToggleBtn.addEventListener("click", async () => {
+    pushToggleBtn.disabled = true;
+    try {
+      if (await pushIstAktiv()) {
+        await pushDeaktivieren();
+      } else {
+        await pushAktivieren();
+      }
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      await aktualisierePushButton();
+      pushToggleBtn.disabled = false;
+    }
+  });
 
   loginForm.addEventListener("submit", async (ev) => {
     ev.preventDefault();

@@ -45,8 +45,24 @@ eine neue, von der bestehenden App unabhängige Bestellfunktion:
 Der Bestellanfragen-Tab in `admin.html` zeigt die Anzahl offener Anfragen im
 Tab-Namen an und aktualisiert sich im echten Modus live über Supabase
 Realtime (`watchNeueAnfragen()` in `src/order-data.js`), solange die Seite
-geöffnet ist. Es gibt keine Push- oder E-Mail-Benachrichtigung außerhalb der
-geöffneten Seite.
+geöffnet ist.
+
+**Push-Benachrichtigungen (nur im echten Modus, noch nicht scharf):**
+
+| Datei | Aufgabe |
+| --- | --- |
+| `sw.js` | Service Worker: zeigt eingehende Push-Nachrichten an, öffnet `admin.html` bei Klick |
+| `src/order-push.js` | Meldet das Gerät über die Push-API an/ab, speichert die Zugangsdaten in `push_subscriptions` |
+| `supabase/functions/notify-new-order/index.ts` | Edge Function: verschickt bei neuer Bestellanfrage einen Push an alle registrierten Geräte |
+
+Neue Tabelle `push_subscriptions` in derselben (noch nicht ausgeführten)
+Migration. Erfordert nach dem Ausführen der Migration zusätzlich: VAPID-
+Schlüssel als Edge-Function-Secrets hinterlegen, die Function deployen, in
+Supabase einen Database-Webhook `bestellanfragen` → `INSERT` → diese
+Function einrichten, und auf dem iPhone die App über "Teilen → Zum
+Home-Bildschirm" installieren (Web Push funktioniert in Safari nur für
+installierte PWAs, ab iOS 16.4). Ohne diese Schritte bleibt der Button
+"Push-Benachrichtigungen aktivieren" wirkungslos.
 
 **Testmodus:** `ORDER_TEST_MODE = true` in `src/order-data.js` sorgt dafür,
 dass beide Seiten ausschließlich mit Testdaten im `localStorage` des

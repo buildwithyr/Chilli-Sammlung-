@@ -106,3 +106,24 @@ end;
 $$;
 
 grant execute on function public.submit_bestellanfrage(text, text, text, jsonb) to anon, authenticated;
+
+-- Push-Benachrichtigungen für die Admin-Oberfläche: je eingeloggtem Gerät
+-- eine Zeile mit den Browser-Zugangsdaten für den Web-Push-Versand
+-- (RFC 8291). Enthält keine Bestell- oder Kontaktdaten. Nur eingeloggte
+-- Nutzer (Papa) dürfen eigene Geräte registrieren/entfernen; gelesen wird
+-- diese Tabelle ausschließlich serverseitig von der Edge Function
+-- notify-new-order (mit dem Service-Role-Key, umgeht RLS regulär).
+create table if not exists public.push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+
+create policy "Push-Geraete nur eingeloggt anlegbar" on public.push_subscriptions
+  for insert to authenticated with check (true);
+create policy "Push-Geraete nur eingeloggt loeschbar" on public.push_subscriptions
+  for delete to authenticated using (true);
