@@ -39,28 +39,54 @@ eine neue, von der bestehenden App unabhängige Bestellfunktion:
 | `src/order-core.js` | Reine Hilfsfunktionen (Mengenprüfung, Status-Labels) – getestet in `tests/order-core.test.js` |
 | `src/order-data.js` | Einziger Supabase-Zugriffspunkt dieses Features, inkl. `ORDER_TEST_MODE`-Schalter |
 | `src/order-public.js` / `src/order-admin.js` | UI-Logik der beiden neuen Seiten |
+| `src/order-qr.js` | Menüpunkt "QR-Code für Bestellungen" in `index.html`, zeigt QR-Code zu `bestellen.html` |
 | `order.css` | Styles des Features, nutzt bestehende Variablen aus `style.css` |
 
-**Testmodus:** `ORDER_TEST_MODE = true` in `src/order-data.js` sorgt dafür,
-dass beide Seiten ausschließlich mit Testdaten im `localStorage` des
-Browsers arbeiten – kein Zugriff auf die Live-Datenbank oder Supabase Auth.
-Login im Testmodus: beliebige E-Mail, Passwort `papa-test`.
+Der Bestellanfragen-Tab in `admin.html` zeigt die Anzahl offener Anfragen im
+Tab-Namen an und aktualisiert sich im echten Modus live über Supabase
+Realtime (`watchNeueAnfragen()` in `src/order-data.js`), solange die Seite
+geöffnet ist.
 
-**Geplante, noch nicht ausgeführte Migration:**
-`supabase/migrations/20260922120000_add_customer_orders.sql` legt drei neue,
-eigenständige Tabellen an (`chili_freigaben`, `bestellanfragen`,
-`bestellanfragen_positionen`) inklusive RLS-Policies. Sie ändert keine
-bestehende Tabelle, keine bestehenden Daten und keine bestehende
-Zugriffsregel. Erst nach ausdrücklicher Freigabe auf der Live-Datenbank
-ausführen; danach `ORDER_TEST_MODE` auf `false` stellen und für Papa sowie
-weitere Admins (z. B. dich) je einen Supabase-Auth-Login anlegen – die
-RLS-Regeln prüfen nur die Rolle `authenticated`, nicht eine bestimmte
-Person, daher funktionieren mehrere Admin-Logins ohne weitere Änderung.
+**Push-Benachrichtigungen (nur im echten Modus, noch nicht scharf):**
 
-**Offenes Risiko:** Bis zur Migration und Umstellung von `ORDER_TEST_MODE`
-ist die Bestellfunktion nicht mit echten Bestellungen nutzbar. Die
-bestehende App (`index.html`/`app.js`) wurde für dieses Feature nicht
-verändert.
+| Datei | Aufgabe |
+| --- | --- |
+| `sw.js` | Service Worker: zeigt eingehende Push-Nachrichten an, öffnet `admin.html` bei Klick |
+| `src/order-push.js` | Meldet das Gerät über die Push-API an/ab, speichert die Zugangsdaten in `push_subscriptions` |
+| `supabase/functions/notify-new-order/index.ts` | Edge Function: verschickt bei neuer Bestellanfrage einen Push an alle registrierten Geräte |
+
+Neue Tabelle `push_subscriptions` in derselben Migration (siehe unten).
+Noch offen, damit der Button "Push-Benachrichtigungen aktivieren" wirkt:
+in Supabase einen Database-Webhook `bestellanfragen` → `INSERT` → Function
+`notify-new-order` einrichten, und auf dem iPhone die App über "Teilen →
+Zum Home-Bildschirm" installieren (Web Push funktioniert in Safari nur für
+installierte PWAs, ab iOS 16.4). VAPID-Secrets sind bereits hinterlegt,
+die Function ist bereits deployt.
+
+**Status seit 22.09.2026: echter Modus aktiv.** `ORDER_TEST_MODE = false`
+in `src/order-data.js`. Die Migration
+`supabase/migrations/20260922120000_add_customer_orders.sql` wurde auf der
+Live-Datenbank ausgeführt und legt vier neue, eigenständige Tabellen an
+(`chili_freigaben`, `bestellanfragen`, `bestellanfragen_positionen`,
+`push_subscriptions`) inklusive RLS-Policies sowie die Funktion
+`submit_bestellanfrage()`. Besucher legen Anfragen ausschließlich über diese
+Funktion an (atomar, ohne Leserecht auf die Tabellen); Direktzugriff bleibt
+eingeloggten Nutzern vorbehalten. Die Migration hat keine bestehende
+Tabelle, keine bestehenden Daten und keine bestehende Zugriffsregel
+verändert. Die RLS-Regeln prüfen nur die Rolle `authenticated`, nicht eine
+bestimmte Person, daher funktionieren mehrere Admin-Logins (du und Papa)
+ohne weitere Änderung.
+
+Zum Testen mit Testdaten statt der Live-Daten kann `ORDER_TEST_MODE` in
+`src/order-data.js` wieder auf `true` gestellt werden (kein Zugriff auf
+Live-Datenbank/Auth, Login dann mit beliebiger E-Mail und Passwort
+`papa-test`).
+
+**Offenes Risiko:** Noch ist kein echter Chili über `chili_freigaben`
+freigegeben, `bestellen.html` zeigt bis zur ersten Freigabe im
+Admin-Bereich "keine Chilis freigegeben". Die bestehende App
+(`index.html`/`app.js`) wurde für die Bestellanfragen-Logik nicht
+verändert (nur um den QR-Code-Menüpunkt ergänzt).
 
 ## Hauptfunktionen
 

@@ -2,13 +2,11 @@
 // Supabase-Zugriffe für dieses Feature ausschließlich hier, wie in AGENTS.md gefordert.
 //
 // ORDER_TEST_MODE: Solange true, werden ausschließlich Testdaten aus dem
-// localStorage dieses Browsers verwendet – es findet KEIN Zugriff auf die
-// Tabellen `chili_freigaben`, `bestellanfragen`, `bestellanfragen_positionen`
-// oder Supabase Auth statt. Erst wenn die Migration
-// `supabase/migrations/20260922120000_add_customer_orders.sql` bewusst auf
-// der Live-Datenbank ausgeführt und ein Login für Papa angelegt wurde, darf
-// dieser Schalter auf false gestellt werden.
-const ORDER_TEST_MODE = true;
+// localStorage dieses Browsers verwendet. Seit der Migration
+// `supabase/migrations/20260922120000_add_customer_orders.sql` auf der
+// Live-Datenbank ausgeführt wurde (22.09.2026) und ein echter Login
+// angelegt ist, läuft dieses Feature im echten Modus.
+const ORDER_TEST_MODE = false;
 const ORDER_TEST_ADMIN_PASSWORT = "papa-test"; // NUR für den Testmodus, keine echte Sicherheit.
 
 const orderSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -45,11 +43,7 @@ function ladeTestStore() {
 }
 
 function speichereTestStore(store) {
-  try {
-    localStorage.setItem(ORDER_TEST_STORE_KEY, JSON.stringify(store));
-  } catch (e) {
-    // Speichern im Testmodus ist nicht kritisch.
-  }
+  localStorage.setItem(ORDER_TEST_STORE_KEY, JSON.stringify(store));
 }
 
 const ORDER_TEST_CHILIS = [
@@ -98,20 +92,17 @@ async function submitBestellanfrage({ name, kontakt, nachricht, positionen }) {
     speichereTestStore(store);
     return true;
   }
-  const { data: anfrage, error: err1 } = await orderSb
-    .from("bestellanfragen")
-    .insert({ name, kontakt, nachricht: nachricht || null })
-    .select()
-    .single();
-  if (err1) throw new Error(`Bestellanfrage konnte nicht gesendet werden: ${err1.message}`);
-  const rows = positionen.map((p) => ({
-    anfrage_id: anfrage.id,
-    chili_id: p.chiliId,
-    chili_name: p.chiliName,
-    menge: p.menge,
-  }));
-  const { error: err2 } = await orderSb.from("bestellanfragen_positionen").insert(rows);
-  if (err2) throw new Error(`Bestellpositionen konnten nicht gespeichert werden: ${err2.message}`);
+  // Anlegen läuft über die RPC submit_bestellanfrage() (siehe Migration):
+  // Anonyme dürfen laut Zugriffsregeln nicht direkt aus bestellanfragen
+  // lesen, ein Insert mit .select() würde also die neue Zeile nicht
+  // zurückbekommen. Die Funktion legt Anfrage + Positionen zudem atomar an.
+  const { error } = await orderSb.rpc("submit_bestellanfrage", {
+    p_name: name,
+    p_kontakt: kontakt,
+    p_nachricht: nachricht || null,
+    p_positionen: positionen.map((p) => ({ chiliId: p.chiliId, chiliName: p.chiliName, menge: p.menge })),
+  });
+  if (error) throw new Error(`Bestellanfrage konnte nicht gesendet werden: ${error.message}`);
   return true;
 }
 
@@ -202,6 +193,19 @@ async function papaLogout() {
     return;
   }
   await orderSb.auth.signOut();
+}
+
+// Benachrichtigt bei neu eingehenden Bestellanfragen, solange die Seite
+// geöffnet ist (kein Push, kein E-Mail-Versand). Im Testmodus passiert
+// nichts, da es keine echte Datenbank gibt, die sich ändern könnte.
+// Gibt eine Funktion zurück, mit der man wieder abbestellen kann.
+function watchNeueAnfragen(onNeueAnfrage) {
+  if (ORDER_TEST_MODE) return () => {};
+  const channel = orderSb
+    .channel("bestellanfragen-neu")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "bestellanfragen" }, onNeueAnfrage)
+    .subscribe();
+  return () => orderSb.removeChannel(channel);
 }
 
 async function istPapaEingeloggt() {
