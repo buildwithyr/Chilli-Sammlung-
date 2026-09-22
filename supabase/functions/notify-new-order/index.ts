@@ -2,14 +2,14 @@
 // registrierten Geräte (Tabelle push_subscriptions), sobald eine neue
 // Zeile in bestellanfragen angelegt wird.
 //
-// Wird über einen Supabase Database Webhook ausgelöst (Dashboard:
-// Database -> Webhooks -> Tabelle bestellanfragen, Ereignis INSERT,
-// Ziel: diese Function). Nicht Teil der SQL-Migration, weil ein Webhook
-// die Function-URL und ggf. einen Auth-Header enthält, die nicht in ein
-// öffentliches Repo gehören.
+// Wird über einen Datenbank-Trigger auf bestellanfragen (siehe Migration
+// 20260922130000_add_notify_new_order_trigger.sql) via pg_net aufgerufen.
+// verify_jwt ist bei dieser Function AUS (siehe Deploy), stattdessen prüft
+// sie einen eigenen geheimen Header, der nur dem Trigger bekannt ist -
+// damit kann niemand außer der Datenbank diese Function auslösen.
 //
 // Benötigte Secrets (Supabase Dashboard -> Edge Functions -> Secrets):
-//   VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (z.B. "mailto:du@example.com")
+//   VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, INTERNAL_WEBHOOK_SECRET
 //   SUPABASE_URL und SUPABASE_SERVICE_ROLE_KEY sind als Systemvariablen
 //   in jeder Edge Function automatisch vorhanden.
 
@@ -28,6 +28,11 @@ const supabase = createClient(
 );
 
 Deno.serve(async (req) => {
+  const secret = Deno.env.get("INTERNAL_WEBHOOK_SECRET");
+  if (!secret || req.headers.get("x-webhook-secret") !== secret) {
+    return new Response("Nicht autorisiert", { status: 401 });
+  }
+
   let payload;
   try {
     payload = await req.json();
