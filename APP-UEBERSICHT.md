@@ -27,6 +27,41 @@ Die App läuft ohne Build-Schritt als statische GitHub-Pages-Anwendung.
 | `lazy-load.js` | Bedarfsgesteuertes Laden von Chart.js, Tesseract und XLSX |
 | `tv-gallery.js` | Vollbild-Galerie für Querformat, Fernseher und Bildschirmspiegelung |
 
+## Bestellfunktion für Besucher (Branch-Vorschau, noch nicht live)
+
+Auf dem Branch `claude/beautiful-mendel-d1xnbu` (noch nicht in `main`) gibt es
+eine neue, von der bestehenden App unabhängige Bestellfunktion:
+
+| Datei | Aufgabe |
+| --- | --- |
+| `bestellen.html` | Öffentliche Seite: zeigt nur freigegebene Chilis, Mengenwahl, Anfrageformular ohne Login |
+| `admin.html` | Geschützter Bereich für Papa (und weitere eingeloggte Personen): Login, Bestellanfragen bestätigen/stornieren, öffentliche Freigabe je Chili setzen |
+| `src/order-core.js` | Reine Hilfsfunktionen (Mengenprüfung, Status-Labels) – getestet in `tests/order-core.test.js` |
+| `src/order-data.js` | Einziger Supabase-Zugriffspunkt dieses Features, inkl. `ORDER_TEST_MODE`-Schalter |
+| `src/order-public.js` / `src/order-admin.js` | UI-Logik der beiden neuen Seiten |
+| `order.css` | Styles des Features, nutzt bestehende Variablen aus `style.css` |
+
+**Testmodus:** `ORDER_TEST_MODE = true` in `src/order-data.js` sorgt dafür,
+dass beide Seiten ausschließlich mit Testdaten im `localStorage` des
+Browsers arbeiten – kein Zugriff auf die Live-Datenbank oder Supabase Auth.
+Login im Testmodus: beliebige E-Mail, Passwort `papa-test`.
+
+**Geplante, noch nicht ausgeführte Migration:**
+`supabase/migrations/20260922120000_add_customer_orders.sql` legt drei neue,
+eigenständige Tabellen an (`chili_freigaben`, `bestellanfragen`,
+`bestellanfragen_positionen`) inklusive RLS-Policies. Sie ändert keine
+bestehende Tabelle, keine bestehenden Daten und keine bestehende
+Zugriffsregel. Erst nach ausdrücklicher Freigabe auf der Live-Datenbank
+ausführen; danach `ORDER_TEST_MODE` auf `false` stellen und für Papa sowie
+weitere Admins (z. B. dich) je einen Supabase-Auth-Login anlegen – die
+RLS-Regeln prüfen nur die Rolle `authenticated`, nicht eine bestimmte
+Person, daher funktionieren mehrere Admin-Logins ohne weitere Änderung.
+
+**Offenes Risiko:** Bis zur Migration und Umstellung von `ORDER_TEST_MODE`
+ist die Bestellfunktion nicht mit echten Bestellungen nutzbar. Die
+bestehende App (`index.html`/`app.js`) wurde für dieses Feature nicht
+verändert.
+
 ## Hauptfunktionen
 
 - Chili-Sammlung als Kachel- oder Listenansicht
