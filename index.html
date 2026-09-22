@@ -59,6 +59,7 @@
           <div id="menuDropdown" class="menu-dropdown" hidden>
             <button type="button" id="menuStatsBtn" class="menu-item">Statistik</button>
             <button type="button" id="menuGalleryBtn" class="menu-item">TV-/Galerie-Modus</button>
+            <button type="button" id="menuOrderQrBtn" class="menu-item">QR-Code für Bestellungen</button>
             <div class="menu-divider" aria-hidden="true"></div>
             <button type="button" id="dataMenuBtn" class="menu-item menu-submenu-trigger" aria-expanded="false" aria-controls="dataSubmenu">
               <span>Datenverwaltung</span><span class="menu-caret" aria-hidden="true">▾</span>
@@ -405,6 +406,18 @@
     </div>
   </div>
 
+  <div id="orderQrModal" class="modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="modal-back-btn" id="orderQrCloseBtn">‹ Zurück</button>
+        <h2 class="modal-title">QR-Code für Bestellungen</h2>
+      </div>
+      <p class="qr-labels-hint">Kunden scannen den Code und kommen direkt zur Bestellübersicht - keine Anmeldung nötig.</p>
+      <div id="orderQrCode" class="qr-print-area"></div>
+      <p id="orderQrLink" class="qr-labels-hint"></p>
+    </div>
+  </div>
+
   <!-- Detail-/Editier-Modal -->
   <div id="chiliModal" class="modal" hidden>
     <div class="modal-content">
@@ -644,6 +657,7 @@
   <script src="src/lazy-load.js"></script>
   <script src="src/data-service.js"></script>
   <script src="src/tv-gallery.js"></script>
+  <script src="src/order-qr.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

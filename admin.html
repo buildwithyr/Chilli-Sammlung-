@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14100e">
+<title>Bestellverwaltung – Opa Reiters Chili Sammlung</title>
+<link rel="icon" href="assets/icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="order.css">
+</head>
+<body>
+  <div id="loginView" class="order-login">
+    <h1>Anmeldung</h1>
+    <p id="testHint" style="color:var(--color-warn); font-size:0.85rem;" hidden>
+      Testvorschau: Passwort ist <code>papa-test</code> (E-Mail beliebig).
+    </p>
+    <form id="loginForm">
+      <label for="lEmail">E-Mail</label>
+      <input type="email" id="lEmail" style="width:100%; margin:6px 0 12px; padding:10px; border-radius:12px; border:1px solid var(--color-border); background:var(--color-surface-2); color:var(--color-text);">
+      <label for="lPasswort">Passwort</label>
+      <input type="password" id="lPasswort" required style="width:100%; margin:6px 0 12px; padding:10px; border-radius:12px; border:1px solid var(--color-border); background:var(--color-surface-2); color:var(--color-text);">
+      <button type="submit" class="btn btn-primary">Anmelden</button>
+      <div id="loginMsg" class="order-status-msg error"></div>
+    </form>
+  </div>
+
+  <div id="adminView" class="order-page" hidden>
+    <button type="button" id="logoutBtn" class="btn btn-secondary order-logout">Abmelden</button>
+    <div class="order-header">
+      <h1>Bestellverwaltung</h1>
+    </div>
+    <div id="testBanner" class="order-testbanner" hidden>
+      Testvorschau: Alle Daten hier liegen nur im Testspeicher dieses Browsers.
+    </div>
+
+    <div class="order-tabs">
+      <button type="button" id="tabAnfragenBtn" class="btn btn-primary">Bestellanfragen</button>
+      <button type="button" id="tabFreigabenBtn" class="btn btn-secondary">Öffentliche Freigabe</button>
+      <button type="button" id="pushToggleBtn" class="btn btn-secondary">Push-Benachrichtigungen aktivieren</button>
+    </div>
+
+    <div id="anfragenView"></div>
+    <div id="freigabenView" hidden></div>
+  </div>
+
+  <script src="vendor/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="src/core.js"></script>
+  <script src="src/order-core.js"></script>
+  <script src="src/order-data.js"></script>
+  <script src="src/order-push.js"></script>
+  <script src="src/order-admin.js"></script>
+</body>
+</html>
