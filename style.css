@@ -448,6 +448,7 @@ body.tv-gallery-open { overflow: hidden; }
   font-size: 0.9rem;
   cursor: pointer;
   text-align: left;
+  text-decoration: none;
 }
 
 .menu-item:hover { background: var(--color-badge); }
