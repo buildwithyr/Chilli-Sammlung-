@@ -56,12 +56,19 @@ geöffnet ist.
 | `supabase/functions/notify-new-order/index.ts` | Edge Function: verschickt bei neuer Bestellanfrage einen Push an alle registrierten Geräte |
 
 Neue Tabelle `push_subscriptions` in derselben Migration (siehe unten).
-Noch offen, damit der Button "Push-Benachrichtigungen aktivieren" wirkt:
-in Supabase einen Database-Webhook `bestellanfragen` → `INSERT` → Function
-`notify-new-order` einrichten, und auf dem iPhone die App über "Teilen →
-Zum Home-Bildschirm" installieren (Web Push funktioniert in Safari nur für
-installierte PWAs, ab iOS 16.4). VAPID-Secrets sind bereits hinterlegt,
-die Function ist bereits deployt.
+Auslösung läuft über einen Datenbank-Trigger statt über die
+Dashboard-Weboberfläche für Webhooks (die zeigte in diesem Projekt nur
+gewöhnliche SQL-Funktionen zur Auswahl an, keine Edge Functions):
+`supabase/migrations/20260922130000_add_notify_new_order_trigger.sql`
+legt eine `pg_net`-basierte Trigger-Funktion auf `bestellanfragen` an, die
+bei jedem `INSERT` die Function `notify-new-order` aufruft. Das
+Geheimnis dafür liegt in Supabase Vault (`notify_new_order_webhook_secret`,
+nicht im Repo) und muss identisch auch als Edge-Function-Secret
+`INTERNAL_WEBHOOK_SECRET` hinterlegt sein. VAPID-Secrets und
+`INTERNAL_WEBHOOK_SECRET` sind Voraussetzung, damit der Button
+"Push-Benachrichtigungen aktivieren" wirkt; zusätzlich muss die App auf
+dem iPhone über "Teilen → Zum Home-Bildschirm" installiert sein (Web Push
+funktioniert in Safari nur für installierte PWAs, ab iOS 16.4).
 
 **Status seit 22.09.2026: echter Modus aktiv.** `ORDER_TEST_MODE = false`
 in `src/order-data.js`. Die Migration
