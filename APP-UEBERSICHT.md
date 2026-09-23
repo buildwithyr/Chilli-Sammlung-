@@ -54,6 +54,7 @@ geöffnet ist.
 | `sw.js` | Service Worker: zeigt eingehende Push-Nachrichten an, öffnet `admin.html` bei Klick |
 | `src/order-push.js` | Meldet das Gerät über die Push-API an/ab, speichert die Zugangsdaten in `push_subscriptions` |
 | `supabase/functions/notify-new-order/index.ts` | Edge Function: verschickt bei neuer Bestellanfrage einen Push an alle registrierten Geräte |
+| `supabase/functions/notify-order-status/index.ts` | Edge Function: sendet dem Kunden eine E-Mail, wenn seine Anfrage bestätigt oder storniert wird (nur wenn `kontakt` ein `@` enthält); nutzt Resend-API |
 
 Neue Tabelle `push_subscriptions` in derselben Migration (siehe unten).
 Auslösung läuft über einen Datenbank-Trigger statt über die
@@ -61,7 +62,13 @@ Dashboard-Weboberfläche für Webhooks (die zeigte in diesem Projekt nur
 gewöhnliche SQL-Funktionen zur Auswahl an, keine Edge Functions):
 `supabase/migrations/20260922130000_add_notify_new_order_trigger.sql`
 legt eine `pg_net`-basierte Trigger-Funktion auf `bestellanfragen` an, die
-bei jedem `INSERT` die Function `notify-new-order` aufruft. Das
+bei jedem `INSERT` die Function `notify-new-order` aufruft.
+`supabase/migrations/20260923100000_add_notify_order_status_trigger.sql`
+legt analog einen Trigger auf `UPDATE` an, der bei Statuswechsel zu
+`bestaetigt` oder `storniert` die Function `notify-order-status` aufruft
+(Kundenbenachrichtigung per E-Mail über Resend). Nutzt denselben Vault-Eintrag
+und dasselbe `INTERNAL_WEBHOOK_SECRET`. Zusätzlich benötigt:
+`RESEND_API_KEY` und `FROM_EMAIL` als Edge-Function-Secrets. Das
 Geheimnis dafür liegt in Supabase Vault (`notify_new_order_webhook_secret`,
 nicht im Repo) und muss identisch auch als Edge-Function-Secret
 `INTERNAL_WEBHOOK_SECRET` hinterlegt sein. VAPID-Secrets und
